@@ -35,6 +35,13 @@
       {%- render 'theme-editor' -%}
     {% endif %}
 
+    {{ 'nailinit-header.css' | asset_url | stylesheet_tag }}
+
+    {% if request.page_type == 'product' %}
+      {{ 'soulstruck-product.css' | asset_url | stylesheet_tag }}
+      <script src="{{ 'soulstruck-product.js' | asset_url }}" defer></script>
+    {% endif %}
+
     {{ content_for_header }}
   </head>
 
@@ -107,7 +114,7 @@
           const isTouchDevice = 'ontouchstart' in window && navigator.maxTouchPoints > 0;
           const overflowList = headerComponent?.querySelector('overflow-list');
           const hasReachedMinimum = overflowList && overflowList.hasAttribute('minimum-reached');
-          headerComponent.dataset.menuStyle = isTouchDevice || hasReachedMinimum ? 'drawer' : 'menu';
+          headerComponent.dataset.menuStyle = 'drawer';
         }
       })();
     </script>

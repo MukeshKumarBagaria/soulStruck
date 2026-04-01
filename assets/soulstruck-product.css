@@ -1,0 +1,626 @@
+/* ============================================
+   SoulStruck Product Page — Premium Styles
+   High-conversion product page overrides
+   ============================================ */
+
+/* -- Design Tokens -- */
+:root {
+  --ss-accent: #E91E63;
+  --ss-accent-light: #FCE4EC;
+  --ss-accent-dark: #C2185B;
+  --ss-success: #2E7D32;
+  --ss-gold: #F9A825;
+  --ss-bg-light: #FAFAFA;
+  --ss-border: #E0E0E0;
+  --ss-text-muted: #757575;
+  --ss-text-dark: #212121;
+  --ss-radius-sm: 6px;
+  --ss-radius-md: 10px;
+  --ss-radius-lg: 14px;
+  --ss-shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06);
+  --ss-shadow-hover: 0 6px 24px rgba(0, 0, 0, 0.1);
+  --ss-transition: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   1. GLOBAL PRODUCT PAGE LAYOUT
+   ============================================ */
+
+/* Ensure details column has breathing room */
+.product-details > .group-block {
+  gap: 20px !important;
+}
+
+/* Smoother scrolling */
+.product-information {
+  scroll-behavior: smooth;
+}
+
+/* ============================================
+   2. OFFER / DEAL BANNER
+   ============================================ */
+.ss-offer-banner {
+  background: linear-gradient(135deg, var(--ss-accent-light) 0%, #FFF0F5 100%);
+  border: 1px solid rgba(233, 30, 99, 0.15);
+  border-radius: var(--ss-radius-sm);
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ss-accent);
+  letter-spacing: 0.3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  animation: ss-pulse-border 2.5s ease-in-out infinite;
+}
+
+.ss-offer-banner::before {
+  content: '🔥';
+  font-size: 14px;
+}
+
+@keyframes ss-pulse-border {
+  0%, 100% { border-color: rgba(233, 30, 99, 0.15); }
+  50% { border-color: rgba(233, 30, 99, 0.4); }
+}
+
+/* ============================================
+   3. STAR RATING
+   ============================================ */
+.ss-rating,
+.ss-rating-block p {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--ss-text-muted);
+}
+
+/* Style the unicode stars in the rating text */
+.ss-rating-block .text-block__text,
+.ss-rating-block p {
+  color: var(--ss-gold);
+  font-size: 15px;
+}
+
+.ss-rating__stars {
+  display: inline-flex;
+  gap: 1px;
+  color: var(--ss-gold);
+  font-size: 15px;
+}
+
+.ss-rating__count {
+  font-size: 13px;
+  color: var(--ss-text-muted);
+}
+
+.ss-rating__count a {
+  color: var(--ss-text-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ============================================
+   4. PRICING — Sale + Discount Badge
+   ============================================ */
+.ss-price-block {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ss-price-block__current {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ss-text-dark);
+  letter-spacing: -0.5px;
+}
+
+.ss-price-block__compare {
+  font-size: 16px;
+  color: var(--ss-text-muted);
+  text-decoration: line-through;
+}
+
+.ss-price-block__badge {
+  display: inline-flex;
+  align-items: center;
+  background: var(--ss-accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Theme default price overrides to match our style */
+.product-details .price-item--sale {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ss-text-dark);
+}
+
+.product-details .price-item--compare {
+  font-size: 16px;
+  color: var(--ss-text-muted);
+}
+
+/* ============================================
+   5. PRODUCT DESCRIPTION — Read More
+   ============================================ */
+.ss-description {
+  position: relative;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ss-text-muted);
+}
+
+.ss-description.is-collapsed {
+  max-height: 72px;
+  overflow: hidden;
+}
+
+.ss-description.is-collapsed::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 32px;
+  background: linear-gradient(to top, var(--color-background, #fff), transparent);
+  pointer-events: none;
+}
+
+.ss-read-more {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ss-accent);
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  text-decoration: none;
+  transition: color var(--ss-transition);
+}
+
+.ss-read-more:hover {
+  color: var(--ss-accent-dark);
+}
+
+/* ============================================
+   6. VARIANT SWATCHES — Color Grid
+   ============================================ */
+
+/* Enhance the theme's default variant picker for a swatch grid look */
+.product-details .variant-picker__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Make image swatches look like the reference color grid */
+.product-details .variant-swatch {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--ss-radius-sm);
+  border: 2px solid transparent;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all var(--ss-transition);
+  position: relative;
+}
+
+.product-details .variant-swatch:hover {
+  border-color: var(--ss-accent);
+  transform: scale(1.08);
+}
+
+.product-details .variant-swatch[aria-selected="true"],
+.product-details .variant-swatch.is-selected {
+  border-color: var(--ss-text-dark);
+  box-shadow: 0 0 0 1px var(--ss-text-dark);
+}
+
+.product-details .variant-swatch img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Variant label */
+.ss-variant-label {
+  font-size: 13px;
+  color: var(--ss-text-muted);
+  margin-bottom: 4px;
+}
+
+.ss-variant-label strong {
+  color: var(--ss-text-dark);
+  font-weight: 600;
+}
+
+/* ============================================
+   7. ADD TO CART — Full-width Premium CTA
+   ============================================ */
+.product-details .buy-buttons {
+  width: 100%;
+}
+
+.product-details .buy-buttons .button,
+.product-details .buy-buttons .add-to-cart-button {
+  width: 100%;
+  min-height: 52px;
+  border-radius: var(--ss-radius-md);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: all var(--ss-transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.product-details .buy-buttons .button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  transition: left 0.5s ease;
+}
+
+.product-details .buy-buttons .button:hover::after {
+  left: 100%;
+}
+
+.product-details .buy-buttons .button:active {
+  transform: scale(0.98);
+}
+
+/* ============================================
+   8. PRODUCT ADDON / UPSELL CARDS
+   ============================================ */
+.ss-addons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.ss-addon-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--ss-border);
+  border-radius: var(--ss-radius-md);
+  background: #fff;
+  transition: all var(--ss-transition);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.ss-addon-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, transparent 60%, rgba(233, 30, 99, 0.03));
+  opacity: 0;
+  transition: opacity var(--ss-transition);
+}
+
+.ss-addon-card:hover {
+  border-color: var(--ss-accent);
+  box-shadow: var(--ss-shadow-card);
+}
+
+.ss-addon-card:hover::before {
+  opacity: 1;
+}
+
+.ss-addon-card__image {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--ss-radius-sm);
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--ss-bg-light);
+}
+
+.ss-addon-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ss-addon-card__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ss-addon-card__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ss-text-dark);
+  line-height: 1.3;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ss-addon-card__price {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ss-text-dark);
+  background: var(--ss-bg-light);
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.ss-addon-card__cta {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ss-accent);
+  white-space: nowrap;
+  text-decoration: none;
+  padding: 6px 14px;
+  border: 1px solid var(--ss-accent);
+  border-radius: var(--ss-radius-sm);
+  background: transparent;
+  transition: all var(--ss-transition);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.ss-addon-card__cta:hover {
+  background: var(--ss-accent);
+  color: #fff;
+}
+
+/* ============================================
+   9. TRUST SIGNALS / BADGES
+   ============================================ */
+.ss-trust-badges {
+  display: flex;
+  justify-content: flex-start;
+  gap: 24px;
+  padding: 16px 0;
+  border-top: 1px solid var(--ss-border);
+  border-bottom: 1px solid var(--ss-border);
+  flex-wrap: wrap;
+}
+
+.ss-trust-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--ss-text-muted);
+  transition: color var(--ss-transition);
+}
+
+.ss-trust-badge:hover {
+  color: var(--ss-text-dark);
+}
+
+.ss-trust-badge__icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ss-trust-badge__icon svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ============================================
+   10. ACCORDION ENHANCEMENTS
+   ============================================ */
+.product-details .accordion-custom {
+  border-radius: 0;
+}
+
+.product-details .accordion-custom summary {
+  padding: 14px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ss-text-dark);
+  transition: color var(--ss-transition);
+}
+
+.product-details .accordion-custom summary:hover {
+  color: var(--ss-accent);
+}
+
+.product-details .accordion-custom[open] summary {
+  color: var(--ss-accent);
+}
+
+.product-details .accordion-custom .accordion__content {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--ss-text-muted);
+  padding-bottom: 14px;
+}
+
+/* ============================================
+   11. MEDIA GALLERY ENHANCEMENTS
+   ============================================ */
+
+/* Thumbnail strip polish */
+.product-information__media .slideshow-controls__thumbnail {
+  border-radius: var(--ss-radius-sm);
+  border: 2px solid transparent;
+  overflow: hidden;
+  transition: all var(--ss-transition);
+  opacity: 0.7;
+}
+
+.product-information__media .slideshow-controls__thumbnail:hover {
+  opacity: 1;
+  border-color: var(--ss-border);
+}
+
+.product-information__media .slideshow-controls__thumbnail[aria-selected="true"] {
+  opacity: 1;
+  border-color: var(--ss-text-dark);
+}
+
+/* Main image polish */
+.product-information__media .product-media {
+  border-radius: var(--ss-radius-lg);
+  overflow: hidden;
+}
+
+/* Grid layout smooth gap */
+.product-information__media .media-gallery__grid {
+  gap: 6px;
+}
+
+.product-information__media .media-gallery__grid > li {
+  border-radius: var(--ss-radius-md);
+  overflow: hidden;
+}
+
+/* ============================================
+   12. QUANTITY SELECTOR ENHANCEMENT
+   ============================================ */
+.product-details .quantity-selector {
+  border-radius: var(--ss-radius-sm);
+  border: 1px solid var(--ss-border);
+  overflow: hidden;
+}
+
+.product-details .quantity-selector__button {
+  transition: background var(--ss-transition);
+}
+
+.product-details .quantity-selector__button:hover {
+  background: var(--ss-bg-light);
+}
+
+/* ============================================
+   13. PRODUCT RECOMMENDATIONS (below main)
+   ============================================ */
+.product-recommendations .product-card {
+  border-radius: var(--ss-radius-md);
+  overflow: hidden;
+  transition: transform var(--ss-transition), box-shadow var(--ss-transition);
+}
+
+.product-recommendations .product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--ss-shadow-hover);
+}
+
+/* ============================================
+   14. SCROLL ANIMATIONS
+   ============================================ */
+.ss-fade-in {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.ss-fade-in.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================
+   15. MOBILE RESPONSIVE
+   ============================================ */
+@media screen and (max-width: 749px) {
+  .ss-offer-banner {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .ss-price-block__current {
+    font-size: 20px;
+  }
+
+  .ss-trust-badges {
+    gap: 16px;
+  }
+
+  .ss-trust-badge {
+    font-size: 11px;
+  }
+
+  .ss-addon-card {
+    padding: 10px;
+  }
+
+  .ss-addon-card__image {
+    width: 50px;
+    height: 50px;
+  }
+
+  .ss-addon-card__title {
+    font-size: 12px;
+  }
+
+  .product-details .buy-buttons .button,
+  .product-details .buy-buttons .add-to-cart-button {
+    min-height: 48px;
+    font-size: 14px;
+  }
+
+  .ss-addon-card__cta {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  /* Stack addon card on very small screens */
+  @media screen and (max-width: 380px) {
+    .ss-addon-card {
+      flex-wrap: wrap;
+    }
+
+    .ss-addon-card__cta {
+      width: 100%;
+      text-align: center;
+      margin-top: 4px;
+    }
+  }
+}
+
+/* ============================================
+   16. STICKY ADD TO CART ENHANCEMENTS
+   ============================================ */
+.sticky-add-to-cart__bar {
+  border-radius: var(--ss-radius-lg) !important;
+}
+
+.sticky-add-to-cart__button.button {
+  border-radius: var(--ss-radius-md) !important;
+}
+
+/* ============================================
+   17. DIVIDER POLISH
+   ============================================ */
+.product-details .divider-block {
+  opacity: 0.4;
+}

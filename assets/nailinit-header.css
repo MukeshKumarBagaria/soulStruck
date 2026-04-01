@@ -1,0 +1,574 @@
+/* ==============================================================
+   NAILINIT-STYLE HEADER OVERRIDES
+   Transforms the default theme header into a nailinit.it-inspired
+   design with hamburger menu that reveals horizontal nav tabs
+   BELOW the header bar. Logo, search, account, cart all remain
+   visible. X replaces hamburger at the exact same position.
+   ============================================================== */
+
+/* ---------------------------------------------------------------
+   CSS CUSTOM PROPERTIES
+   --------------------------------------------------------------- */
+:root {
+  --nailinit-pink: #E84C7A;
+  --nailinit-pink-dark: #D43D6A;
+  --nailinit-pink-light: #F06292;
+  --nailinit-white: #ffffff;
+  --nailinit-black: #1a1a1a;
+  --nailinit-header-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+  --nailinit-transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --nailinit-transition-medium: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  --nailinit-transition-slow: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ---------------------------------------------------------------
+   ANNOUNCEMENT BAR — Hot Pink
+   --------------------------------------------------------------- */
+.announcement-bar {
+  background-color: var(--nailinit-pink) !important;
+  border-bottom: none !important;
+  animation: nailinit-announcement-entrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.announcement-bar,
+.announcement-bar * {
+  --color-foreground: var(--nailinit-white) !important;
+  --color-foreground-rgb: 255, 255, 255 !important;
+  color: var(--nailinit-white) !important;
+}
+
+.announcement-bar + .section-background,
+.shopify-section:has(.announcement-bar) .section-background,
+.shopify-section:has(.announcement-bar) > .section-background {
+  background-color: var(--nailinit-pink) !important;
+}
+
+.announcement-bar .announcement-bar__text,
+.announcement-bar .announcement-bar__slide {
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: none !important;
+}
+
+.announcement-bar.spacing-style {
+  --padding-block-start: 8px !important;
+  --padding-block-end: 8px !important;
+}
+
+.announcement-bar__slider .slideshow-control {
+  color: var(--nailinit-white) !important;
+  opacity: 0.7;
+  transition: opacity var(--nailinit-transition-fast) !important;
+}
+
+.announcement-bar__slider .slideshow-control:hover { opacity: 1; }
+
+.announcement-bar__slide {
+  transition: opacity 0.6s ease-in-out, visibility 0.6s ease-in-out, transform 0.6s ease-in-out !important;
+}
+
+.announcement-bar__slide[aria-hidden='true'] {
+  opacity: 0 !important; visibility: hidden !important; transform: translateY(-4px) !important;
+}
+
+.announcement-bar__slide:not([aria-hidden='true']) { transform: translateY(0) !important; }
+
+@keyframes nailinit-announcement-entrance {
+  0% { opacity: 0; transform: translateY(-100%); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------------------------------------------------------------
+   MAIN HEADER BAR — Clean white, always visible
+   --------------------------------------------------------------- */
+.header .header__row--top {
+  background-color: var(--nailinit-white) !important;
+  border-bottom: none !important;
+}
+
+.header .header__underlay-closed { background: var(--nailinit-white) !important; }
+.header .header__underlay-open { background: var(--nailinit-white) !important; }
+
+#header-component .header__row--top {
+  --color-background: #ffffff;
+  --color-foreground: #1a1a1a;
+  --color-foreground-rgb: 26, 26, 26;
+}
+
+.header__row--top:not(.divider--page-width),
+.header__row--top.divider--page-width .header__columns {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+.header__columns { padding-block: 10px !important; }
+
+/* ---------------------------------------------------------------
+   HEADER ICONS — Hover animations
+   --------------------------------------------------------------- */
+.header__icon--summary,
+.header-actions__action,
+.search-action .header-actions__action,
+.search-action button,
+.search-action a {
+  transition: transform var(--nailinit-transition-fast),
+              opacity var(--nailinit-transition-fast) !important;
+  will-change: transform;
+}
+
+@media (hover: hover) {
+  .header__icon--summary:hover,
+  .header-actions__action:hover {
+    transform: scale(1.12) !important;
+    opacity: 1 !important;
+  }
+  .header__icon--summary:active,
+  .header-actions__action:active {
+    transform: scale(0.95) !important;
+  }
+}
+
+.header__icon--summary .svg-wrapper svg,
+.header-actions__action:not(.account-button) svg {
+  width: 20px !important;
+  height: 20px !important;
+  transition: transform var(--nailinit-transition-fast) !important;
+}
+
+@media (hover: hover) {
+  .search-action .svg-wrapper:hover svg {
+    transform: rotate(-15deg) scale(1.05) !important;
+  }
+}
+
+/* ---------------------------------------------------------------
+   HAMBURGER / X TOGGLE — X replaces hamburger at same position
+   Override theme CSS that keeps hamburger visible on desktop
+   --------------------------------------------------------------- */
+.header-drawer-icon {
+  transition: transform var(--nailinit-transition-medium),
+              opacity var(--nailinit-transition-fast) !important;
+}
+
+/* Force X to show on ALL screen sizes when menu is open */
+details.menu-open .header__icon--menu .header-drawer-icon--close {
+  display: flex !important;
+}
+details.menu-open .header__icon--menu .header-drawer-icon--open {
+  display: none !important;
+}
+
+/* Spin-in animation for the X icon */
+details.menu-open .header-drawer-icon--close {
+  animation: nailinit-icon-spin 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@keyframes nailinit-icon-spin {
+  0% { transform: rotate(-90deg) scale(0.5); opacity: 0; }
+  100% { transform: rotate(0deg) scale(1); opacity: 1; }
+}
+
+/* Ensure the hamburger/X summary button is ABOVE the backdrop */
+.header__icon--summary {
+  position: relative !important;
+  z-index: 10001 !important;
+}
+
+/* Ensure the entire header row sits above the backdrop */
+.header__row--top {
+  position: relative !important;
+  z-index: 10001 !important;
+}
+
+/* ---------------------------------------------------------------
+   LOGO — Centered, always visible
+   --------------------------------------------------------------- */
+.header-logo {
+  transition: transform var(--nailinit-transition-medium),
+              opacity var(--nailinit-transition-fast) !important;
+}
+
+@media (hover: hover) {
+  .header-logo:hover { transform: scale(1.03) !important; }
+}
+
+/* ---------------------------------------------------------------
+   STICKY HEADER
+   --------------------------------------------------------------- */
+.header[data-sticky-state='active'] {
+  animation: nailinit-sticky-enter 0.4s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+  opacity: 1 !important;
+}
+
+.header-section:has(> #header-component[sticky='always']),
+.header-section:has(> #header-component[sticky='scroll-up'][data-sticky-state='active']) {
+  box-shadow: var(--nailinit-header-shadow);
+  transition: box-shadow var(--nailinit-transition-medium) !important;
+}
+
+@keyframes nailinit-sticky-enter {
+  0% { transform: translateY(-100%); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.header[data-sticky-state='idle'] {
+  opacity: 0 !important;
+  transform: translateY(-20px);
+  transition: opacity 0.25s ease, transform 0.25s ease !important;
+}
+
+/* ===============================================================
+   MENU DRAWER — FULL-WIDTH DROPDOWN BELOW HEADER
+   
+   Instead of sliding from the left, the drawer now:
+   1. Spans the full width of the screen
+   2. Is positioned right below the header (not covering it)
+   3. Drops down with a smooth top-to-bottom animation
+   4. The header (logo, X, search, account, cart) stays visible
+   5. The internal close button is hidden (X in header handles it)
+   =============================================================== */
+
+/*
+ * KEY FIX: The drawer uses max-height + opacity for open/close animation
+ * instead of translateX/translateY. This works WITH the theme's existing
+ * JS toggle mechanism (menu-open class) without fighting it.
+ * 
+ * POSITIONING FIX: The header-section is position:sticky, so using
+ * position:absolute + top:100% on the drawer places it directly below
+ * the header bar, regardless of announcement bar or scroll position.
+ */
+
+/* Make the header section a positioning context for the dropdown
+   and ensure it sits ABOVE the full-screen backdrop */
+.header-section {
+  position: relative !important;
+  z-index: 10002 !important;
+}
+
+/* Drawer: full-width container, absolutely positioned below header */
+.menu-drawer {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  
+  /* Override built-in translateX(-100%) — keep it at 0 */
+  transform: translateX(0) !important;
+  
+  /* Styling */
+  background-color: var(--nailinit-white) !important;
+  border-right: none !important;
+  border-top: none !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+  z-index: 9999 !important;
+  
+  /* Smooth transition via max-height + opacity */
+  transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* When open: expand to show content */
+.menu-open > .menu-drawer,
+.menu-open > .menu-drawer__submenu:not(.menu-drawer__menu--childlist) {
+  transform: translateX(0) !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  max-height: 300px !important;
+  overflow: visible !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Hide the INTERNAL close button — the X in header handles closing */
+.menu-drawer > .menu-drawer__close-button {
+  display: none !important;
+}
+
+/* Backdrop: fully transparent — no blur, no darkening
+   Still clickable to close the menu via click-outside */
+.menu-drawer__backdrop {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: transparent !important;
+  z-index: 9998 !important;
+}
+
+/* ---------------------------------------------------------------
+   MENU ITEMS — HORIZONTAL TABS like nailinit.it
+   --------------------------------------------------------------- */
+
+/* Remove default navigation padding/margin */
+.menu-drawer__navigation {
+  padding: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* Main menu list — horizontal, centered */
+.menu-drawer__menu.has-submenu {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 0 !important;
+  padding: 12px 24px !important;
+  margin: 0 !important;
+  list-style: none !important;
+}
+
+/* Override the built-in bottom margin on desktop */
+.menu-drawer__menu.has-submenu,
+.menu-drawer__menu--childlist:not(:has(.menu-drawer__animated-element)) {
+  margin-block-end: 0 !important;
+}
+
+/* Each menu item inline */
+.menu-drawer__menu.has-submenu > li {
+  display: inline-flex !important;
+  min-height: auto !important;
+  flex: 0 0 auto !important;
+}
+
+/* Menu links — styled as horizontal tabs */
+.menu-drawer__menu-item--mainlist {
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em !important;
+  padding: 8px 18px !important;
+  min-height: auto !important;
+  color: var(--nailinit-black) !important;
+  text-decoration: none !important;
+  position: relative !important;
+  transition: color var(--nailinit-transition-fast) !important;
+  border-radius: 4px !important;
+  white-space: nowrap !important;
+}
+
+@media (hover: hover) {
+  .menu-drawer__menu-item--mainlist:hover {
+    color: var(--nailinit-pink) !important;
+    background-color: transparent !important;
+    padding-left: 18px !important;
+  }
+}
+
+/* Active menu item */
+.menu-drawer__menu-item--active.menu-drawer__menu-item--mainlist {
+  color: var(--nailinit-pink) !important;
+}
+.menu-drawer__menu-item--active.menu-drawer__menu-item--mainlist::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 2px !important;
+  left: 18px !important;
+  right: 18px !important;
+  height: 2px !important;
+  background-color: var(--nailinit-pink) !important;
+  border-radius: 1px !important;
+}
+
+/* First tab gets active style by default */
+.menu-drawer__menu.has-submenu > li:first-child .menu-drawer__menu-item--mainlist {
+  color: var(--nailinit-pink) !important;
+}
+.menu-drawer__menu.has-submenu > li:first-child .menu-drawer__menu-item--mainlist::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 2px !important;
+  left: 18px !important;
+  right: 18px !important;
+  height: 2px !important;
+  background-color: var(--nailinit-pink) !important;
+  border-radius: 1px !important;
+}
+
+/* Hide caret/chevron icons in horizontal mode */
+.menu-drawer__menu.has-submenu > li .icon-caret,
+.menu-drawer__menu.has-submenu > li .icon-plus {
+  display: none !important;
+}
+
+/* Staggered tab entrance animation */
+.menu-drawer-container[open] .menu-drawer__menu.has-submenu > li {
+  animation: nailinit-tab-enter 0.45s cubic-bezier(0.16, 1, 0.3, 1) backwards !important;
+}
+.menu-drawer-container[open] .menu-drawer__menu.has-submenu > li:nth-child(1) { animation-delay: 0.08s !important; }
+.menu-drawer-container[open] .menu-drawer__menu.has-submenu > li:nth-child(2) { animation-delay: 0.12s !important; }
+.menu-drawer-container[open] .menu-drawer__menu.has-submenu > li:nth-child(3) { animation-delay: 0.14s !important; }
+.menu-drawer-container[open] .menu-drawer__menu.has-submenu > li:nth-child(4) { animation-delay: 0.16s !important; }
+.menu-drawer-container[open] .menu-drawer__menu.has-submenu > li:nth-child(5) { animation-delay: 0.18s !important; }
+.menu-drawer-container[open] .menu-drawer__menu.has-submenu > li:nth-child(6) { animation-delay: 0.20s !important; }
+.menu-drawer-container[open] .menu-drawer__menu.has-submenu > li:nth-child(7) { animation-delay: 0.22s !important; }
+.menu-drawer-container[open] .menu-drawer__menu.has-submenu > li:nth-child(8) { animation-delay: 0.24s !important; }
+.menu-drawer-container[open] .menu-drawer__menu.has-submenu > li:nth-child(9) { animation-delay: 0.26s !important; }
+.menu-drawer-container[open] .menu-drawer__menu.has-submenu > li:nth-child(10) { animation-delay: 0.28s !important; }
+
+@keyframes nailinit-tab-enter {
+  0% { opacity: 0; transform: translateY(-8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Hide featured content and utility links in dropdown */
+.menu-drawer__featured-content { display: none !important; }
+.menu-drawer__utility-links { display: none !important; }
+
+/* ---------------------------------------------------------------
+   SUBMENU — Drops down as full-width panel
+   --------------------------------------------------------------- */
+.menu-drawer__submenu {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  height: auto !important;
+  max-height: 70dvh !important;
+  background-color: var(--nailinit-white) !important;
+  z-index: 10001 !important;
+  overflow-y: auto !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+.menu-drawer__submenu .menu-drawer__menu--childlist {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  gap: 4px 8px !important;
+  padding: 16px 24px !important;
+}
+
+.menu-drawer__back-button {
+  transition: transform var(--nailinit-transition-fast),
+              color var(--nailinit-transition-fast) !important;
+}
+
+@media (hover: hover) {
+  .menu-drawer__back-button:hover {
+    color: var(--nailinit-pink) !important;
+    transform: translateX(-4px) !important;
+  }
+}
+
+/* ---------------------------------------------------------------
+   CART DRAWER
+   --------------------------------------------------------------- */
+.cart-drawer__dialog {
+  transition: transform var(--nailinit-transition-slow) !important;
+  box-shadow: -4px 0 30px rgba(0, 0, 0, 0.12) !important;
+  border-left: none !important;
+}
+
+.cart-drawer__close-button {
+  transition: transform var(--nailinit-transition-fast) !important;
+}
+
+@media (hover: hover) {
+  .cart-drawer__close-button:hover { transform: rotate(90deg) !important; }
+}
+
+/* ---------------------------------------------------------------
+   CART BUBBLE — Pink accent
+   --------------------------------------------------------------- */
+.cart-bubble__background { background-color: var(--nailinit-pink) !important; }
+.cart-bubble__text { color: var(--nailinit-white) !important; }
+
+.cart-bubble--animating .cart-bubble__background {
+  animation: nailinit-cart-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+@keyframes nailinit-cart-pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ---------------------------------------------------------------
+   SEARCH MODAL
+   --------------------------------------------------------------- */
+.search-modal {
+  animation: nailinit-search-enter 0.3s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+}
+
+@keyframes nailinit-search-enter {
+  0% { opacity: 0; transform: translateY(-10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------------------------------------------------------------
+   LOCALIZATION DROPDOWN
+   --------------------------------------------------------------- */
+.localization-wrapper:not([hidden]) {
+  animation: nailinit-localization-enter 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@keyframes nailinit-localization-enter {
+  0% { opacity: 0; transform: translateY(10px) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ---------------------------------------------------------------
+   MOBILE-SPECIFIC
+   --------------------------------------------------------------- */
+@media screen and (max-width: 749px) {
+  .header__columns { padding-block: 8px !important; }
+
+  .header__icon--summary,
+  .header-actions__action {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Horizontally scrollable tabs on mobile */
+  .menu-drawer__menu.has-submenu {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    justify-content: flex-start !important;
+    padding: 10px 16px !important;
+    gap: 0 !important;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .menu-drawer__menu.has-submenu::-webkit-scrollbar { display: none; }
+
+  .menu-drawer__menu-item--mainlist {
+    font-size: 0.82rem !important;
+    padding: 6px 12px !important;
+  }
+}
+
+/* ---------------------------------------------------------------
+   PERFORMANCE & ENTRANCE
+   --------------------------------------------------------------- */
+#header-component { will-change: transform, opacity; }
+
+#header-group {
+  animation: nailinit-header-group-enter 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes nailinit-header-group-enter {
+  0% { opacity: 0; transform: translateY(-8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------------------------------------------------------------
+   REDUCED MOTION
+   --------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
