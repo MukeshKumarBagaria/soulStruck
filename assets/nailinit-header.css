@@ -1,53 +1,52 @@
 /* ==============================================================
    NAILINIT-STYLE HEADER OVERRIDES
-   Transforms the default theme header into a nailinit.it-inspired
-   design with hamburger menu that reveals horizontal nav tabs
-   BELOW the header bar. Logo, search, account, cart all remain
-   visible. X replaces hamburger at the exact same position.
+   Clean, minimal header with visible search bar, centered logo,
+   and navigation bar below. Matches nailinit.it reference design.
    ============================================================== */
 
 /* ---------------------------------------------------------------
    CSS CUSTOM PROPERTIES
    --------------------------------------------------------------- */
 :root {
-  --nailinit-pink: #E84C7A;
-  --nailinit-pink-dark: #D43D6A;
-  --nailinit-pink-light: #F06292;
-  --nailinit-white: #ffffff;
-  --nailinit-black: #1a1a1a;
-  --nailinit-header-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
-  --nailinit-transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --nailinit-transition-medium: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  --nailinit-transition-slow: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  --ni-white: #ffffff;
+  --ni-black: #1a1a1a;
+  --ni-gray-100: #f5f5f5;
+  --ni-gray-200: #e5e5e5;
+  --ni-gray-400: #9e9e9e;
+  --ni-gray-600: #616161;
+  --ni-header-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+  --ni-transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --ni-transition-medium: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  --ni-transition-slow: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  --ni-announcement-bg: #8B4513;
 }
 
 /* ---------------------------------------------------------------
-   ANNOUNCEMENT BAR — Hot Pink
+   1. ANNOUNCEMENT BAR — Dark warm bar with arrows
    --------------------------------------------------------------- */
 .announcement-bar {
-  background-color: var(--nailinit-pink) !important;
+  background-color: var(--ni-announcement-bg) !important;
   border-bottom: none !important;
-  animation: nailinit-announcement-entrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.announcement-bar,
-.announcement-bar * {
-  --color-foreground: var(--nailinit-white) !important;
-  --color-foreground-rgb: 255, 255, 255 !important;
-  color: var(--nailinit-white) !important;
 }
 
 .announcement-bar + .section-background,
 .shopify-section:has(.announcement-bar) .section-background,
 .shopify-section:has(.announcement-bar) > .section-background {
-  background-color: var(--nailinit-pink) !important;
+  background-color: var(--ni-announcement-bg) !important;
+}
+
+.announcement-bar,
+.announcement-bar * {
+  --color-foreground: var(--ni-white) !important;
+  --color-foreground-rgb: 255, 255, 255 !important;
+  color: var(--ni-white) !important;
 }
 
 .announcement-bar .announcement-bar__text,
 .announcement-bar .announcement-bar__slide {
-  font-size: 0.75rem !important;
+  font-size: 0.8rem !important;
   font-weight: 500 !important;
-  letter-spacing: 0.04em !important;
+  letter-spacing: 0.02em !important;
   text-transform: none !important;
 }
 
@@ -56,39 +55,27 @@
   --padding-block-end: 8px !important;
 }
 
+/* Announcement arrows — clean chevron style */
 .announcement-bar__slider .slideshow-control {
-  color: var(--nailinit-white) !important;
-  opacity: 0.7;
-  transition: opacity var(--nailinit-transition-fast) !important;
+  color: var(--ni-white) !important;
+  opacity: 0.8;
+  transition: opacity var(--ni-transition-fast) !important;
 }
 
-.announcement-bar__slider .slideshow-control:hover { opacity: 1; }
-
-.announcement-bar__slide {
-  transition: opacity 0.6s ease-in-out, visibility 0.6s ease-in-out, transform 0.6s ease-in-out !important;
-}
-
-.announcement-bar__slide[aria-hidden='true'] {
-  opacity: 0 !important; visibility: hidden !important; transform: translateY(-4px) !important;
-}
-
-.announcement-bar__slide:not([aria-hidden='true']) { transform: translateY(0) !important; }
-
-@keyframes nailinit-announcement-entrance {
-  0% { opacity: 0; transform: translateY(-100%); }
-  100% { opacity: 1; transform: translateY(0); }
+.announcement-bar__slider .slideshow-control:hover {
+  opacity: 1;
 }
 
 /* ---------------------------------------------------------------
-   MAIN HEADER BAR — Clean white, always visible
+   2. MAIN HEADER BAR — Clean white
    --------------------------------------------------------------- */
 .header .header__row--top {
-  background-color: var(--nailinit-white) !important;
+  background-color: var(--ni-white) !important;
   border-bottom: none !important;
 }
 
-.header .header__underlay-closed { background: var(--nailinit-white) !important; }
-.header .header__underlay-open { background: var(--nailinit-white) !important; }
+.header .header__underlay-closed { background: var(--ni-white) !important; }
+.header .header__underlay-open { background: var(--ni-white) !important; }
 
 #header-component .header__row--top {
   --color-background: #ffffff;
@@ -101,25 +88,119 @@
   border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
 }
 
-.header__columns { padding-block: 10px !important; }
+.header__columns {
+  padding-block: 12px !important;
+}
 
 /* ---------------------------------------------------------------
-   HEADER ICONS — Hover animations
+   3. SEARCH BUTTON → SEARCH BAR APPEARANCE
+   Transforms the search icon button into a search-input-looking bar
+   --------------------------------------------------------------- */
+
+/* Make search action look like a search input */
+.header__column--left .search-action,
+.header__column--left search-button {
+  display: flex !important;
+  flex: 1;
+  min-width: 0;
+}
+
+.header__column--left .search-action .header-actions__action,
+.header__column--left search-button .header-actions__action {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  min-width: 200px !important;
+  max-width: 380px !important;
+  padding: 8px 14px !important;
+  border: 1px solid var(--ni-gray-200) !important;
+  border-radius: 6px !important;
+  background: var(--ni-white) !important;
+  color: var(--ni-gray-400) !important;
+  font-size: 0.85rem !important;
+  font-weight: 400 !important;
+  letter-spacing: 0 !important;
+  transition: border-color var(--ni-transition-fast),
+              box-shadow var(--ni-transition-fast) !important;
+  cursor: text !important;
+  justify-content: flex-start !important;
+  flex-direction: row-reverse !important;
+}
+
+.header__column--left .search-action .header-actions__action:hover {
+  border-color: var(--ni-gray-400) !important;
+  transform: none !important;
+}
+
+.header__column--left .search-action .header-actions__action:focus-within {
+  border-color: var(--ni-black) !important;
+  box-shadow: 0 0 0 1px var(--ni-black) !important;
+}
+
+/* Show the search text on desktop */
+.header__column--left .search-action .header-actions__action > span.hidden {
+  display: inline !important;
+  color: var(--ni-gray-400) !important;
+  font-weight: 400 !important;
+  white-space: nowrap !important;
+}
+
+/* Search icon inside the bar */
+.header__column--left .search-action .svg-wrapper {
+  flex-shrink: 0 !important;
+  display: flex !important;
+}
+
+.header__column--left .search-action .svg-wrapper svg {
+  width: 18px !important;
+  height: 18px !important;
+  color: var(--ni-gray-400) !important;
+}
+
+/* Add placeholder text via ::after */
+.header__column--left .search-action .header-actions__action::after {
+  content: 'What are you looking for?';
+  color: var(--ni-gray-400);
+  font-size: 0.85rem;
+  font-weight: 400;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* Hide the default "Search" text, show our placeholder instead */
+.header__column--left .search-action .header-actions__action > span.hidden {
+  display: none !important;
+}
+
+/* Ensure the search icon is visible inside the bar */
+.header__column--left .search-action .header-actions__action > .svg-wrapper {
+  display: flex !important;
+}
+
+/* Left column should grow to fit the search bar */
+.header__column--left {
+  flex: 1 !important;
+  min-width: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+/* ---------------------------------------------------------------
+   4. HEADER ICONS — Clean hover animations
    --------------------------------------------------------------- */
 .header__icon--summary,
-.header-actions__action,
-.search-action .header-actions__action,
-.search-action button,
-.search-action a {
-  transition: transform var(--nailinit-transition-fast),
-              opacity var(--nailinit-transition-fast) !important;
+.header-actions__action {
+  transition: transform var(--ni-transition-fast),
+              opacity var(--ni-transition-fast) !important;
   will-change: transform;
 }
 
 @media (hover: hover) {
   .header__icon--summary:hover,
   .header-actions__action:hover {
-    transform: scale(1.12) !important;
+    transform: scale(1.08) !important;
     opacity: 1 !important;
   }
   .header__icon--summary:active,
@@ -128,29 +209,25 @@
   }
 }
 
+/* Don't scale the search bar on hover */
+.header__column--left .search-action .header-actions__action:hover {
+  transform: none !important;
+}
+
 .header__icon--summary .svg-wrapper svg,
 .header-actions__action:not(.account-button) svg {
   width: 20px !important;
   height: 20px !important;
-  transition: transform var(--nailinit-transition-fast) !important;
-}
-
-@media (hover: hover) {
-  .search-action .svg-wrapper:hover svg {
-    transform: rotate(-15deg) scale(1.05) !important;
-  }
 }
 
 /* ---------------------------------------------------------------
-   HAMBURGER / X TOGGLE — X replaces hamburger at same position
-   Override theme CSS that keeps hamburger visible on desktop
+   5. HAMBURGER / X TOGGLE
    --------------------------------------------------------------- */
 .header-drawer-icon {
-  transition: transform var(--nailinit-transition-medium),
-              opacity var(--nailinit-transition-fast) !important;
+  transition: transform var(--ni-transition-medium),
+              opacity var(--ni-transition-fast) !important;
 }
 
-/* Force X to show on ALL screen sizes when menu is open */
 details.menu-open .header__icon--menu .header-drawer-icon--close {
   display: flex !important;
 }
@@ -158,34 +235,31 @@ details.menu-open .header__icon--menu .header-drawer-icon--open {
   display: none !important;
 }
 
-/* Spin-in animation for the X icon */
 details.menu-open .header-drawer-icon--close {
-  animation: nailinit-icon-spin 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  animation: ni-icon-spin 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-@keyframes nailinit-icon-spin {
+@keyframes ni-icon-spin {
   0% { transform: rotate(-90deg) scale(0.5); opacity: 0; }
   100% { transform: rotate(0deg) scale(1); opacity: 1; }
 }
 
-/* Ensure the hamburger/X summary button is ABOVE the backdrop */
 .header__icon--summary {
   position: relative !important;
   z-index: 10001 !important;
 }
 
-/* Ensure the entire header row sits above the backdrop */
 .header__row--top {
   position: relative !important;
   z-index: 10001 !important;
 }
 
 /* ---------------------------------------------------------------
-   LOGO — Centered, always visible
+   6. LOGO — Centered
    --------------------------------------------------------------- */
 .header-logo {
-  transition: transform var(--nailinit-transition-medium),
-              opacity var(--nailinit-transition-fast) !important;
+  transition: transform var(--ni-transition-medium),
+              opacity var(--ni-transition-fast) !important;
 }
 
 @media (hover: hover) {
@@ -193,20 +267,97 @@ details.menu-open .header-drawer-icon--close {
 }
 
 /* ---------------------------------------------------------------
-   STICKY HEADER
+   7. NAVIGATION BAR — Visible links below header
+   --------------------------------------------------------------- */
+.header__navigation-bar-row {
+  background: var(--ni-white) !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.06) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+  padding: 0 !important;
+}
+
+.header__navigation-bar-row .menu-list {
+  display: flex !important;
+  justify-content: center !important;
+  padding: 0 !important;
+}
+
+.header__navigation-bar-row .menu-list__scroll-container {
+  display: flex !important;
+  justify-content: center !important;
+  width: 100% !important;
+}
+
+.header__navigation-bar-row .menu-list__list {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.header__navigation-bar-row .menu-list__item {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 12px 24px !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  color: var(--ni-black) !important;
+  text-decoration: none !important;
+  letter-spacing: 0.01em !important;
+  transition: color var(--ni-transition-fast) !important;
+  white-space: nowrap !important;
+  position: relative !important;
+}
+
+.header__navigation-bar-row .menu-list__item::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 24px;
+  right: 24px;
+  height: 2px;
+  background: var(--ni-black);
+  transform: scaleX(0);
+  transition: transform var(--ni-transition-fast);
+  transform-origin: center;
+}
+
+@media (hover: hover) {
+  .header__navigation-bar-row .menu-list__item:hover {
+    color: var(--ni-black) !important;
+  }
+
+  .header__navigation-bar-row .menu-list__item:hover::after {
+    transform: scaleX(1);
+  }
+}
+
+.header__navigation-bar-row .menu-list__item[aria-current="page"] {
+  color: var(--ni-black) !important;
+  font-weight: 700 !important;
+}
+
+.header__navigation-bar-row .menu-list__item[aria-current="page"]::after {
+  transform: scaleX(1);
+}
+
+/* ---------------------------------------------------------------
+   8. STICKY HEADER — Clean shadow
    --------------------------------------------------------------- */
 .header[data-sticky-state='active'] {
-  animation: nailinit-sticky-enter 0.4s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+  animation: ni-sticky-enter 0.4s cubic-bezier(0.16, 1, 0.3, 1) both !important;
   opacity: 1 !important;
 }
 
 .header-section:has(> #header-component[sticky='always']),
 .header-section:has(> #header-component[sticky='scroll-up'][data-sticky-state='active']) {
-  box-shadow: var(--nailinit-header-shadow);
-  transition: box-shadow var(--nailinit-transition-medium) !important;
+  box-shadow: var(--ni-header-shadow);
+  transition: box-shadow var(--ni-transition-medium) !important;
 }
 
-@keyframes nailinit-sticky-enter {
+@keyframes ni-sticky-enter {
   0% { transform: translateY(-100%); opacity: 0; }
   100% { transform: translateY(0); opacity: 1; }
 }
@@ -217,35 +368,14 @@ details.menu-open .header-drawer-icon--close {
   transition: opacity 0.25s ease, transform 0.25s ease !important;
 }
 
-/* ===============================================================
-   MENU DRAWER — FULL-WIDTH DROPDOWN BELOW HEADER
-   
-   Instead of sliding from the left, the drawer now:
-   1. Spans the full width of the screen
-   2. Is positioned right below the header (not covering it)
-   3. Drops down with a smooth top-to-bottom animation
-   4. The header (logo, X, search, account, cart) stays visible
-   5. The internal close button is hidden (X in header handles it)
-   =============================================================== */
-
-/*
- * KEY FIX: The drawer uses max-height + opacity for open/close animation
- * instead of translateX/translateY. This works WITH the theme's existing
- * JS toggle mechanism (menu-open class) without fighting it.
- * 
- * POSITIONING FIX: The header-section is position:sticky, so using
- * position:absolute + top:100% on the drawer places it directly below
- * the header bar, regardless of announcement bar or scroll position.
- */
-
-/* Make the header section a positioning context for the dropdown
-   and ensure it sits ABOVE the full-screen backdrop */
+/* ---------------------------------------------------------------
+   9. MENU DRAWER — Full-width dropdown below header
+   --------------------------------------------------------------- */
 .header-section {
   position: relative !important;
   z-index: 10002 !important;
 }
 
-/* Drawer: full-width container, absolutely positioned below header */
 .menu-drawer {
   position: absolute !important;
   top: 100% !important;
@@ -257,25 +387,18 @@ details.menu-open .header-drawer-icon--close {
   max-height: 0 !important;
   overflow: hidden !important;
   opacity: 0 !important;
-  
-  /* Override built-in translateX(-100%) — keep it at 0 */
   transform: translateX(0) !important;
-  
-  /* Styling */
-  background-color: var(--nailinit-white) !important;
+  background-color: var(--ni-white) !important;
   border-right: none !important;
   border-top: none !important;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
   z-index: 9999 !important;
-  
-  /* Smooth transition via max-height + opacity */
   transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1),
               opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
               visibility 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-/* When open: expand to show content */
 .menu-open > .menu-drawer,
 .menu-open > .menu-drawer__submenu:not(.menu-drawer__menu--childlist) {
   transform: translateX(0) !important;
@@ -287,13 +410,10 @@ details.menu-open .header-drawer-icon--close {
   flex-direction: column !important;
 }
 
-/* Hide the INTERNAL close button — the X in header handles closing */
 .menu-drawer > .menu-drawer__close-button {
   display: none !important;
 }
 
-/* Backdrop: fully transparent — no blur, no darkening
-   Still clickable to close the menu via click-outside */
 .menu-drawer__backdrop {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
@@ -302,16 +422,13 @@ details.menu-open .header-drawer-icon--close {
 }
 
 /* ---------------------------------------------------------------
-   MENU ITEMS — HORIZONTAL TABS like nailinit.it
+   10. MENU ITEMS — Horizontal tabs
    --------------------------------------------------------------- */
-
-/* Remove default navigation padding/margin */
 .menu-drawer__navigation {
   padding: 0 !important;
   margin-top: 0 !important;
 }
 
-/* Main menu list — horizontal, centered */
 .menu-drawer__menu.has-submenu {
   display: flex !important;
   flex-direction: row !important;
@@ -324,81 +441,61 @@ details.menu-open .header-drawer-icon--close {
   list-style: none !important;
 }
 
-/* Override the built-in bottom margin on desktop */
 .menu-drawer__menu.has-submenu,
 .menu-drawer__menu--childlist:not(:has(.menu-drawer__animated-element)) {
   margin-block-end: 0 !important;
 }
 
-/* Each menu item inline */
 .menu-drawer__menu.has-submenu > li {
   display: inline-flex !important;
   min-height: auto !important;
   flex: 0 0 auto !important;
 }
 
-/* Menu links — styled as horizontal tabs */
 .menu-drawer__menu-item--mainlist {
-  font-size: 0.9rem !important;
-  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
   letter-spacing: 0.01em !important;
-  padding: 8px 18px !important;
+  padding: 8px 20px !important;
   min-height: auto !important;
-  color: var(--nailinit-black) !important;
+  color: var(--ni-black) !important;
   text-decoration: none !important;
   position: relative !important;
-  transition: color var(--nailinit-transition-fast) !important;
+  transition: color var(--ni-transition-fast) !important;
   border-radius: 4px !important;
   white-space: nowrap !important;
 }
 
 @media (hover: hover) {
   .menu-drawer__menu-item--mainlist:hover {
-    color: var(--nailinit-pink) !important;
+    color: var(--ni-gray-600) !important;
     background-color: transparent !important;
-    padding-left: 18px !important;
+    padding-left: 20px !important;
   }
 }
 
-/* Active menu item */
 .menu-drawer__menu-item--active.menu-drawer__menu-item--mainlist {
-  color: var(--nailinit-pink) !important;
+  color: var(--ni-black) !important;
 }
 .menu-drawer__menu-item--active.menu-drawer__menu-item--mainlist::after {
   content: '' !important;
   position: absolute !important;
   bottom: 2px !important;
-  left: 18px !important;
-  right: 18px !important;
+  left: 20px !important;
+  right: 20px !important;
   height: 2px !important;
-  background-color: var(--nailinit-pink) !important;
+  background-color: var(--ni-black) !important;
   border-radius: 1px !important;
 }
 
-/* First tab gets active style by default */
-.menu-drawer__menu.has-submenu > li:first-child .menu-drawer__menu-item--mainlist {
-  color: var(--nailinit-pink) !important;
-}
-.menu-drawer__menu.has-submenu > li:first-child .menu-drawer__menu-item--mainlist::after {
-  content: '' !important;
-  position: absolute !important;
-  bottom: 2px !important;
-  left: 18px !important;
-  right: 18px !important;
-  height: 2px !important;
-  background-color: var(--nailinit-pink) !important;
-  border-radius: 1px !important;
-}
-
-/* Hide caret/chevron icons in horizontal mode */
 .menu-drawer__menu.has-submenu > li .icon-caret,
 .menu-drawer__menu.has-submenu > li .icon-plus {
   display: none !important;
 }
 
-/* Staggered tab entrance animation */
+/* Staggered entrance */
 .menu-drawer-container[open] .menu-drawer__menu.has-submenu > li {
-  animation: nailinit-tab-enter 0.45s cubic-bezier(0.16, 1, 0.3, 1) backwards !important;
+  animation: ni-tab-enter 0.45s cubic-bezier(0.16, 1, 0.3, 1) backwards !important;
 }
 .menu-drawer-container[open] .menu-drawer__menu.has-submenu > li:nth-child(1) { animation-delay: 0.08s !important; }
 .menu-drawer-container[open] .menu-drawer__menu.has-submenu > li:nth-child(2) { animation-delay: 0.12s !important; }
@@ -406,22 +503,17 @@ details.menu-open .header-drawer-icon--close {
 .menu-drawer-container[open] .menu-drawer__menu.has-submenu > li:nth-child(4) { animation-delay: 0.16s !important; }
 .menu-drawer-container[open] .menu-drawer__menu.has-submenu > li:nth-child(5) { animation-delay: 0.18s !important; }
 .menu-drawer-container[open] .menu-drawer__menu.has-submenu > li:nth-child(6) { animation-delay: 0.20s !important; }
-.menu-drawer-container[open] .menu-drawer__menu.has-submenu > li:nth-child(7) { animation-delay: 0.22s !important; }
-.menu-drawer-container[open] .menu-drawer__menu.has-submenu > li:nth-child(8) { animation-delay: 0.24s !important; }
-.menu-drawer-container[open] .menu-drawer__menu.has-submenu > li:nth-child(9) { animation-delay: 0.26s !important; }
-.menu-drawer-container[open] .menu-drawer__menu.has-submenu > li:nth-child(10) { animation-delay: 0.28s !important; }
 
-@keyframes nailinit-tab-enter {
+@keyframes ni-tab-enter {
   0% { opacity: 0; transform: translateY(-8px); }
   100% { opacity: 1; transform: translateY(0); }
 }
 
-/* Hide featured content and utility links in dropdown */
 .menu-drawer__featured-content { display: none !important; }
 .menu-drawer__utility-links { display: none !important; }
 
 /* ---------------------------------------------------------------
-   SUBMENU — Drops down as full-width panel
+   11. SUBMENU
    --------------------------------------------------------------- */
 .menu-drawer__submenu {
   position: fixed !important;
@@ -431,7 +523,7 @@ details.menu-open .header-drawer-icon--close {
   width: 100% !important;
   height: auto !important;
   max-height: 70dvh !important;
-  background-color: var(--nailinit-white) !important;
+  background-color: var(--ni-white) !important;
   z-index: 10001 !important;
   overflow-y: auto !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
@@ -447,28 +539,28 @@ details.menu-open .header-drawer-icon--close {
 }
 
 .menu-drawer__back-button {
-  transition: transform var(--nailinit-transition-fast),
-              color var(--nailinit-transition-fast) !important;
+  transition: transform var(--ni-transition-fast),
+              color var(--ni-transition-fast) !important;
 }
 
 @media (hover: hover) {
   .menu-drawer__back-button:hover {
-    color: var(--nailinit-pink) !important;
+    color: var(--ni-gray-600) !important;
     transform: translateX(-4px) !important;
   }
 }
 
 /* ---------------------------------------------------------------
-   CART DRAWER
+   12. CART DRAWER
    --------------------------------------------------------------- */
 .cart-drawer__dialog {
-  transition: transform var(--nailinit-transition-slow) !important;
+  transition: transform var(--ni-transition-slow) !important;
   box-shadow: -4px 0 30px rgba(0, 0, 0, 0.12) !important;
   border-left: none !important;
 }
 
 .cart-drawer__close-button {
-  transition: transform var(--nailinit-transition-fast) !important;
+  transition: transform var(--ni-transition-fast) !important;
 }
 
 @media (hover: hover) {
@@ -476,47 +568,35 @@ details.menu-open .header-drawer-icon--close {
 }
 
 /* ---------------------------------------------------------------
-   CART BUBBLE — Pink accent
+   13. CART BUBBLE — Dark accent
    --------------------------------------------------------------- */
-.cart-bubble__background { background-color: var(--nailinit-pink) !important; }
-.cart-bubble__text { color: var(--nailinit-white) !important; }
+.cart-bubble__background { background-color: var(--ni-black) !important; }
+.cart-bubble__text { color: var(--ni-white) !important; }
 
 .cart-bubble--animating .cart-bubble__background {
-  animation: nailinit-cart-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  animation: ni-cart-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
 }
 
-@keyframes nailinit-cart-pop {
+@keyframes ni-cart-pop {
   0% { transform: scale(0.5); opacity: 0; }
   50% { transform: scale(1.3); }
   100% { transform: scale(1); opacity: 1; }
 }
 
 /* ---------------------------------------------------------------
-   SEARCH MODAL
+   14. SEARCH MODAL
    --------------------------------------------------------------- */
 .search-modal {
-  animation: nailinit-search-enter 0.3s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+  animation: ni-search-enter 0.3s cubic-bezier(0.16, 1, 0.3, 1) both !important;
 }
 
-@keyframes nailinit-search-enter {
+@keyframes ni-search-enter {
   0% { opacity: 0; transform: translateY(-10px); }
   100% { opacity: 1; transform: translateY(0); }
 }
 
 /* ---------------------------------------------------------------
-   LOCALIZATION DROPDOWN
-   --------------------------------------------------------------- */
-.localization-wrapper:not([hidden]) {
-  animation: nailinit-localization-enter 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-}
-
-@keyframes nailinit-localization-enter {
-  0% { opacity: 0; transform: translateY(10px) scale(0.96); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-/* ---------------------------------------------------------------
-   MOBILE-SPECIFIC
+   15. MOBILE RESPONSIVE
    --------------------------------------------------------------- */
 @media screen and (max-width: 749px) {
   .header__columns { padding-block: 8px !important; }
@@ -528,6 +608,19 @@ details.menu-open .header-drawer-icon--close {
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  /* Search bar: smaller on mobile */
+  .header__column--left .search-action .header-actions__action {
+    min-width: 140px !important;
+    max-width: 200px !important;
+    padding: 6px 10px !important;
+    font-size: 0.8rem !important;
+  }
+
+  .header__column--left .search-action .header-actions__action::after {
+    content: 'Search...' !important;
+    font-size: 0.8rem !important;
   }
 
   /* Horizontally scrollable tabs on mobile */
@@ -546,24 +639,44 @@ details.menu-open .header-drawer-icon--close {
     font-size: 0.82rem !important;
     padding: 6px 12px !important;
   }
+
+  /* Navigation bar on mobile */
+  .header__navigation-bar-row .menu-list__list {
+    gap: 0 !important;
+  }
+
+  .header__navigation-bar-row .menu-list__item {
+    padding: 10px 16px !important;
+    font-size: 0.82rem !important;
+  }
+
+  .header__navigation-bar-row .menu-list__scroll-container {
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  .header__navigation-bar-row .menu-list__scroll-container::-webkit-scrollbar {
+    display: none !important;
+  }
 }
 
 /* ---------------------------------------------------------------
-   PERFORMANCE & ENTRANCE
+   16. PERFORMANCE & ENTRANCE
    --------------------------------------------------------------- */
 #header-component { will-change: transform, opacity; }
 
 #header-group {
-  animation: nailinit-header-group-enter 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: ni-header-enter 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-@keyframes nailinit-header-group-enter {
+@keyframes ni-header-enter {
   0% { opacity: 0; transform: translateY(-8px); }
   100% { opacity: 1; transform: translateY(0); }
 }
 
 /* ---------------------------------------------------------------
-   REDUCED MOTION
+   17. REDUCED MOTION
    --------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
