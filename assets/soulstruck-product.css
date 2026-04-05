@@ -137,6 +137,29 @@
   text-transform: uppercase;
 }
 
+/* Price container — ensure inline layout for price + badge */
+.product-details [ref="priceContainer"] {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Discount percentage badge */
+.ss-discount-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2E7D32;
+  border: 1px solid #C8E6C9;
+  background: #E8F5E9;
+  padding: 2px 10px;
+  border-radius: 4px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
 /* Theme default price overrides to match our style */
 .product-details .price-item--sale {
   font-size: 24px;
@@ -472,9 +495,10 @@
 .product-information__media .slideshow-controls__thumbnail {
   border-radius: var(--ss-radius-sm);
   border: 2px solid transparent;
-  overflow: hidden;
+  overflow: visible;
   transition: all var(--ss-transition);
   opacity: 0.7;
+  position: relative;
 }
 
 .product-information__media .slideshow-controls__thumbnail:hover {
@@ -485,6 +509,38 @@
 .product-information__media .slideshow-controls__thumbnail[aria-selected="true"] {
   opacity: 1;
   border-color: var(--ss-text-dark);
+}
+
+/* Active thumbnail arrow indicator — positioned inside, pointing towards main image */
+.product-information__media .slideshow-controls__thumbnail[aria-selected="true"]::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--ss-text-dark);
+  transform: rotate(45deg);
+  z-index: 2;
+}
+
+/* Arrow points right when thumbnails are on the left */
+slideshow-controls[pagination-position="left"] .slideshow-controls__thumbnail[aria-selected="true"]::after {
+  right: -5px;
+  top: 50%;
+  margin-top: -4px;
+}
+
+/* Arrow points left when thumbnails are on the right */
+slideshow-controls[pagination-position="right"] .slideshow-controls__thumbnail[aria-selected="true"]::after {
+  left: -5px;
+  top: 50%;
+  margin-top: -4px;
+}
+
+/* Arrow points down when thumbnails are on bottom/center */
+slideshow-controls[pagination-position="center"] .slideshow-controls__thumbnail[aria-selected="true"]::after {
+  top: -5px;
+  left: 50%;
+  margin-left: -4px;
 }
 
 /* Main image polish */
@@ -501,6 +557,65 @@
 .product-information__media .media-gallery__grid > li {
   border-radius: var(--ss-radius-md);
   overflow: hidden;
+}
+
+/* ============================================
+   11b. SLIDESHOW ARROW NAVIGATION ENHANCEMENTS
+   ============================================ */
+
+/* Arrow buttons — clean circular style with hover fill */
+.product-information__media slideshow-arrows .slideshow-control {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ss-border);
+  background: var(--color-background, #fff);
+  color: var(--ss-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.product-information__media slideshow-arrows .slideshow-control::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--ss-text-dark);
+  transform: scale(0);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
+
+.product-information__media slideshow-arrows .slideshow-control:hover {
+  border-color: var(--ss-text-dark);
+  color: #fff;
+}
+
+.product-information__media slideshow-arrows .slideshow-control:hover::before {
+  transform: scale(1);
+}
+
+.product-information__media slideshow-arrows .slideshow-control .svg-wrapper {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-information__media slideshow-arrows .slideshow-control svg {
+  width: 14px;
+  height: 14px;
+  transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.product-information__media slideshow-arrows .slideshow-control:hover svg {
+  color: #fff;
 }
 
 /* ============================================
@@ -559,6 +674,16 @@
 
   .ss-price-block__current {
     font-size: 20px;
+  }
+
+  .ss-discount-badge {
+    font-size: 11px;
+    padding: 1px 7px;
+  }
+
+  /* Hide thumbnail arrow indicator on mobile (thumbnails become dots) */
+  .product-information__media .slideshow-controls__thumbnail[aria-selected="true"]::after {
+    display: none;
   }
 
   .ss-trust-badges {

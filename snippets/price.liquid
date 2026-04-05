@@ -15,8 +15,11 @@
   assign compare_at_price = selected_variant.compare_at_price
 
   assign show_compare_price = false
+  assign discount_percentage = 0
   if compare_at_price > price
     assign show_compare_price = true
+    assign price_diff = compare_at_price | minus: price
+    assign discount_percentage = price_diff | times: 100 | divided_by: compare_at_price
   endif
 
   if product_resource == blank
@@ -108,6 +111,10 @@
         <span class="visually-hidden">{{ 'content.price_regular' | t }}&nbsp;</span>
         <span class="compare-at-price">{{- compare_at_price -}}</span>
       </span>
+    {% endif %}
+
+    {% if show_compare_price and discount_percentage > 0 %}
+      <span class="ss-discount-badge">{{ discount_percentage }}% Off</span>
     {% endif %}
   {% endif %}
   {%- if selected_variant.unit_price and show_unit_price %}
