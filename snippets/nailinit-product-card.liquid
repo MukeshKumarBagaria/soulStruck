@@ -1,0 +1,168 @@
+{% comment %}
+  NailInIt Product Card Snippet
+  Called by nailinit-product-showcase section.
+
+  @param product         {object}  Shopify product object (or nil for placeholder)
+  @param shipping_text   {string}  Banner text
+  @param hot_seller      {boolean} Force hot-seller badge
+  @param custom_badge    {string}  Custom badge label
+  @param custom_offer    {string}  Override offer text
+  @param hot_seller_threshold {number} Auto-badge when review count >= this
+  @param block_attr      {string}  block.shopify_attributes
+{% endcomment %}
+
+{%- liquid
+  if product != nil and product != blank
+    assign p           = product
+    assign p_title     = p.title
+    assign p_url       = p.url
+    assign p_img       = p.featured_image
+    assign p_price     = p.price
+    assign p_compare   = p.compare_at_price
+    assign p_variant   = p.selected_or_first_available_variant
+    assign p_offer     = p.metafields.custom.offer_text | default: custom_offer
+    assign p_avail     = p.available
+
+    # Rating metafields (Judge.me / Okendo / native)
+    assign p_rating    = p.metafields.reviews.rating.value.rating    | default: p.metafields.loox.avg_rating | default: nil
+    assign p_rcount    = p.metafields.reviews.rating_count.value     | default: p.metafields.loox.num_reviews | default: nil
+    assign has_real_product = true
+  else
+    assign has_real_product = false
+  endif
+
+  # Save badge
+  assign save_amount = 0
+  if has_real_product and p_compare > p_price
+    assign save_amount = p_compare | minus: p_price
+  endif
+
+  # Hot Seller auto-badge
+  assign show_hot = hot_seller
+  if hot_seller_threshold > 0 and p_rcount != nil
+    if p_rcount >= hot_seller_threshold
+      assign show_hot = true
+    endif
+  endif
+
+  # Badge label
+  assign badge_label = 'Hot Seller'
+  if custom_badge != blank
+    assign badge_label = custom_badge
+  endif
+-%}
+
+<div class="ni-ps-card" {% if block_attr %}{{ block_attr }}{% endif %}>
+
+  {%- comment -%} Image + badges {%- endcomment -%}
+  <div class="ni-ps-card__img-wrap">
+    {%- if has_real_product and p_img != blank -%}
+      <a href="{{ p_url }}" aria-label="{{ p_title | escape }}" tabindex="-1">
+        <img
+          src="{{ p_img | image_url: width: 600 }}"
+          srcset="{{ p_img | image_url: width: 300 }} 300w,
+                  {{ p_img | image_url: width: 600 }} 600w"
+          sizes="(max-width:749px) 50vw, 25vw"
+          alt="{{ p_img.alt | default: p_title | escape }}"
+          width="600"
+          height="{{ 600 | divided_by: p_img.aspect_ratio | round }}"
+          loading="lazy"
+          class="ni-ps-card__img">
+      </a>
+    {%- else -%}
+      <div class="ni-ps-card__placeholder">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </div>
+    {%- endif -%}
+
+    {%- if show_hot or custom_badge != blank -%}
+      <span class="ni-ps-card__badge-hot">{{ badge_label }}</span>
+    {%- endif -%}
+
+    {%- if save_amount > 0 -%}
+      <span class="ni-ps-card__badge-save">SAVE {{ p_compare | minus: p_price | money_without_trailing_zeros }}</span>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Body {%- endcomment -%}
+  <div class="ni-ps-card__body">
+
+    {%- if has_real_product -%}
+      <a href="{{ p_url }}" class="ni-ps-card__title-link">
+        <h3 class="ni-ps-card__title">{{ p_title }}</h3>
+      </a>
+    {%- else -%}
+      <h3 class="ni-ps-card__title">Product title</h3>
+    {%- endif -%}
+
+    {%- if p_offer != blank -%}
+      <p class="ni-ps-card__offer">{{ p_offer }}</p>
+    {%- elsif has_real_product and p.metafields.custom.subtitle != blank -%}
+      <p class="ni-ps-card__offer">{{ p.metafields.custom.subtitle }}</p>
+    {%- elsif has_real_product and p.vendor != blank -%}
+      <p class="ni-ps-card__offer" style="color:#aaa;">{{ p.vendor }}</p>
+    {%- endif -%}
+
+    {%- comment -%} Ratings {%- endcomment -%}
+    {%- if p_rating != nil or p_rcount != nil -%}
+      <div class="ni-ps-card__ratings">
+        {%- if p_rating != nil -%}
+          <span class="ni-ps-card__stars">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            {{ p_rating }}
+          </span>
+        {%- endif -%}
+        {%- if p_rcount != nil -%}
+          <span class="ni-ps-card__reviews">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            {{ p_rcount }} Reviews
+          </span>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Shipping banner {%- endcomment -%}
+    {%- if shipping_text != blank -%}
+      <div class="ni-ps-card__shipping">{{ shipping_text | escape }}</div>
+    {%- endif -%}
+
+    {%- comment -%} Price + Add to cart {%- endcomment -%}
+    <div class="ni-ps-card__buy">
+      <div class="ni-ps-card__prices">
+        {%- if has_real_product -%}
+          <span class="ni-ps-card__price">{{ p_price | money_without_trailing_zeros }}</span>
+          {%- if p_compare > p_price -%}
+            <span class="ni-ps-card__compare">{{ p_compare | money_without_trailing_zeros }}</span>
+          {%- endif -%}
+        {%- else -%}
+          <span class="ni-ps-card__price">₹000</span>
+        {%- endif -%}
+      </div>
+
+      {%- if has_real_product and p_avail and p_variant -%}
+        <button
+          class="ni-ps-card__atc"
+          data-variant-id="{{ p_variant.id }}"
+          aria-label="Add {{ p_title | escape }} to cart">
+          Add To Cart
+        </button>
+      {%- elsif has_real_product and p_avail == false -%}
+        <span class="ni-ps-card__atc" style="opacity:0.5; pointer-events:none;">Sold Out</span>
+      {%- else -%}
+        <span class="ni-ps-card__atc">Add To Cart</span>
+      {%- endif -%}
+    </div>
+
+  </div>
+</div>
+
+<style>
+  .ni-ps-card__title-link {
+    text-decoration: none;
+    color: inherit;
+  }
+  .ni-ps-card__title-link:hover .ni-ps-card__title {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+</style>

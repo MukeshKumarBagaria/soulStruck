@@ -1,0 +1,424 @@
+{% comment %}
+  NailInIt Infinite Marquee Ticker
+  ─ Infinite horizontal scroll with text + icon pairs
+  ─ Fully customisable via theme editor
+  ─ Reusable: add to any template, any number of times
+{% endcomment %}
+
+{%- liquid
+  assign speed  = section.settings.speed   | default: 30
+  assign gap    = section.settings.item_gap | default: 60
+  assign dir    = section.settings.direction
+  assign pt     = section.settings.padding_top
+  assign pb     = section.settings.padding_bottom
+-%}
+
+<style>
+  #ni-ticker-{{ section.id }} {
+    --ni-t-speed    : {{ speed }}s;
+    --ni-t-gap      : {{ gap }}px;
+    --ni-t-text-sz  : {{ section.settings.text_size }}px;
+    --ni-t-icon-sz  : {{ section.settings.icon_size }}px;
+    --ni-t-fw       : {{ section.settings.font_weight }};
+    --ni-t-icon-clr : {{ section.settings.icon_color }};
+    --ni-t-text-clr : {{ section.settings.text_color }};
+    background-color: {{ section.settings.bg_color }};
+    padding-top     : {{ pt }}px;
+    padding-bottom  : {{ pb }}px;
+    {% if section.settings.border_top %}
+      border-top: 1px solid {{ section.settings.border_color }};
+    {% endif %}
+    {% if section.settings.border_bottom %}
+      border-bottom: 1px solid {{ section.settings.border_color }};
+    {% endif %}
+  }
+</style>
+
+<div id="ni-ticker-{{ section.id }}" class="ni-ticker" aria-label="Feature highlights">
+  <div class="ni-ticker__track">
+    <!--
+      Two identical sets of items side-by-side.
+      Animation moves them left by exactly 50% (= one full set),
+      at which point the second set is in the exact same position
+      the first started → perfect seamless loop.
+    -->
+    <div class="ni-ticker__reel{% if dir == 'reverse' %} ni-ticker__reel--rtl{% endif %}">
+      {%- for pass in (1..2) -%}
+        <ul class="ni-ticker__list" {% if pass == 2 %}aria-hidden="true"{% endif %}>
+          {%- for block in section.blocks -%}
+            {%- assign has_text  = block.settings.text        | strip | size -%}
+            {%- assign has_img   = block.settings.icon_image -%}
+            {%- assign has_icon  = block.settings.icon -%}
+
+            {%- if has_text > 0 -%}
+              <li class="ni-ticker__item ni-ticker__item--text" {{ block.shopify_attributes }}>
+                {{- block.settings.text | escape -}}
+              </li>
+            {%- endif -%}
+
+            {%- if has_img != blank or has_icon != 'none' -%}
+              <li class="ni-ticker__item ni-ticker__item--icon">
+                {%- if has_img != blank -%}
+                  <img src="{{ block.settings.icon_image | image_url: width: 64 }}"
+                       alt="" width="{{ section.settings.icon_size }}"
+                       height="{{ section.settings.icon_size }}"
+                       loading="lazy" class="ni-ticker__custom-img">
+                {%- else -%}
+                  <span class="ni-ticker__svg-wrap">
+                    {%- case block.settings.icon -%}
+                      {%- when 'hand' -%}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M18 11V6.5a1.5 1.5 0 0 0-3 0V11m0 0V5a1.5 1.5 0 0 0-3 0v6m0 0V6.5a1.5 1.5 0 0 0-3 0V17l-2-2a1.5 1.5 0 0 0-2.12 2.12l4.24 4.24A6 6 0 0 0 18 17v-6"/>
+                          <path d="m21 5-1 1m-1-3-.5 1.5M19 8l1.5-.5"/>
+                        </svg>
+                      {%- when 'recycle' -%}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M7 19H4.815a1.83 1.83 0 0 1-1.57-.881 1.785 1.785 0 0 1-.004-1.784L7.196 9.5"/>
+                          <path d="M11 19h8.203a1.83 1.83 0 0 0 1.556-.89 1.784 1.784 0 0 0 0-1.775l-1.226-2.12"/>
+                          <path d="m14 16 3 3-3 3"/>
+                          <path d="M8.293 13.596 7.196 9.5 3.1 10.598"/>
+                          <path d="m9.344 5.811 1.093-1.892A1.83 1.83 0 0 1 11.985 3a1.784 1.784 0 0 1 1.546.888l3.943 6.843"/>
+                          <path d="m13.378 9.633 4.096 1.098 1.097-4.096"/>
+                        </svg>
+                      {%- when 'clock' -%}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="12" cy="12" r="10"/>
+                          <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                      {%- when 'hourglass' -%}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M5 22h14M5 2h14"/>
+                          <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/>
+                          <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/>
+                        </svg>
+                      {%- when 'sparkle' -%}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+                          <path d="M5 3v4M19 17v4M3 5h4M17 19h4"/>
+                        </svg>
+                      {%- when 'star' -%}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        </svg>
+                      {%- when 'heart' -%}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                        </svg>
+                      {%- when 'leaf' -%}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/>
+                          <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+                        </svg>
+                      {%- when 'diamond' -%}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M2.7 10.3a2.41 2.41 0 0 0 0 3.41l7.59 7.59a2.41 2.41 0 0 0 3.41 0l7.59-7.59a2.41 2.41 0 0 0 0-3.41L13.7 2.71a2.41 2.41 0 0 0-3.41 0z"/>
+                        </svg>
+                      {%- when 'check' -%}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="12" cy="12" r="10"/>
+                          <path d="m9 12 2 2 4-4"/>
+                        </svg>
+                      {%- when 'flower' -%}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="12" cy="12" r="3"/>
+                          <path d="M12 2a4 4 0 0 1 0 8 4 4 0 0 1 0-8zM12 14a4 4 0 0 1 0 8 4 4 0 0 1 0-8zM2 12a4 4 0 0 1 8 0 4 4 0 0 1-8 0zM14 12a4 4 0 0 1 8 0 4 4 0 0 1-8 0z"/>
+                        </svg>
+                      {%- when 'nail' -%}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M8 3h8a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>
+                          <path d="M12 9v12"/>
+                          <path d="M9 21h6"/>
+                        </svg>
+                    {%- endcase -%}
+                  </span>
+                {%- endif -%}
+              </li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+/* ── NailInIt Marquee Ticker ─────────────────────────────── */
+.ni-ticker {
+  width: 100%;
+  overflow: hidden;
+}
+
+.ni-ticker__track {
+  width: 100%;
+  overflow: hidden;
+}
+
+.ni-ticker__reel {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+/* Pause on hover for accessibility */
+.ni-ticker:hover .ni-ticker__reel {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ni-ticker__reel {
+    animation: ni-ticker-scroll var(--ni-t-speed, 30s) linear infinite;
+  }
+  .ni-ticker__reel--rtl {
+    animation-direction: reverse;
+  }
+}
+
+@keyframes ni-ticker-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.ni-ticker__list {
+  display: flex;
+  align-items: center;
+  gap: var(--ni-t-gap, 60px);
+  list-style: none;
+  margin: 0;
+  padding: 0 calc(var(--ni-t-gap, 60px) / 2);
+  white-space: nowrap;
+}
+
+.ni-ticker__item {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.ni-ticker__item--text {
+  font-size: var(--ni-t-text-sz, 22px);
+  font-weight: var(--ni-t-fw, 800);
+  color: var(--ni-t-text-clr, #1a1a1a);
+  letter-spacing: -0.01em;
+}
+
+.ni-ticker__item--icon {
+  color: var(--ni-t-icon-clr, #FF2D7C);
+}
+
+.ni-ticker__svg-wrap svg,
+.ni-ticker__svg-wrap {
+  display: block;
+  width: var(--ni-t-icon-sz, 32px);
+  height: var(--ni-t-icon-sz, 32px);
+}
+
+.ni-ticker__custom-img {
+  display: block;
+  width: var(--ni-t-icon-sz, 32px);
+  height: var(--ni-t-icon-sz, 32px);
+  object-fit: contain;
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "NailInIt Marquee",
+  "tag": "section",
+  "class": "nailinit-marquee-section",
+  "disabled_on": { "groups": ["header", "footer"] },
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Marquee Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "long lasting"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "none",     "label": "— No icon —" },
+            { "value": "hand",     "label": "✋ Hand / Sparkles" },
+            { "value": "recycle",  "label": "♻️ Recycle" },
+            { "value": "clock",    "label": "🕐 Clock" },
+            { "value": "hourglass","label": "⏳ Hourglass" },
+            { "value": "sparkle",  "label": "✨ Sparkle" },
+            { "value": "star",     "label": "⭐ Star" },
+            { "value": "heart",    "label": "❤️ Heart" },
+            { "value": "leaf",     "label": "🌿 Leaf" },
+            { "value": "diamond",  "label": "💎 Diamond" },
+            { "value": "check",    "label": "✅ Check circle" },
+            { "value": "flower",   "label": "🌸 Flower" },
+            { "value": "nail",     "label": "💅 Nail" }
+          ],
+          "default": "hand"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Custom icon image (overrides dropdown)"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Scroll speed (seconds per loop)",
+      "info": "Lower = faster",
+      "min": 5,
+      "max": 120,
+      "step": 5,
+      "default": 30
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Scroll direction",
+      "options": [
+        { "value": "normal",  "label": "← Left (default)" },
+        { "value": "reverse", "label": "→ Right" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Text size",
+      "min": 12,
+      "max": 56,
+      "step": 1,
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Font weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra-bold" },
+        { "value": "900", "label": "Black" }
+      ],
+      "default": "800"
+    },
+    {
+      "type": "header",
+      "content": "Icons"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon size",
+      "min": 16,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "header",
+      "content": "Colours"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text colour",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon colour",
+      "default": "#FF2D7C"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_top",
+      "label": "Top border",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "border_bottom",
+      "label": "Bottom border",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border colour",
+      "default": "#e8e8e8"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "item_gap",
+      "label": "Gap between items",
+      "min": 16,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "presets": [
+    {
+      "name": "NailInIt Marquee",
+      "blocks": [
+        { "type": "item", "settings": { "text": "long lasting",  "icon": "hand"      } },
+        { "type": "item", "settings": { "text": "crease-free",   "icon": "recycle"   } },
+        { "type": "item", "settings": { "text": "reusable",      "icon": "clock"     } },
+        { "type": "item", "settings": { "text": "quick & easy",  "icon": "hourglass" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

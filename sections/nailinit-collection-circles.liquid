@@ -1,0 +1,929 @@
+{% comment %}
+  NailInIt Collection Circles
+  ─ Horizontally scrollable circular category browser
+  ─ Navigation arrows appear on section hover (left/right edges)
+  ─ Individual circle hover: overlay icon + text
+  ─ Label chevron on hover: "chrome ›"
+  ─ Mobile: exactly 4 circles visible at a time
+  ─ Fully customisable, reusable, error-proof
+{% endcomment %}
+
+{%- liquid
+  assign overlay_r = section.settings.hover_overlay_color | color_extract: 'red'
+  assign overlay_g = section.settings.hover_overlay_color | color_extract: 'green'
+  assign overlay_b = section.settings.hover_overlay_color | color_extract: 'blue'
+  assign overlay_a = section.settings.hover_overlay_opacity | divided_by: 100.0
+-%}
+
+<style>
+  #ni-cc-{{ section.id }} {
+    --ni-cc-circle-sz    : {{ section.settings.circle_size }}px;
+    --ni-cc-gap          : {{ section.settings.gap }}px;
+    --ni-cc-label-sz     : {{ section.settings.label_size }}px;
+    --ni-cc-label-weight : {{ section.settings.label_weight }};
+    --ni-cc-label-color  : {{ section.settings.label_color }};
+    --ni-cc-label-color-hover: {{ section.settings.label_hover_color }};
+    --ni-cc-active-color : {{ section.settings.accent_color }};
+    --ni-cc-arrow-bg     : {{ section.settings.arrow_bg_color }};
+    --ni-cc-arrow-color  : {{ section.settings.arrow_icon_color }};
+    --ni-cc-border-w     : {{ section.settings.border_width }}px;
+    --ni-cc-border-color : {{ section.settings.border_color }};
+    --ni-cc-border-hover : {{ section.settings.border_hover_color }};
+    --ni-cc-overlay-bg   : rgba({{ overlay_r }},{{ overlay_g }},{{ overlay_b }},{{ overlay_a }});
+    --ni-cc-overlay-text : {{ section.settings.hover_text_color }};
+    --ni-cc-bg           : {{ section.settings.bg_color }};
+    padding-top          : {{ section.settings.padding_top }}px;
+    padding-bottom       : {{ section.settings.padding_bottom }}px;
+    background           : var(--ni-cc-bg);
+  }
+</style>
+
+<section
+  id="ni-cc-{{ section.id }}"
+  class="ni-cc{% if section.settings.always_show_arrows %} ni-cc--always-arrows{% endif %}"
+  aria-label="{{ section.settings.heading | default: 'Shop by category' | escape }}"
+>
+
+  {%- if section.settings.heading != blank -%}
+    <div class="ni-cc__header">
+      <h2 class="ni-cc__heading">{{ section.settings.heading | escape }}</h2>
+      {%- if section.settings.view_all_url != blank -%}
+        <a href="{{ section.settings.view_all_url }}" class="ni-cc__view-all">
+          {{ section.settings.view_all_text | escape }}
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="ni-cc__outer">
+
+    <!-- LEFT ARROW -->
+    <button
+      class="ni-cc__nav ni-cc__nav--prev"
+      aria-label="{{ section.settings.prev_label | escape }}"
+      data-ni-prev
+    >
+      {%- if section.settings.arrow_style == 'round' -%}
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+      {%- else -%}
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+      {%- endif -%}
+    </button>
+
+    <!-- SCROLL TRACK -->
+    <ul class="ni-cc__track" role="list" data-ni-track>
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign b = block.settings
+
+          # URL
+          if b.collection != blank
+            assign item_url = b.collection.url
+          elsif b.custom_url != blank
+            assign item_url = b.custom_url
+          else
+            assign item_url = '#'
+          endif
+
+          # Image
+          if b.custom_image != blank
+            assign item_img = b.custom_image
+          elsif b.collection != blank and b.collection.image != blank
+            assign item_img = b.collection.image
+          elsif b.collection != blank and b.collection.products.first != nil
+            assign item_img = b.collection.products.first.featured_image
+          else
+            assign item_img = nil
+          endif
+
+          # Label
+          if b.custom_label != blank
+            assign item_label = b.custom_label
+          elsif b.collection != blank
+            assign item_label = b.collection.title
+          else
+            assign item_label = 'Collection'
+          endif
+
+          # Per-item hover text (falls back to section default)
+          assign item_hover_text = section.settings.default_hover_text
+          if b.hover_text != blank
+            assign item_hover_text = b.hover_text
+          endif
+
+          # Active state
+          assign is_active = false
+          if b.collection != blank and request.path == b.collection.url
+            assign is_active = true
+          endif
+        -%}
+
+        <li
+          class="ni-cc__item{% if is_active %} ni-cc__item--active{% endif %}"
+          {{ block.shopify_attributes }}
+        >
+          <a
+            href="{{ item_url }}"
+            class="ni-cc__link"
+            {% if is_active %}aria-current="page"{% endif %}
+          >
+            <!-- CIRCLE -->
+            <div class="ni-cc__circle-wrap">
+              <div class="ni-cc__circle">
+
+                {%- if item_img != nil -%}
+                  <img
+                    src="{{ item_img | image_url: width: 300 }}"
+                    srcset="{{ item_img | image_url: width: 150 }} 150w,
+                            {{ item_img | image_url: width: 300 }} 300w,
+                            {{ item_img | image_url: width: 400 }} 400w"
+                    sizes="{{ section.settings.circle_size }}px"
+                    alt="{{ item_label | escape }}"
+                    width="300"
+                    height="300"
+                    loading="{% if forloop.index <= 6 %}eager{% else %}lazy{% endif %}"
+                    class="ni-cc__img"
+                  >
+                {%- else -%}
+                  <div class="ni-cc__placeholder" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  </div>
+                {%- endif -%}
+
+                <!-- HOVER OVERLAY (icon + text inside circle) -->
+                {%- if section.settings.show_hover_overlay -%}
+                  <div class="ni-cc__overlay" aria-hidden="true">
+                    {%- if section.settings.show_hover_icon -%}
+                      <span class="ni-cc__overlay-icon">
+                        {%- case section.settings.hover_icon_style -%}
+                          {%- when 'arrow' -%}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                          {%- when 'chevron' -%}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                          {%- when 'plus' -%}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                          {%- when 'eye' -%}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                          {%- when 'heart' -%}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                        {%- endcase -%}
+                      </span>
+                    {%- endif -%}
+                    {%- if section.settings.show_hover_text -%}
+                      <span class="ni-cc__overlay-text">{{ item_hover_text | escape }}</span>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+
+              </div><!-- /circle -->
+            </div><!-- /circle-wrap -->
+
+            <!-- LABEL -->
+            <span class="ni-cc__label">
+              {{- item_label | escape -}}
+              {%- if section.settings.show_label_chevron -%}
+                <span class="ni-cc__label-chevron" aria-hidden="true">&rsaquo;</span>
+              {%- endif -%}
+            </span>
+
+          </a>
+        </li>
+
+      {%- else -%}
+        {%- comment -%} Placeholder items when no blocks added yet {%- endcomment -%}
+        {%- for i in (1..6) -%}
+          <li class="ni-cc__item ni-cc__item--placeholder">
+            <div class="ni-cc__link">
+              <div class="ni-cc__circle-wrap">
+                <div class="ni-cc__circle ni-cc__circle--placeholder">
+                  <div class="ni-cc__placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  </div>
+                </div>
+              </div>
+              <span class="ni-cc__label">Category {{ i }}</span>
+            </div>
+          </li>
+        {%- endfor -%}
+      {%- endfor -%}
+    </ul><!-- /track -->
+
+    <!-- RIGHT ARROW -->
+    <button
+      class="ni-cc__nav ni-cc__nav--next"
+      aria-label="{{ section.settings.next_label | escape }}"
+      data-ni-next
+    >
+      {%- if section.settings.arrow_style == 'round' -%}
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/><polyline points="9 18 15 12 9 6" transform="translate(6,0)"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" transform="scale(-1,1) translate(-24,0)"/></svg>
+      {%- else -%}
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19 7-7-7-7"/><path d="M5 12h14"/></svg>
+      {%- endif -%}
+    </button>
+
+  </div><!-- /outer -->
+
+</section>
+
+{% stylesheet %}
+/* ─────────────────────────────────────────────────────────────
+   NailInIt Collection Circles
+   ───────────────────────────────────────────────────────────── */
+
+/* Section wrapper */
+.ni-cc {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Header */
+.ni-cc__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 48px 20px;
+}
+@media screen and (max-width: 749px) {
+  .ni-cc__header { padding: 0 16px 16px; }
+}
+.ni-cc__heading {
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #1a1a1a;
+  margin: 0;
+}
+.ni-cc__view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: gap 0.2s ease;
+}
+.ni-cc__view-all:hover { gap: 8px; }
+
+/* Outer — holds arrows + track, position:relative for absolute arrows */
+.ni-cc__outer {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* ── Navigation arrows ─────────────────────────────────────── */
+.ni-cc__nav {
+  position: absolute;
+  top: calc(var(--ni-cc-circle-sz, 100px) / 2);
+  transform: translateY(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: var(--ni-cc-arrow-bg, #ffffff);
+  color: var(--ni-cc-arrow-color, #1a1a1a);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.14);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease,
+              visibility 0.25s ease,
+              background 0.2s ease,
+              transform 0.2s ease;
+  flex-shrink: 0;
+}
+.ni-cc__nav--prev { left: 8px; }
+.ni-cc__nav--next { right: 8px; }
+
+/* Show arrows on section hover */
+.ni-cc:hover .ni-cc__nav:not([data-hidden]) {
+  opacity: 1;
+  visibility: visible;
+}
+/* Always show if setting enabled */
+.ni-cc--always-arrows .ni-cc__nav:not([data-hidden]) {
+  opacity: 1;
+  visibility: visible;
+}
+/* Arrow hover state */
+.ni-cc__nav:hover {
+  background: var(--ni-cc-arrow-color, #1a1a1a);
+  color: var(--ni-cc-arrow-bg, #ffffff);
+  transform: translateY(-50%) scale(1.08);
+}
+.ni-cc__nav[data-hidden] {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none;
+}
+
+/* ── Scroll track ──────────────────────────────────────────── */
+.ni-cc__track {
+  display: flex;
+  flex-direction: row;
+  gap: var(--ni-cc-gap, 20px);
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 8px 48px 16px;
+  margin: 0;
+  list-style: none;
+  width: 100%;
+}
+.ni-cc__track::-webkit-scrollbar { display: none; }
+
+/* ── Item ──────────────────────────────────────────────────── */
+.ni-cc__item {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  scroll-snap-align: start;
+}
+
+/* ── Link ──────────────────────────────────────────────────── */
+.ni-cc__link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* ── Circle wrap (handles the border ring) ─────────────────── */
+.ni-cc__circle-wrap {
+  width: var(--ni-cc-circle-sz, 100px);
+  height: var(--ni-cc-circle-sz, 100px);
+  border-radius: 50%;
+  padding: var(--ni-cc-border-w, 2px);
+  background: var(--ni-cc-border-color, #e8e8e8);
+  transition: background 0.25s ease, transform 0.3s cubic-bezier(0.16,1,0.3,1);
+  flex-shrink: 0;
+}
+@media (hover: hover) {
+  .ni-cc__link:hover .ni-cc__circle-wrap {
+    background: var(--ni-cc-border-hover, #1a1a1a);
+    transform: scale(1.06);
+  }
+}
+.ni-cc__item--active .ni-cc__circle-wrap {
+  background: var(--ni-cc-active-color, #FF2D7C) !important;
+}
+
+/* ── Circle ────────────────────────────────────────────────── */
+.ni-cc__circle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+  background: #f0f0f0;
+}
+
+/* Image */
+.ni-cc__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+@media (hover: hover) {
+  .ni-cc__link:hover .ni-cc__img {
+    transform: scale(1.08);
+  }
+}
+
+/* Placeholder (no image) */
+.ni-cc__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e8e8e8;
+  color: #bbb;
+}
+.ni-cc__circle--placeholder { animation: ni-cc-shimmer 1.6s ease-in-out infinite alternate; }
+@keyframes ni-cc-shimmer {
+  from { background: #e8e8e8; }
+  to   { background: #f4f4f4; }
+}
+
+/* ── Hover overlay ─────────────────────────────────────────── */
+.ni-cc__overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--ni-cc-overlay-bg, rgba(0,0,0,0.35));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+@media (hover: hover) {
+  .ni-cc__link:hover .ni-cc__overlay {
+    opacity: 1;
+  }
+}
+.ni-cc__overlay-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ni-cc-overlay-text, #ffffff);
+  line-height: 1;
+}
+.ni-cc__overlay-icon svg { display: block; }
+.ni-cc__overlay-text {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ni-cc-overlay-text, #ffffff);
+  white-space: nowrap;
+  line-height: 1;
+}
+
+/* ── Label ─────────────────────────────────────────────────── */
+.ni-cc__label {
+  font-size: var(--ni-cc-label-sz, 13px);
+  font-weight: var(--ni-cc-label-weight, 500);
+  color: var(--ni-cc-label-color, #1a1a1a);
+  text-align: center;
+  line-height: 1.2;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+@media (hover: hover) {
+  .ni-cc__link:hover .ni-cc__label {
+    color: var(--ni-cc-label-color-hover, #1a1a1a);
+  }
+}
+.ni-cc__item--active .ni-cc__label {
+  color: var(--ni-cc-active-color, #FF2D7C);
+  font-weight: 700;
+}
+
+/* Label chevron — hidden by default, shown on hover */
+.ni-cc__label-chevron {
+  font-size: 1.1em;
+  line-height: 1;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  display: inline-block;
+}
+@media (hover: hover) {
+  .ni-cc__link:hover .ni-cc__label-chevron {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ── Mobile: exactly 4 items visible ──────────────────────── */
+@media screen and (max-width: 749px) {
+  .ni-cc__track {
+    gap: 8px;
+    padding: 8px 16px 16px;
+  }
+  .ni-cc__item {
+    /* 4 items: (100vw - 32px padding - 24px gaps) / 4 */
+    flex: 0 0 calc((100vw - 32px - 24px) / 4);
+  }
+  /* Circle fills item width automatically */
+  .ni-cc__circle-wrap {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+  }
+  /* Always show arrows on mobile */
+  .ni-cc__nav {
+    opacity: 1;
+    visibility: visible;
+    width: 32px;
+    height: 32px;
+    top: calc((100vw - 32px - 24px) / 8 + 8px); /* half circle height */
+  }
+  .ni-cc__nav--prev { left: 0; }
+  .ni-cc__nav--next { right: 0; }
+  /* Pull track inward to not overlap arrow buttons */
+  .ni-cc__track {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+  .ni-cc__label { font-size: 0.7rem; }
+}
+
+/* ── Reduced motion ────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .ni-cc__circle-wrap,
+  .ni-cc__img,
+  .ni-cc__overlay,
+  .ni-cc__label,
+  .ni-cc__label-chevron,
+  .ni-cc__nav { transition: none !important; }
+}
+{% endstylesheet %}
+
+<script>
+(function () {
+  const section = document.getElementById('ni-cc-{{ section.id }}');
+  if (!section) return;
+
+  const track   = section.querySelector('[data-ni-track]');
+  const prevBtn = section.querySelector('[data-ni-prev]');
+  const nextBtn = section.querySelector('[data-ni-next]');
+  if (!track) return;
+
+  // ── Scroll amount: width of 4 items ─────────────────────────
+  function scrollAmount() {
+    const item = track.querySelector('.ni-cc__item');
+    if (!item) return 280;
+    const gap = parseFloat(getComputedStyle(track).gap) || 8;
+    return (item.offsetWidth + gap) * 4;
+  }
+
+  // ── Update arrow visibility based on scroll position ────────
+  function updateArrows() {
+    const atStart = track.scrollLeft <= 4;
+    const atEnd   = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
+    if (prevBtn) {
+      if (atStart) prevBtn.setAttribute('data-hidden', '');
+      else          prevBtn.removeAttribute('data-hidden');
+    }
+    if (nextBtn) {
+      if (atEnd) nextBtn.setAttribute('data-hidden', '');
+      else        nextBtn.removeAttribute('data-hidden');
+    }
+  }
+
+  // Initialise
+  updateArrows();
+  track.addEventListener('scroll', updateArrows, { passive: true });
+  window.addEventListener('resize', updateArrows, { passive: true });
+
+  // ── Arrow click handlers ─────────────────────────────────────
+  prevBtn?.addEventListener('click', () => {
+    track.scrollBy({ left: -scrollAmount(), behavior: 'smooth' });
+  });
+  nextBtn?.addEventListener('click', () => {
+    track.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
+  });
+
+  // ── Touch swipe ──────────────────────────────────────────────
+  let touchStartX = 0;
+  track.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+  }, { passive: true });
+  track.addEventListener('touchend', (e) => {
+    const delta = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(delta) > 40) {
+      track.scrollBy({ left: delta < 0 ? scrollAmount() : -scrollAmount(), behavior: 'smooth' });
+    }
+  }, { passive: true });
+
+  // ── Keyboard navigation ──────────────────────────────────────
+  section.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft')  { e.preventDefault(); track.scrollBy({ left: -scrollAmount(), behavior: 'smooth' }); }
+    if (e.key === 'ArrowRight') { e.preventDefault(); track.scrollBy({ left:  scrollAmount(), behavior: 'smooth' }); }
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "NI Collection Circles",
+  "tag": "section",
+  "class": "nailinit-collection-circles",
+  "disabled_on": { "groups": ["header", "footer"] },
+  "blocks": [
+    {
+      "type": "circle",
+      "name": "Collection Circle",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_image",
+          "label": "Custom image (overrides collection image)"
+        },
+        {
+          "type": "text",
+          "id": "custom_label",
+          "label": "Custom label (overrides collection title)"
+        },
+        {
+          "type": "url",
+          "id": "custom_url",
+          "label": "Custom link (overrides collection URL)"
+        },
+        {
+          "type": "text",
+          "id": "hover_text",
+          "label": "Hover overlay text (overrides section default)"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section heading",
+      "default": "Shop by Style"
+    },
+    {
+      "type": "text",
+      "id": "view_all_text",
+      "label": "View all label",
+      "default": "View all"
+    },
+    {
+      "type": "url",
+      "id": "view_all_url",
+      "label": "View all link"
+    },
+    {
+      "type": "header",
+      "content": "Hover Overlay (inside circle)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_hover_overlay",
+      "label": "Show overlay on circle hover",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_hover_icon",
+      "label": "Show icon in overlay",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "hover_icon_style",
+      "label": "Overlay icon",
+      "options": [
+        { "value": "arrow",   "label": "→ Arrow" },
+        { "value": "chevron", "label": "› Chevron" },
+        { "value": "plus",    "label": "+ Plus" },
+        { "value": "eye",     "label": "👁 Eye" },
+        { "value": "heart",   "label": "♥ Heart" }
+      ],
+      "default": "arrow"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_hover_text",
+      "label": "Show text in overlay",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "default_hover_text",
+      "label": "Default overlay text",
+      "default": "Shop"
+    },
+    {
+      "type": "header",
+      "content": "Label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_label_chevron",
+      "label": "Show › after label on hover",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Navigation Arrows"
+    },
+    {
+      "type": "checkbox",
+      "id": "always_show_arrows",
+      "label": "Always show arrows (not just on hover)",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "arrow_style",
+      "label": "Arrow style",
+      "options": [
+        { "value": "round",  "label": "Chevron (‹ ›)" },
+        { "value": "linear", "label": "Arrow (← →)" }
+      ],
+      "default": "round"
+    },
+    {
+      "type": "text",
+      "id": "prev_label",
+      "label": "Previous button aria-label",
+      "default": "Scroll left"
+    },
+    {
+      "type": "text",
+      "id": "next_label",
+      "label": "Next button aria-label",
+      "default": "Scroll right"
+    },
+    {
+      "type": "header",
+      "content": "Colours"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Label colour",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "label_hover_color",
+      "label": "Label colour on hover",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Active / accent colour",
+      "default": "#FF2D7C"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Circle border (ring) colour",
+      "default": "#e8e8e8"
+    },
+    {
+      "type": "color",
+      "id": "border_hover_color",
+      "label": "Circle border colour on hover",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "hover_overlay_color",
+      "label": "Overlay colour",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "hover_overlay_opacity",
+      "label": "Overlay opacity (%)",
+      "min": 5,
+      "max": 90,
+      "step": 5,
+      "default": 40
+    },
+    {
+      "type": "color",
+      "id": "hover_text_color",
+      "label": "Overlay icon & text colour",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "arrow_bg_color",
+      "label": "Arrow button background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "arrow_icon_color",
+      "label": "Arrow button icon colour",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "Sizes"
+    },
+    {
+      "type": "range",
+      "id": "circle_size",
+      "label": "Circle size (desktop)",
+      "min": 60,
+      "max": 180,
+      "step": 4,
+      "unit": "px",
+      "default": 108
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "label": "Border ring thickness",
+      "min": 0,
+      "max": 6,
+      "step": 1,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between circles (desktop)",
+      "min": 8,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "label_size",
+      "label": "Label font size",
+      "min": 10,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "select",
+      "id": "label_weight",
+      "label": "Label font weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "presets": [
+    {
+      "name": "NI Collection Circles",
+      "blocks": [
+        { "type": "circle", "settings": { "custom_label": "all" } },
+        { "type": "circle", "settings": { "custom_label": "cat eye" } },
+        { "type": "circle", "settings": { "custom_label": "chrome" } },
+        { "type": "circle", "settings": { "custom_label": "french" } },
+        { "type": "circle", "settings": { "custom_label": "ombre" } },
+        { "type": "circle", "settings": { "custom_label": "matte" } },
+        { "type": "circle", "settings": { "custom_label": "glossy" } },
+        { "type": "circle", "settings": { "custom_label": "3D design" } },
+        { "type": "circle", "settings": { "custom_label": "summer" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

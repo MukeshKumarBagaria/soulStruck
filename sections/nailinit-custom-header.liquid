@@ -1,0 +1,1230 @@
+{% comment %}
+  NailInIt Custom Header — Fully Standalone
+  ─ No dependency on any theme header CSS/JS
+  ─ Desktop: search pill | centered logo | icons | nav bar below
+  ─ Mobile: hamburger | search | logo | icons → drawer for nav
+  ─ Sticky at top, bottom shadow appears on scroll
+  ─ Smooth animations, fully accessible
+{% endcomment %}
+
+{%- liquid
+  assign nav_menu   = section.settings.menu
+  assign logo_img   = section.settings.logo
+  assign logo_text  = section.settings.logo_text | default: shop.name
+  assign logo_width = section.settings.logo_width
+  assign show_nav   = section.settings.show_nav_bar
+  assign show_acc   = section.settings.show_account
+  assign show_cart  = section.settings.show_cart
+  assign search_ph  = section.settings.search_placeholder
+  assign sticky     = section.settings.sticky_header
+  assign cart_count = cart.item_count
+-%}
+
+<style>
+  #ni-ch-{{ section.id }} {
+    --ni-ch-bg          : {{ section.settings.bg_color }};
+    --ni-ch-fg          : {{ section.settings.text_color }};
+    --ni-ch-border      : {{ section.settings.border_color }};
+    --ni-ch-nav-color   : {{ section.settings.nav_link_color }};
+    --ni-ch-nav-hover   : {{ section.settings.nav_link_hover }};
+    --ni-ch-nav-active  : {{ section.settings.nav_active_color }};
+    --ni-ch-search-bg   : {{ section.settings.search_bg }};
+    --ni-ch-search-bd   : {{ section.settings.search_border_color }};
+    --ni-ch-logo-w      : {{ logo_width }}px;
+    --ni-ch-shadow      : {{ section.settings.scroll_shadow }};
+    --ni-ch-bar-h       : {{ section.settings.bar_height }}px;
+    --ni-ch-nav-h       : {{ section.settings.nav_height }}px;
+    --ni-ch-drawer-bg   : {{ section.settings.drawer_bg }};
+    --ni-ch-drawer-link : {{ section.settings.drawer_link_color }};
+    --ni-ch-radius      : {{ section.settings.search_radius }}px;
+    --ni-ch-accent      : {{ section.settings.accent_color }};
+  }
+</style>
+
+{%- comment -%} ── Drawer overlay (rendered before header for stacking) ── {%- endcomment -%}
+<div
+  class="ni-ch__overlay"
+  id="ni-ch-overlay-{{ section.id }}"
+  aria-hidden="true"
+  tabindex="-1"
+></div>
+
+{%- comment -%} ── Mobile drawer ─────────────────────────────────────── {%- endcomment -%}
+<aside
+  class="ni-ch__drawer"
+  id="ni-ch-drawer-{{ section.id }}"
+  aria-hidden="true"
+  aria-label="{{ section.settings.drawer_label | escape }}"
+  role="dialog"
+  tabindex="-1"
+>
+  <div class="ni-ch__drawer-inner">
+
+    <div class="ni-ch__drawer-head">
+      {%- if logo_img != blank -%}
+        <img
+          src="{{ logo_img | image_url: width: 200 }}"
+          alt="{{ logo_text | escape }}"
+          width="{{ logo_width }}"
+          height="{{ logo_width | divided_by: logo_img.aspect_ratio | round }}"
+          loading="eager"
+          class="ni-ch__drawer-logo"
+        >
+      {%- else -%}
+        <span class="ni-ch__drawer-logo-text">{{ logo_text | escape }}</span>
+      {%- endif -%}
+      <button
+        class="ni-ch__drawer-close"
+        aria-label="{{ section.settings.close_label | escape }}"
+        id="ni-ch-close-{{ section.id }}"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <nav class="ni-ch__drawer-nav" aria-label="{{ section.settings.drawer_nav_label | escape }}">
+      <ul class="ni-ch__drawer-list" role="list">
+        {%- if nav_menu != blank -%}
+          {%- for link in nav_menu.links -%}
+            <li class="ni-ch__drawer-item">
+              <a
+                href="{{ link.url }}"
+                class="ni-ch__drawer-link{% if link.active %} ni-ch__drawer-link--active{% endif %}"
+                {% if link.active %}aria-current="page"{% endif %}
+              >
+                {{ link.title | escape }}
+                {%- if link.links.size > 0 -%}
+                  <svg class="ni-ch__drawer-caret" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                {%- endif -%}
+              </a>
+              {%- if link.links.size > 0 -%}
+                <ul class="ni-ch__drawer-sublist" role="list">
+                  {%- for sublink in link.links -%}
+                    <li>
+                      <a href="{{ sublink.url }}" class="ni-ch__drawer-sublink">{{ sublink.title | escape }}</a>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        {%- endif -%}
+      </ul>
+    </nav>
+
+    <div class="ni-ch__drawer-footer">
+      {%- if show_acc -%}
+        <a href="{% if customer %}/account{% else %}/account/login{% endif %}" class="ni-ch__drawer-account">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          {% if customer %}{{ customer.first_name | escape }}{% else %}{{ section.settings.account_label | escape }}{% endif %}
+        </a>
+      {%- endif -%}
+      {%- if section.settings.show_social_drawer -%}
+        <div class="ni-ch__drawer-social">
+          {%- if settings.social_instagram_link != blank -%}
+            <a href="{{ settings.social_instagram_link }}" target="_blank" rel="noopener" aria-label="Instagram">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+  </div>
+</aside>
+
+{%- comment -%} ── MAIN HEADER ───────────────────────────────────────── {%- endcomment -%}
+<div
+  id="ni-ch-{{ section.id }}"
+  class="ni-ch{% if sticky %} ni-ch--sticky{% endif %}"
+  data-section-id="{{ section.id }}"
+>
+  <header class="ni-ch__header" role="banner">
+
+    {%- comment -%} ── Main bar ──────────────────────────────────────── {%- endcomment -%}
+    <div class="ni-ch__bar">
+
+      <!-- LEFT: hamburger (mobile) + search -->
+      <div class="ni-ch__left">
+
+        {%- comment -%} Hamburger — mobile only {%- endcomment -%}
+        <button
+          class="ni-ch__hamburger"
+          aria-label="{{ section.settings.menu_label | escape }}"
+          aria-expanded="false"
+          aria-controls="ni-ch-drawer-{{ section.id }}"
+          id="ni-ch-burger-{{ section.id }}"
+        >
+          <span class="ni-ch__hamburger-line"></span>
+          <span class="ni-ch__hamburger-line"></span>
+          <span class="ni-ch__hamburger-line"></span>
+        </button>
+
+        {%- comment -%} Search pill {%- endcomment -%}
+        <form
+          action="/search"
+          method="get"
+          role="search"
+          class="ni-ch__search-form"
+        >
+          <input type="hidden" name="type" value="{{ section.settings.search_type }}">
+          <button type="submit" class="ni-ch__search-icon-btn" aria-label="{{ section.settings.search_label | escape }}" tabindex="-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
+          <input
+            type="search"
+            name="q"
+            class="ni-ch__search-input"
+            placeholder="{{ search_ph | escape }}"
+            autocomplete="off"
+            autocorrect="off"
+            spellcheck="false"
+            aria-label="{{ search_ph | escape }}"
+          >
+        </form>
+
+      </div><!-- /left -->
+
+      <!-- CENTER: Logo -->
+      <div class="ni-ch__center">
+        <a href="{{ routes.root_url }}" class="ni-ch__logo-link" aria-label="{{ logo_text | escape }}">
+          {%- if logo_img != blank -%}
+            <img
+              src="{{ logo_img | image_url: width: 400 }}"
+              srcset="{{ logo_img | image_url: width: 200 }} 200w,
+                      {{ logo_img | image_url: width: 400 }} 400w"
+              sizes="{{ logo_width }}px"
+              alt="{{ logo_text | escape }}"
+              width="{{ logo_width }}"
+              height="{{ logo_width | divided_by: logo_img.aspect_ratio | round }}"
+              loading="eager"
+              fetchpriority="high"
+              class="ni-ch__logo-img"
+            >
+          {%- else -%}
+            <span class="ni-ch__logo-text">{{ logo_text | escape }}</span>
+          {%- endif -%}
+        </a>
+      </div><!-- /center -->
+
+      <!-- RIGHT: Account + Cart -->
+      <div class="ni-ch__right">
+
+        {%- if show_acc and shop.customer_accounts_enabled -%}
+          <a
+            href="{% if customer %}/account{% else %}/account/login{% endif %}"
+            class="ni-ch__icon-btn"
+            aria-label="{% if customer %}{{ 'accessibility.account' | t | default: 'My account' }}{% else %}{{ section.settings.account_label | escape }}{% endif %}"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </a>
+        {%- endif -%}
+
+        {%- if show_cart -%}
+          <a
+            href="{{ routes.cart_url }}"
+            class="ni-ch__icon-btn ni-ch__cart-btn"
+            aria-label="{{ section.settings.cart_label | escape }}"
+            id="ni-ch-cart-{{ section.id }}"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <span
+              class="ni-ch__cart-count{% if cart_count == 0 %} ni-ch__cart-count--hidden{% endif %}"
+              id="ni-ch-cart-count-{{ section.id }}"
+              aria-label="{{ cart_count }} items in cart"
+            >{{ cart_count }}</span>
+          </a>
+        {%- endif -%}
+
+      </div><!-- /right -->
+
+    </div><!-- /bar -->
+
+    {%- comment -%} ── Desktop nav bar ───────────────────────────────── {%- endcomment -%}
+    {%- if show_nav and nav_menu != blank -%}
+      <nav class="ni-ch__nav" aria-label="{{ section.settings.nav_aria_label | escape }}">
+        <ul class="ni-ch__nav-list" role="list">
+          {%- for link in nav_menu.links -%}
+            <li class="ni-ch__nav-item{% if link.links.size > 0 %} ni-ch__nav-item--has-children{% endif %}">
+              <a
+                href="{{ link.url }}"
+                class="ni-ch__nav-link{% if link.active %} ni-ch__nav-link--active{% endif %}"
+                {% if link.active %}aria-current="page"{% endif %}
+                {% if link.links.size > 0 %}aria-haspopup="true" aria-expanded="false"{% endif %}
+              >
+                {{ link.title | escape }}
+              </a>
+              {%- if link.links.size > 0 -%}
+                <ul class="ni-ch__dropdown" role="list">
+                  {%- for sublink in link.links -%}
+                    <li>
+                      <a
+                        href="{{ sublink.url }}"
+                        class="ni-ch__dropdown-link{% if sublink.active %} ni-ch__dropdown-link--active{% endif %}"
+                        {% if sublink.active %}aria-current="page"{% endif %}
+                      >{{ sublink.title | escape }}</a>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      </nav>
+    {%- endif -%}
+
+  </header>
+</div><!-- /ni-ch wrapper -->
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   NailInIt Custom Header
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Reset scope ──────────────────────────────────────────────── */
+.ni-ch *,
+.ni-ch *::before,
+.ni-ch *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+.ni-ch a    { text-decoration: none; color: inherit; }
+.ni-ch ul   { list-style: none; }
+.ni-ch button { background: none; border: none; cursor: pointer; font: inherit; }
+
+/* ── Wrapper ──────────────────────────────────────────────────── */
+.ni-ch {
+  background: var(--ni-ch-bg, #fff);
+  width: 100%;
+  z-index: 9999;
+}
+.ni-ch--sticky {
+  position: sticky;
+  top: 0;
+}
+
+/* Shadow appears on scroll via JS */
+.ni-ch--scrolled {
+  box-shadow: var(--ni-ch-shadow, 0 2px 16px rgba(0,0,0,0.08));
+  transition: box-shadow 0.3s ease;
+}
+
+/* ── Main bar ─────────────────────────────────────────────────── */
+.ni-ch__bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  height: var(--ni-ch-bar-h, 64px);
+  padding: 0 32px;
+  border-bottom: 1px solid var(--ni-ch-border, rgba(0,0,0,0.08));
+}
+@media screen and (max-width: 749px) {
+  .ni-ch__bar {
+    padding: 0 12px;
+    height: var(--ni-ch-bar-h, 56px);
+    gap: 8px;
+  }
+}
+
+/* ── Left column ──────────────────────────────────────────────── */
+.ni-ch__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* ── Hamburger (mobile only) ──────────────────────────────────── */
+.ni-ch__hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  padding: 6px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+@media (hover: hover) {
+  .ni-ch__hamburger:hover { background: rgba(0,0,0,0.05); }
+}
+@media screen and (max-width: 749px) {
+  .ni-ch__hamburger {
+    display: flex;
+  }
+}
+.ni-ch__hamburger-line {
+  display: block;
+  width: 100%;
+  height: 1.5px;
+  background: var(--ni-ch-fg, #1a1a1a);
+  border-radius: 2px;
+  transform-origin: center;
+  transition: transform 0.3s cubic-bezier(0.16,1,0.3,1),
+              opacity 0.25s ease;
+}
+/* Open state — animated to X */
+.ni-ch__hamburger--open .ni-ch__hamburger-line:nth-child(1) {
+  transform: translateY(6.5px) rotate(45deg);
+}
+.ni-ch__hamburger--open .ni-ch__hamburger-line:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.ni-ch__hamburger--open .ni-ch__hamburger-line:nth-child(3) {
+  transform: translateY(-6.5px) rotate(-45deg);
+}
+
+/* ── Search form ──────────────────────────────────────────────── */
+.ni-ch__search-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--ni-ch-search-bg, #fff);
+  border: 1px solid var(--ni-ch-search-bd, #e0e0e0);
+  border-radius: var(--ni-ch-radius, 8px);
+  padding: 0 14px;
+  height: 40px;
+  max-width: 360px;
+  width: 100%;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.ni-ch__search-form:focus-within {
+  border-color: var(--ni-ch-fg, #1a1a1a);
+  box-shadow: 0 0 0 1px var(--ni-ch-fg, #1a1a1a);
+}
+.ni-ch__search-icon-btn {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: #9e9e9e;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+.ni-ch__search-form:focus-within .ni-ch__search-icon-btn { color: var(--ni-ch-fg, #1a1a1a); }
+.ni-ch__search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.875rem;
+  color: var(--ni-ch-fg, #1a1a1a);
+  min-width: 0;
+  line-height: 1;
+  /* Remove browser's native search clear button */
+  -webkit-appearance: none;
+}
+.ni-ch__search-input::placeholder { color: #9e9e9e; }
+.ni-ch__search-input::-webkit-search-decoration,
+.ni-ch__search-input::-webkit-search-cancel-button { display: none; }
+
+/* Mobile: compress search to icon-only */
+@media screen and (max-width: 749px) {
+  .ni-ch__search-form {
+    max-width: unset;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    justify-content: center;
+    border-radius: 50%;
+    flex-shrink: 0;
+    overflow: hidden;
+    transition: width 0.35s cubic-bezier(0.16,1,0.3,1),
+                border-radius 0.35s ease,
+                border-color 0.2s ease;
+  }
+  .ni-ch__search-form.ni-ch__search-form--expanded {
+    width: 180px;
+    border-radius: 8px;
+    padding: 0 10px;
+  }
+  .ni-ch__search-input {
+    display: none;
+    font-size: 0.82rem;
+  }
+  .ni-ch__search-form--expanded .ni-ch__search-input {
+    display: block;
+  }
+  .ni-ch__search-icon-btn { color: var(--ni-ch-fg, #1a1a1a); }
+}
+
+/* ── Center: Logo ─────────────────────────────────────────────── */
+.ni-ch__center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 16px;
+}
+.ni-ch__logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+@media (hover: hover) {
+  .ni-ch__logo-link:hover { opacity: 0.7; }
+}
+.ni-ch__logo-img {
+  display: block;
+  max-width: var(--ni-ch-logo-w, 120px);
+  height: auto;
+  object-fit: contain;
+}
+.ni-ch__logo-text {
+  font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--ni-ch-fg, #1a1a1a);
+  white-space: nowrap;
+  line-height: 1;
+}
+
+/* ── Right: Icons ─────────────────────────────────────────────── */
+.ni-ch__right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+.ni-ch__icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  color: var(--ni-ch-fg, #1a1a1a);
+  transition: opacity 0.2s ease, background 0.2s ease;
+  flex-shrink: 0;
+}
+@media (hover: hover) {
+  .ni-ch__icon-btn:hover { opacity: 0.6; }
+}
+.ni-ch__icon-btn:active { opacity: 0.4; }
+
+/* Cart count badge */
+.ni-ch__cart-count {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 3px;
+  border-radius: 100px;
+  background: var(--ni-ch-accent, #1a1a1a);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  pointer-events: none;
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1),
+              opacity 0.2s ease;
+  transform-origin: center;
+}
+.ni-ch__cart-count--hidden {
+  opacity: 0;
+  transform: scale(0);
+}
+.ni-ch__cart-count--pop {
+  animation: ni-ch-pop 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes ni-ch-pop {
+  0%   { transform: scale(0.4); opacity: 0; }
+  60%  { transform: scale(1.3); }
+  100% { transform: scale(1);   opacity: 1; }
+}
+
+/* ── Desktop nav bar ──────────────────────────────────────────── */
+.ni-ch__nav {
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid var(--ni-ch-border, rgba(0,0,0,0.08));
+}
+.ni-ch__nav-list {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: var(--ni-ch-nav-h, 44px);
+}
+.ni-ch__nav-item {
+  position: relative;
+}
+.ni-ch__nav-link {
+  display: inline-flex;
+  align-items: center;
+  height: var(--ni-ch-nav-h, 44px);
+  padding: 0 22px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--ni-ch-nav-color, #1a1a1a);
+  white-space: nowrap;
+  position: relative;
+  transition: color 0.2s ease;
+}
+/* Animated underline on hover/active */
+.ni-ch__nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 22px;
+  right: 22px;
+  height: 2px;
+  background: var(--ni-ch-nav-active, #1a1a1a);
+  border-radius: 2px;
+  transform: scaleX(0);
+  transition: transform 0.25s cubic-bezier(0.16,1,0.3,1);
+  transform-origin: center;
+}
+@media (hover: hover) {
+  .ni-ch__nav-link:hover { color: var(--ni-ch-nav-hover, #1a1a1a); }
+  .ni-ch__nav-link:hover::after { transform: scaleX(1); }
+}
+.ni-ch__nav-link--active { color: var(--ni-ch-nav-active, #1a1a1a); }
+.ni-ch__nav-link--active::after { transform: scaleX(1); }
+
+/* Desktop dropdown */
+.ni-ch__dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 180px;
+  background: var(--ni-ch-bg, #fff);
+  border: 1px solid var(--ni-ch-border, rgba(0,0,0,0.08));
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+  padding: 6px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity 0.2s ease,
+              visibility 0.2s ease,
+              transform 0.25s cubic-bezier(0.16,1,0.3,1);
+  z-index: 100;
+  pointer-events: none;
+}
+.ni-ch__nav-item--has-children:hover .ni-ch__dropdown,
+.ni-ch__nav-item--has-children:focus-within .ni-ch__dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.ni-ch__dropdown-link {
+  display: block;
+  padding: 8px 14px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ni-ch-nav-color, #1a1a1a);
+  border-radius: 6px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+@media (hover: hover) {
+  .ni-ch__dropdown-link:hover {
+    background: rgba(0,0,0,0.05);
+    color: var(--ni-ch-nav-active, #1a1a1a);
+  }
+}
+.ni-ch__dropdown-link--active { font-weight: 700; }
+
+/* Hide nav on mobile */
+@media screen and (max-width: 749px) {
+  .ni-ch__nav { display: none; }
+}
+
+/* ── Mobile drawer overlay ────────────────────────────────────── */
+.ni-ch__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 10000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+.ni-ch__overlay--open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ── Mobile drawer ────────────────────────────────────────────── */
+.ni-ch__drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: min(320px, 88vw);
+  background: var(--ni-ch-drawer-bg, #fff);
+  z-index: 10001;
+  transform: translateX(-100%);
+  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 4px 0 24px rgba(0,0,0,0.12);
+}
+.ni-ch__drawer--open {
+  transform: translateX(0);
+}
+.ni-ch__drawer-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Drawer header */
+.ni-ch__drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+  flex-shrink: 0;
+}
+.ni-ch__drawer-logo { max-width: 100px; height: auto; }
+.ni-ch__drawer-logo-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ni-ch-drawer-link, #1a1a1a);
+}
+.ni-ch__drawer-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  color: var(--ni-ch-drawer-link, #1a1a1a);
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+@media (hover: hover) {
+  .ni-ch__drawer-close:hover { background: rgba(0,0,0,0.06); }
+}
+
+/* Drawer nav */
+.ni-ch__drawer-nav {
+  flex: 1;
+  padding: 12px 0;
+}
+.ni-ch__drawer-list { display: flex; flex-direction: column; }
+.ni-ch__drawer-item { border-bottom: 1px solid rgba(0,0,0,0.06); }
+.ni-ch__drawer-item:last-child { border-bottom: none; }
+.ni-ch__drawer-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ni-ch-drawer-link, #1a1a1a);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+@media (hover: hover) {
+  .ni-ch__drawer-link:hover { background: rgba(0,0,0,0.04); }
+}
+.ni-ch__drawer-link--active { color: var(--ni-ch-accent, #1a1a1a); }
+.ni-ch__drawer-caret {
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+.ni-ch__drawer-sublist {
+  padding: 0 20px 8px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ni-ch__drawer-sublink {
+  display: block;
+  padding: 8px 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgba(26,26,26,0.7);
+  transition: color 0.15s ease;
+}
+@media (hover: hover) {
+  .ni-ch__drawer-sublink:hover { color: var(--ni-ch-drawer-link, #1a1a1a); }
+}
+
+/* Drawer footer */
+.ni-ch__drawer-footer {
+  padding: 16px 20px 24px;
+  border-top: 1px solid rgba(0,0,0,0.07);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ni-ch__drawer-account {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ni-ch-drawer-link, #1a1a1a);
+  transition: opacity 0.2s ease;
+}
+@media (hover: hover) {
+  .ni-ch__drawer-account:hover { opacity: 0.7; }
+}
+.ni-ch__drawer-social {
+  display: flex;
+  gap: 12px;
+}
+.ni-ch__drawer-social a {
+  color: var(--ni-ch-drawer-link, #1a1a1a);
+  display: flex;
+  transition: opacity 0.2s ease;
+}
+@media (hover: hover) {
+  .ni-ch__drawer-social a:hover { opacity: 0.6; }
+}
+
+/* ── Reduced motion ───────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .ni-ch__hamburger-line,
+  .ni-ch__drawer,
+  .ni-ch__overlay,
+  .ni-ch__search-form,
+  .ni-ch__nav-link::after,
+  .ni-ch__dropdown,
+  .ni-ch__cart-count { transition: none !important; animation: none !important; }
+}
+</style>
+
+<script>
+(function () {
+  'use strict';
+
+  const SECTION_ID = '{{ section.id }}';
+  const wrapper    = document.getElementById('ni-ch-' + SECTION_ID);
+  const overlay    = document.getElementById('ni-ch-overlay-' + SECTION_ID);
+  const drawer     = document.getElementById('ni-ch-drawer-' + SECTION_ID);
+  const burger     = document.getElementById('ni-ch-burger-' + SECTION_ID);
+  const closeBtn   = document.getElementById('ni-ch-close-' + SECTION_ID);
+  const cartBadge  = document.getElementById('ni-ch-cart-count-' + SECTION_ID);
+
+  if (!wrapper) return;
+
+  /* ── Scroll shadow ─────────────────────────────────────────── */
+  let rafId = null;
+  function onScroll() {
+    if (rafId) return;
+    rafId = requestAnimationFrame(() => {
+      wrapper.classList.toggle('ni-ch--scrolled', window.scrollY > 10);
+      rafId = null;
+    });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll(); // initialise
+
+  /* ── Mobile search expand ──────────────────────────────────── */
+  const searchForm = wrapper.querySelector('.ni-ch__search-form');
+  const searchInput = wrapper.querySelector('.ni-ch__search-input');
+  const searchIconBtn = wrapper.querySelector('.ni-ch__search-icon-btn');
+
+  if (searchIconBtn && searchForm && searchInput) {
+    searchIconBtn.addEventListener('click', (e) => {
+      if (window.innerWidth <= 749) {
+        if (!searchForm.classList.contains('ni-ch__search-form--expanded')) {
+          e.preventDefault();
+          searchForm.classList.add('ni-ch__search-form--expanded');
+          searchInput.focus();
+        }
+      }
+    });
+    // Collapse on blur outside
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth <= 749 && !searchForm.contains(e.target)) {
+        searchForm.classList.remove('ni-ch__search-form--expanded');
+      }
+    });
+  }
+
+  /* ── Drawer open / close ───────────────────────────────────── */
+  let drawerOpen = false;
+  let focusTrap  = [];
+
+  function openDrawer() {
+    drawerOpen = true;
+    drawer?.classList.add('ni-ch__drawer--open');
+    overlay?.classList.add('ni-ch__overlay--open');
+    burger?.classList.add('ni-ch__hamburger--open');
+    burger?.setAttribute('aria-expanded', 'true');
+    drawer?.removeAttribute('aria-hidden');
+    document.body.style.overflow = 'hidden';
+    // Focus first focusable in drawer
+    setTimeout(() => {
+      focusTrap = Array.from(drawer?.querySelectorAll(
+        'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])'
+      ) || []);
+      (closeBtn || focusTrap[0])?.focus();
+    }, 50);
+  }
+
+  function closeDrawer() {
+    drawerOpen = false;
+    drawer?.classList.remove('ni-ch__drawer--open');
+    overlay?.classList.remove('ni-ch__overlay--open');
+    burger?.classList.remove('ni-ch__hamburger--open');
+    burger?.setAttribute('aria-expanded', 'false');
+    drawer?.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    burger?.focus();
+  }
+
+  burger?.addEventListener('click', () => drawerOpen ? closeDrawer() : openDrawer());
+  closeBtn?.addEventListener('click', closeDrawer);
+  overlay?.addEventListener('click', closeDrawer);
+
+  // Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && drawerOpen) closeDrawer();
+  });
+
+  // Focus trap inside drawer
+  drawer?.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab' || !drawerOpen || focusTrap.length === 0) return;
+    const first = focusTrap[0];
+    const last  = focusTrap[focusTrap.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+    } else {
+      if (document.activeElement === last)  { e.preventDefault(); first.focus(); }
+    }
+  });
+
+  /* ── Cart count ────────────────────────────────────────────── */
+  function updateCartCount(count) {
+    if (!cartBadge) return;
+    const hidden = count === 0;
+    cartBadge.textContent = count;
+    cartBadge.setAttribute('aria-label', count + ' items in cart');
+    if (hidden) {
+      cartBadge.classList.add('ni-ch__cart-count--hidden');
+    } else {
+      cartBadge.classList.remove('ni-ch__cart-count--hidden');
+      cartBadge.classList.remove('ni-ch__cart-count--pop');
+      void cartBadge.offsetWidth; // reflow
+      cartBadge.classList.add('ni-ch__cart-count--pop');
+    }
+  }
+
+  // Fetch cart count on page load
+  fetch('/cart.js')
+    .then(r => r.json())
+    .then(data => updateCartCount(data.item_count))
+    .catch(() => {});
+
+  // Listen for cart updates from theme/other sections
+  document.addEventListener('cart:updated',   (e) => updateCartCount(e.detail?.itemCount ?? e.detail?.item_count ?? 0));
+  document.addEventListener('cart:item-added', () => fetch('/cart.js').then(r => r.json()).then(d => updateCartCount(d.item_count)).catch(() => {}));
+
+  /* ── Resize: close drawer + reset search on desktop ────────── */
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 749 && drawerOpen) closeDrawer();
+    if (window.innerWidth > 749 && searchForm) {
+      searchForm.classList.remove('ni-ch__search-form--expanded');
+    }
+  }, { passive: true });
+
+})();
+</script>
+
+{% schema %}
+{
+  "name": "NailInIt Custom Header",
+  "tag": "div",
+  "class": "nailinit-custom-header-section",
+  "enabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "text",
+      "id": "logo_text",
+      "label": "Logo text (if no image)",
+      "default": "nailinit"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "Logo image width",
+      "min": 60,
+      "max": 260,
+      "step": 4,
+      "unit": "px",
+      "default": 120
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Navigation menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_nav_bar",
+      "label": "Show nav bar below header (desktop)",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "nav_aria_label",
+      "label": "Nav bar accessibility label",
+      "default": "Main navigation"
+    },
+    {
+      "type": "header",
+      "content": "Search"
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Search placeholder",
+      "default": "What are you looking for?"
+    },
+    {
+      "type": "select",
+      "id": "search_type",
+      "label": "Search type filter",
+      "options": [
+        { "value": "product", "label": "Products" },
+        { "value": "article", "label": "Articles" },
+        { "value": "page",    "label": "Pages" }
+      ],
+      "default": "product"
+    },
+    {
+      "type": "text",
+      "id": "search_label",
+      "label": "Search aria-label",
+      "default": "Search"
+    },
+    {
+      "type": "range",
+      "id": "search_radius",
+      "label": "Search pill border radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Icons"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_account",
+      "label": "Show account icon",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "account_label",
+      "label": "Account button label",
+      "default": "Sign in"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart",
+      "label": "Show cart icon",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "cart_label",
+      "label": "Cart button aria-label",
+      "default": "Cart"
+    },
+    {
+      "type": "header",
+      "content": "Sticky & Scroll"
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_header",
+      "label": "Sticky header",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "scroll_shadow",
+      "label": "Shadow on scroll (CSS box-shadow value)",
+      "default": "0 2px 16px rgba(0,0,0,0.08)"
+    },
+    {
+      "type": "header",
+      "content": "Mobile Drawer"
+    },
+    {
+      "type": "text",
+      "id": "menu_label",
+      "label": "Hamburger aria-label",
+      "default": "Open menu"
+    },
+    {
+      "type": "text",
+      "id": "close_label",
+      "label": "Close button aria-label",
+      "default": "Close menu"
+    },
+    {
+      "type": "text",
+      "id": "drawer_label",
+      "label": "Drawer aria-label",
+      "default": "Navigation menu"
+    },
+    {
+      "type": "text",
+      "id": "drawer_nav_label",
+      "label": "Drawer nav aria-label",
+      "default": "Mobile navigation"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_social_drawer",
+      "label": "Show social links in drawer",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Sizes & Layout"
+    },
+    {
+      "type": "range",
+      "id": "bar_height",
+      "label": "Header bar height",
+      "min": 48,
+      "max": 96,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "nav_height",
+      "label": "Nav bar height",
+      "min": 32,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 44
+    },
+    {
+      "type": "header",
+      "content": "Colours"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Header background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Icon & logo text colour",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Divider colour",
+      "default": "#e8e8e8"
+    },
+    {
+      "type": "color",
+      "id": "search_bg",
+      "label": "Search background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "search_border_color",
+      "label": "Search border colour",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "color",
+      "id": "nav_link_color",
+      "label": "Nav link colour",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "nav_link_hover",
+      "label": "Nav link hover colour",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "nav_active_color",
+      "label": "Nav active link & underline colour",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent colour (cart badge, active states)",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "drawer_bg",
+      "label": "Drawer background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "drawer_link_color",
+      "label": "Drawer link colour",
+      "default": "#1a1a1a"
+    }
+  ],
+  "presets": [
+    {
+      "name": "NailInIt Custom Header",
+      "settings": {
+        "logo_text": "nailinit",
+        "logo_width": 120,
+        "menu": "main-menu",
+        "show_nav_bar": true,
+        "sticky_header": true,
+        "bar_height": 64,
+        "nav_height": 44,
+        "search_placeholder": "What are you looking for?",
+        "show_account": true,
+        "show_cart": true,
+        "accent_color": "#1a1a1a"
+      }
+    }
+  ]
+}
+{% endschema %}

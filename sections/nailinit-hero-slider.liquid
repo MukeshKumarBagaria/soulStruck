@@ -1,0 +1,628 @@
+{% comment %}
+  NailInIt Hero Slider
+  Split layout: left (text) | right (image card)
+  Premium animations, fully customisable blocks
+{% endcomment %}
+
+{%- assign autoplay_ms = section.settings.autoplay_speed | times: 1000 -%}
+{%- assign slide_count  = section.blocks | size -%}
+
+<style>
+  #ni-hero-{{ section.id }} {
+    --ni-h-accent   : {{ section.settings.accent_color }};
+    --ni-h-bg       : {{ section.settings.bg_color }};
+    --ni-h-radius   : {{ section.settings.card_radius }}px;
+    --ni-h-pt       : {{ section.settings.padding_top }}px;
+    --ni-h-pb       : {{ section.settings.padding_bottom }}px;
+  }
+</style>
+
+<section id="ni-hero-{{ section.id }}" class="ni-hero-slider" data-autoplay="{{ section.settings.autoplay }}" data-speed="{{ autoplay_ms }}">
+
+  <div class="ni-hero__inner">
+
+    {%- for block in section.blocks -%}
+      {%- assign is_active = false -%}
+      {%- if forloop.first -%}{%- assign is_active = true -%}{%- endif -%}
+
+      <div class="ni-hero__slide{% if is_active %} ni-hero__slide--active{% endif %}"
+           data-slide="{{ forloop.index0 }}"
+           {{ block.shopify_attributes }}>
+
+        <!-- LEFT — text content -->
+        <div class="ni-hero__left">
+          {%- if block.settings.badge_text != blank -%}
+            <div class="ni-hero__badge">
+              {%- if block.settings.badge_emoji != blank -%}
+                <span class="ni-hero__badge-emoji" aria-hidden="true">{{ block.settings.badge_emoji }}</span>
+              {%- endif -%}
+              <span>{{ block.settings.badge_text | escape }}</span>
+            </div>
+          {%- endif -%}
+
+          {%- if block.settings.heading != blank -%}
+            <h2 class="ni-hero__heading">{{ block.settings.heading }}</h2>
+          {%- endif -%}
+
+          {%- if block.settings.subtext != blank -%}
+            <p class="ni-hero__subtext">{{ block.settings.subtext | escape }}</p>
+          {%- endif -%}
+
+          {%- if block.settings.cta_text != blank -%}
+            <a href="{{ block.settings.cta_url | default: '#' }}" class="ni-hero__cta">
+              {{ block.settings.cta_text | escape }}
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </a>
+          {%- endif -%}
+        </div>
+
+        <!-- RIGHT — image card -->
+        <div class="ni-hero__right">
+          <div class="ni-hero__card" style="background-color: {{ block.settings.card_bg_color }};">
+
+            {%- comment -%} Cloud / blob decorations {%- endcomment -%}
+            {%- if block.settings.show_blobs -%}
+              <span class="ni-hero__blob ni-hero__blob--tl" aria-hidden="true"></span>
+              <span class="ni-hero__blob ni-hero__blob--tr" aria-hidden="true"></span>
+              <span class="ni-hero__blob ni-hero__blob--bl" aria-hidden="true"></span>
+              <span class="ni-hero__blob ni-hero__blob--br" aria-hidden="true"></span>
+            {%- endif -%}
+
+            {%- if block.settings.card_image != blank -%}
+              <img
+                src="{{ block.settings.card_image | image_url: width: 900 }}"
+                srcset="{{ block.settings.card_image | image_url: width: 450 }} 450w,
+                        {{ block.settings.card_image | image_url: width: 900 }} 900w"
+                sizes="(max-width:749px) 100vw, 50vw"
+                alt="{{ block.settings.card_image.alt | default: block.settings.heading | escape }}"
+                width="900"
+                height="{{ 900 | divided_by: block.settings.card_image.aspect_ratio | round }}"
+                loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                class="ni-hero__card-img">
+            {%- endif -%}
+
+            {%- if block.settings.price_line_1 != blank or block.settings.price_line_2 != blank -%}
+              <div class="ni-hero__price-box">
+                {%- if block.settings.price_line_1 != blank -%}
+                  <p class="ni-hero__price-label">{{ block.settings.price_line_1 | escape }}</p>
+                  {%- if block.settings.price_value_1 != blank -%}
+                    <p class="ni-hero__price-value">{{ block.settings.price_value_1 | escape }}</p>
+                  {%- endif -%}
+                {%- endif -%}
+                {%- if block.settings.price_line_1 != blank and block.settings.price_line_2 != blank -%}
+                  <hr class="ni-hero__price-divider">
+                {%- endif -%}
+                {%- if block.settings.price_line_2 != blank -%}
+                  <p class="ni-hero__price-label">{{ block.settings.price_line_2 | escape }}</p>
+                  {%- if block.settings.price_value_2 != blank -%}
+                    <p class="ni-hero__price-value">{{ block.settings.price_value_2 | escape }}</p>
+                  {%- endif -%}
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+
+          </div>
+        </div><!-- /right -->
+
+      </div><!-- /slide -->
+    {%- endfor -%}
+  </div><!-- /inner -->
+
+  {%- if slide_count > 1 -%}
+    <!-- Navigation -->
+    <div class="ni-hero__nav">
+      <button class="ni-hero__arrow ni-hero__arrow--prev" aria-label="Previous slide">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+
+      <div class="ni-hero__dots" role="tablist" aria-label="Slides">
+        {%- for block in section.blocks -%}
+          <button class="ni-hero__dot{% if forloop.first %} ni-hero__dot--active{% endif %}"
+                  role="tab"
+                  aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+                  aria-label="Slide {{ forloop.index }}"
+                  data-index="{{ forloop.index0 }}"></button>
+        {%- endfor -%}
+      </div>
+
+      <button class="ni-hero__arrow ni-hero__arrow--next" aria-label="Next slide">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  {%- endif -%}
+
+</section>
+
+<style>
+/* ── NailInIt Hero Slider ──────────────────────────────────── */
+#ni-hero-{{ section.id }} {
+  background: var(--ni-h-bg);
+  padding: var(--ni-h-pt) 0 var(--ni-h-pb);
+  position: relative;
+  overflow: hidden;
+}
+
+.ni-hero__inner {
+  position: relative;
+  width: 100%;
+  min-height: 340px;
+}
+
+/* Slides */
+.ni-hero__slide {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 48px;
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translateX(60px);
+  transition: opacity 0.55s cubic-bezier(0.16,1,0.3,1),
+              transform 0.55s cubic-bezier(0.16,1,0.3,1);
+  pointer-events: none;
+}
+.ni-hero__slide--active {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+  position: relative;
+}
+.ni-hero__slide--exit {
+  opacity: 0;
+  transform: translateX(-60px);
+  position: absolute;
+  pointer-events: none;
+}
+
+/* LEFT */
+.ni-hero__left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+.ni-hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #555;
+  letter-spacing: 0.01em;
+}
+.ni-hero__badge-emoji { font-size: 1rem; }
+.ni-hero__heading {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: #1a1a1a;
+  margin: 0;
+}
+.ni-hero__subtext {
+  font-size: 0.95rem;
+  color: #555;
+  margin: 0;
+  max-width: 320px;
+}
+.ni-hero__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 13px 24px;
+  border-radius: 100px;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.ni-hero__cta:hover {
+  background: #333;
+  transform: translateY(-1px);
+}
+.ni-hero__cta svg { transition: transform 0.2s ease; }
+.ni-hero__cta:hover svg { transform: translateX(3px); }
+
+/* RIGHT — card */
+.ni-hero__right {
+  display: flex;
+  align-items: stretch;
+}
+.ni-hero__card {
+  position: relative;
+  border-radius: var(--ni-h-radius);
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 1 / 0.72;
+  display: flex;
+  align-items: flex-end;
+}
+.ni-hero__card-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+/* Blob decorations */
+.ni-hero__blob {
+  position: absolute;
+  width: 90px;
+  height: 70px;
+  background: rgba(255,255,255,0.55);
+  border-radius: 50% 40% 55% 45%;
+  z-index: 1;
+}
+.ni-hero__blob--tl { top: -20px; left: 10px; }
+.ni-hero__blob--tr { top: -15px; right: 40px; width: 70px; height: 55px; }
+.ni-hero__blob--bl { bottom: -15px; left: 40px; width: 70px; height: 55px; }
+.ni-hero__blob--br { bottom: -20px; right: 10px; }
+
+/* Price box */
+.ni-hero__price-box {
+  position: absolute;
+  right: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  text-align: center;
+  color: #fff;
+}
+.ni-hero__price-label {
+  font-size: clamp(1rem, 2.2vw, 1.5rem);
+  font-weight: 500;
+  margin: 0 0 2px;
+  opacity: 0.9;
+}
+.ni-hero__price-value {
+  font-size: clamp(1.6rem, 3.5vw, 2.8rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  margin: 0 0 6px;
+  line-height: 1;
+}
+.ni-hero__price-divider {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.5);
+  margin: 8px 0;
+}
+
+/* Navigation */
+.ni-hero__nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 48px 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.ni-hero__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0,0,0,0.18);
+  background: transparent;
+  cursor: pointer;
+  color: #1a1a1a;
+  transition: border-color 0.2s ease, background 0.2s ease;
+  flex-shrink: 0;
+}
+.ni-hero__arrow:hover { border-color: #1a1a1a; background: rgba(0,0,0,0.05); }
+
+.ni-hero__dots { display: flex; gap: 6px; align-items: center; }
+.ni-hero__dot {
+  height: 8px;
+  width: 8px;
+  border-radius: 100px;
+  background: rgba(0,0,0,0.2);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: width 0.35s cubic-bezier(0.16,1,0.3,1),
+              background 0.25s ease;
+}
+.ni-hero__dot--active {
+  width: 28px;
+  background: #1a1a1a;
+}
+
+/* Mobile */
+@media screen and (max-width: 749px) {
+  .ni-hero__slide {
+    grid-template-columns: 1fr;
+    padding: 0 20px;
+    gap: 24px;
+  }
+  .ni-hero__inner { min-height: auto; }
+  .ni-hero__heading { font-size: 2rem; }
+  .ni-hero__card { aspect-ratio: 1 / 0.85; }
+  .ni-hero__price-box { right: 16px; }
+  .ni-hero__nav { padding: 16px 20px 0; }
+  .ni-hero__left { gap: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ni-hero__slide { transition: none; }
+  .ni-hero__dot  { transition: none; }
+}
+</style>
+
+<script>
+(function() {
+  const section = document.getElementById('ni-hero-{{ section.id }}');
+  if (!section) return;
+
+  const slides    = section.querySelectorAll('.ni-hero__slide');
+  const dots      = section.querySelectorAll('.ni-hero__dot');
+  const prevBtn   = section.querySelector('.ni-hero__arrow--prev');
+  const nextBtn   = section.querySelector('.ni-hero__arrow--next');
+  const autoplay  = section.dataset.autoplay === 'true';
+  const speed     = parseInt(section.dataset.speed) || 5000;
+  let   current   = 0;
+  let   timer     = null;
+
+  if (slides.length < 2) return;
+
+  function goTo(index) {
+    const prev = current;
+    current = (index + slides.length) % slides.length;
+
+    slides[prev].classList.add('ni-hero__slide--exit');
+    slides[prev].classList.remove('ni-hero__slide--active');
+    dots[prev]?.classList.remove('ni-hero__dot--active');
+    dots[prev]?.setAttribute('aria-selected', 'false');
+
+    slides[current].classList.add('ni-hero__slide--active');
+    slides[current].classList.remove('ni-hero__slide--exit');
+    dots[current]?.classList.add('ni-hero__dot--active');
+    dots[current]?.setAttribute('aria-selected', 'true');
+
+    setTimeout(() => slides[prev].classList.remove('ni-hero__slide--exit'), 600);
+  }
+
+  function startAutoplay() {
+    if (!autoplay) return;
+    timer = setInterval(() => goTo(current + 1), speed);
+  }
+  function stopAutoplay() { clearInterval(timer); }
+
+  nextBtn?.addEventListener('click', () => { stopAutoplay(); goTo(current + 1); startAutoplay(); });
+  prevBtn?.addEventListener('click', () => { stopAutoplay(); goTo(current - 1); startAutoplay(); });
+  dots.forEach(dot => dot.addEventListener('click', (e) => {
+    stopAutoplay();
+    goTo(parseInt(e.currentTarget.dataset.index));
+    startAutoplay();
+  }));
+
+  section.addEventListener('mouseenter', stopAutoplay);
+  section.addEventListener('mouseleave', startAutoplay);
+
+  // Touch swipe
+  let touchStartX = 0;
+  section.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  section.addEventListener('touchend',   (e) => {
+    const delta = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(delta) > 50) { stopAutoplay(); goTo(current + (delta < 0 ? 1 : -1)); startAutoplay(); }
+  }, { passive: true });
+
+  startAutoplay();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "NailInIt Hero Slider",
+  "tag": "section",
+  "class": "nailinit-hero-section",
+  "disabled_on": { "groups": ["header", "footer"] },
+  "max_blocks": 8,
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Left — Text Content"
+        },
+        {
+          "type": "text",
+          "id": "badge_emoji",
+          "label": "Badge emoji",
+          "default": "🎯"
+        },
+        {
+          "type": "text",
+          "id": "badge_text",
+          "label": "Badge text",
+          "default": "limited time offer"
+        },
+        {
+          "type": "textarea",
+          "id": "heading",
+          "label": "Heading",
+          "default": "more nails,\nmore savings"
+        },
+        {
+          "type": "text",
+          "id": "subtext",
+          "label": "Subtext (optional)",
+          "default": "Shop the best deals on press-on nails"
+        },
+        {
+          "type": "text",
+          "id": "cta_text",
+          "label": "Button text",
+          "default": "save now"
+        },
+        {
+          "type": "url",
+          "id": "cta_url",
+          "label": "Button link"
+        },
+        {
+          "type": "header",
+          "content": "Right — Image Card"
+        },
+        {
+          "type": "image_picker",
+          "id": "card_image",
+          "label": "Card image"
+        },
+        {
+          "type": "color",
+          "id": "card_bg_color",
+          "label": "Card background colour",
+          "default": "#FF2D7C"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_blobs",
+          "label": "Show cloud / blob decorations",
+          "default": true
+        },
+        {
+          "type": "header",
+          "content": "Pricing Overlay (optional)"
+        },
+        {
+          "type": "text",
+          "id": "price_line_1",
+          "label": "Price label 1",
+          "default": "Any 2 at"
+        },
+        {
+          "type": "text",
+          "id": "price_value_1",
+          "label": "Price value 1",
+          "default": "₹999"
+        },
+        {
+          "type": "text",
+          "id": "price_line_2",
+          "label": "Price label 2",
+          "default": "Any 3 at"
+        },
+        {
+          "type": "text",
+          "id": "price_value_2",
+          "label": "Price value 2",
+          "default": "₹1199"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent colour",
+      "default": "#FF2D7C"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card border radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Autoplay"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay slides",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Autoplay interval (seconds)",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "NailInIt Hero Slider",
+      "blocks": [
+        {
+          "type": "slide",
+          "settings": {
+            "badge_emoji": "🎯",
+            "badge_text": "limited time offer",
+            "heading": "more nails,\nmore savings",
+            "cta_text": "save now",
+            "card_bg_color": "#FF2D7C",
+            "show_blobs": true,
+            "price_line_1": "Any 2 at",
+            "price_value_1": "₹999",
+            "price_line_2": "Any 3 at",
+            "price_value_2": "₹1199"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "badge_emoji": "💅",
+            "badge_text": "new arrivals",
+            "heading": "nail your\nperfect look",
+            "cta_text": "shop now",
+            "card_bg_color": "#1a1a1a",
+            "show_blobs": true
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

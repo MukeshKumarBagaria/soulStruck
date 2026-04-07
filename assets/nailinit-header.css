@@ -1,12 +1,9 @@
 /* ==============================================================
-   NAILINIT-STYLE HEADER — Exact match to nailin.it reference
-   Single-row header: Hamburger | Search bar | Logo | Account | Cart
-   Clean white, minimal, sticky with shadow on scroll.
+   NAILINIT-STYLE HEADER — Matches reference design exactly
+   Desktop: Announcement bar → Header (search | logo | icons) → Nav bar
+   Mobile:  Announcement bar → Header (hamburger | search icon | logo | icons)
    ============================================================== */
 
-/* ---------------------------------------------------------------
-   CSS CUSTOM PROPERTIES
-   --------------------------------------------------------------- */
 :root {
   --ni-white: #ffffff;
   --ni-black: #1a1a1a;
@@ -15,93 +12,66 @@
   --ni-gray-300: #d4d4d4;
   --ni-gray-400: #9e9e9e;
   --ni-gray-600: #616161;
-  --ni-header-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  --ni-header-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
   --ni-transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --ni-transition-medium: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   --ni-transition-slow: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ---------------------------------------------------------------
-   1. HIDE ANNOUNCEMENT BAR
-   Reference design shows no announcement bar above header.
-   If you want the announcement bar, remove this section.
+   1. ANNOUNCEMENT BAR — keep visible
    --------------------------------------------------------------- */
 .shopify-section:has(.announcement-bar) {
-  display: none !important;
+  display: block;
 }
 
 /* ---------------------------------------------------------------
-   2. HIDE NAVIGATION BAR (bottom row)
-   Reference has single-row header only, no nav links below.
-   --------------------------------------------------------------- */
-.header__navigation-bar-row {
-  display: none !important;
-}
-
-.header__row--bottom {
-  display: none !important;
-}
-
-/* ---------------------------------------------------------------
-   3. HEADER SECTION — Wrapper
+   2. HEADER SECTION WRAPPER
    --------------------------------------------------------------- */
 .header-section {
   position: relative !important;
   z-index: 10002 !important;
 }
-
-#header-group {
-  animation: none;
-}
+#header-group { animation: none; }
 
 /* ---------------------------------------------------------------
-   4. MAIN HEADER BAR — Clean white, single row
+   3. MAIN HEADER ROW — white, clean
    --------------------------------------------------------------- */
-#header-component {
-  will-change: transform;
-}
-
 #header-component .header__row--top {
   --color-background: #ffffff;
   --color-foreground: #1a1a1a;
   --color-foreground-rgb: 26, 26, 26;
 }
-
 .header .header__row--top {
   background-color: var(--ni-white) !important;
   border-bottom: none !important;
 }
-
 .header .header__underlay-closed,
 .header .header__underlay-open {
   background: var(--ni-white) !important;
 }
-
-/* Subtle bottom divider */
 .header__row--top .header__columns {
   border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
 }
-
-/* Compact vertical padding */
 .header__columns {
   padding-block: 12px !important;
   align-items: center !important;
 }
 
 /* ---------------------------------------------------------------
-   5. LEFT COLUMN — Hamburger + Search bar
+   4. HAMBURGER — hidden on desktop, visible on mobile
    --------------------------------------------------------------- */
-.header__column--left {
-  flex: 1 !important;
-  min-width: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 8px !important;
+@media screen and (min-width: 750px) {
+  .header__drawer {
+    display: none !important;
+  }
 }
-
-/* ---------------------------------------------------------------
-   6. HAMBURGER MENU ICON
-   --------------------------------------------------------------- */
+@media screen and (max-width: 749px) {
+  .header__drawer {
+    display: flex !important;
+    align-items: center !important;
+  }
+}
 .header__icon--summary {
   position: relative !important;
   z-index: 10001 !important;
@@ -113,38 +83,45 @@
   padding: 0 !important;
   flex-shrink: 0 !important;
 }
-
 .header__icon--summary .svg-wrapper svg {
   width: 22px !important;
   height: 22px !important;
   color: var(--ni-black) !important;
 }
-
-/* Hamburger open/close transition */
 .header-drawer-icon {
-  transition: transform var(--ni-transition-medium),
-              opacity var(--ni-transition-fast) !important;
+  transition: transform var(--ni-transition-medium), opacity var(--ni-transition-fast) !important;
 }
-
-details.menu-open .header__icon--menu .header-drawer-icon--close {
-  display: flex !important;
-}
-details.menu-open .header__icon--menu .header-drawer-icon--open {
-  display: none !important;
-}
-
+details.menu-open .header__icon--menu .header-drawer-icon--close { display: flex !important; }
+details.menu-open .header__icon--menu .header-drawer-icon--open  { display: none  !important; }
 details.menu-open .header-drawer-icon--close {
   animation: ni-icon-spin 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
-
 @keyframes ni-icon-spin {
-  0% { transform: rotate(-90deg) scale(0.5); opacity: 0; }
-  100% { transform: rotate(0deg) scale(1); opacity: 1; }
+  0%   { transform: rotate(-90deg) scale(0.5); opacity: 0; }
+  100% { transform: rotate(0deg)   scale(1);   opacity: 1; }
 }
 
 /* ---------------------------------------------------------------
-   7. SEARCH BAR — Styled as input field
-   Transforms the search icon/button into a visible search input
+   5. HIDE THE DUPLICATE RIGHT-COLUMN SEARCH
+   (search-action--hidden-on-drawer = the extra search near account icons)
+   --------------------------------------------------------------- */
+.search-action--hidden-on-drawer {
+  display: none !important;
+}
+
+/* ---------------------------------------------------------------
+   6. LEFT COLUMN — holds hamburger (mobile) + search bar
+   --------------------------------------------------------------- */
+.header__column--left {
+  flex: 1 !important;
+  min-width: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+/* ---------------------------------------------------------------
+   7. SEARCH BAR — desktop: pill input  |  mobile: bare icon
    --------------------------------------------------------------- */
 .header__column--left .search-action,
 .header__column--left search-button {
@@ -153,101 +130,89 @@ details.menu-open .header-drawer-icon--close {
   min-width: 0;
 }
 
-.header__column--left .search-action .header-actions__action,
-.header__column--left search-button .header-actions__action {
-  display: flex !important;
-  align-items: center !important;
-  gap: 10px !important;
-  width: 100% !important;
-  min-width: 200px !important;
-  max-width: 400px !important;
-  padding: 10px 16px !important;
-  border: 1px solid var(--ni-gray-200) !important;
-  border-radius: 8px !important;
-  background: var(--ni-white) !important;
-  color: var(--ni-gray-400) !important;
-  font-size: 0.875rem !important;
-  font-weight: 400 !important;
-  letter-spacing: 0 !important;
-  cursor: text !important;
-  justify-content: flex-start !important;
-  flex-direction: row-reverse !important;
-  transition: border-color var(--ni-transition-fast) !important;
+/* Desktop search pill */
+@media screen and (min-width: 750px) {
+  .header__column--left .search-action .header-actions__action,
+  .header__column--left search-button .header-actions__action {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    width: 100% !important;
+    min-width: 200px !important;
+    max-width: 380px !important;
+    padding: 10px 16px !important;
+    border: 1px solid var(--ni-gray-200) !important;
+    border-radius: 8px !important;
+    background: var(--ni-white) !important;
+    color: var(--ni-gray-400) !important;
+    font-size: 0.875rem !important;
+    font-weight: 400 !important;
+    letter-spacing: 0 !important;
+    cursor: text !important;
+    justify-content: flex-start !important;
+    flex-direction: row-reverse !important;
+    transition: border-color var(--ni-transition-fast),
+                box-shadow var(--ni-transition-fast) !important;
+  }
+  .header__column--left .search-action .header-actions__action:hover {
+    border-color: var(--ni-gray-300) !important;
+    transform: none !important;
+  }
+  .header__column--left .search-action .header-actions__action:focus-within {
+    border-color: var(--ni-black) !important;
+    box-shadow: 0 0 0 1px var(--ni-black) !important;
+  }
+  /* Placeholder text */
+  .header__column--left .search-action .header-actions__action::after {
+    content: 'What are you looking for?';
+    color: var(--ni-gray-400);
+    font-size: 0.875rem;
+    font-weight: 400;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .header__column--left .search-action .svg-wrapper svg {
+    width: 20px !important;
+    height: 20px !important;
+    color: var(--ni-gray-400) !important;
+  }
 }
 
-/* Hover — subtle border darken */
-.header__column--left .search-action .header-actions__action:hover {
-  border-color: var(--ni-gray-300) !important;
-  transform: none !important;
-}
-
-/* Focus ring */
-.header__column--left .search-action .header-actions__action:focus-within {
-  border-color: var(--ni-black) !important;
-  box-shadow: 0 0 0 1px var(--ni-black) !important;
-}
-
-/* Placeholder text */
-.header__column--left .search-action .header-actions__action::after {
-  content: 'What are you looking for?';
-  color: var(--ni-gray-400);
-  font-size: 0.875rem;
-  font-weight: 400;
-  white-space: nowrap;
-  pointer-events: none;
-}
-
-/* Hide default "Search" span text */
+/* Hide default "Search" label text */
 .header__column--left .search-action .header-actions__action > span.hidden {
   display: none !important;
 }
-
-/* Search magnifying glass icon */
 .header__column--left .search-action .svg-wrapper {
   flex-shrink: 0 !important;
   display: flex !important;
 }
-
-.header__column--left .search-action .svg-wrapper svg {
-  width: 20px !important;
-  height: 20px !important;
-  color: var(--ni-gray-400) !important;
-}
-
-/* Ensure search icon is visible */
 .header__column--left .search-action .header-actions__action > .svg-wrapper {
   display: flex !important;
 }
 
 /* ---------------------------------------------------------------
-   8. LOGO — Centered column
+   8. LOGO — always centered (header-row.liquid forces center column)
    --------------------------------------------------------------- */
 .header__column--center {
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
 }
-
 .header-logo {
   transition: opacity var(--ni-transition-fast) !important;
 }
-
 @media (hover: hover) {
-  .header-logo:hover {
-    opacity: 0.7 !important;
-  }
+  .header-logo:hover { opacity: 0.7 !important; }
 }
 
 /* ---------------------------------------------------------------
-   9. RIGHT COLUMN — Account + Cart icons
+   9. RIGHT COLUMN — Account + Cart icons only
    --------------------------------------------------------------- */
 .header__column--right {
   display: flex !important;
   align-items: center !important;
   justify-content: flex-end !important;
 }
-
-/* Icon shared styles */
 .header-actions__action:not(.account-button) svg,
 .header__column--right .header-actions__action svg,
 .header__column--right .account-button__icon {
@@ -255,74 +220,123 @@ details.menu-open .header-drawer-icon--close {
   height: 22px !important;
   color: var(--ni-black) !important;
 }
-
-/* Clean icon hover */
 .header-actions__action,
 .header__icon--summary {
   transition: opacity var(--ni-transition-fast) !important;
 }
-
 @media (hover: hover) {
   .header__column--right .header-actions__action:hover,
-  .header__icon--summary:hover {
-    opacity: 0.6 !important;
-    transform: none !important;
-  }
+  .header__icon--summary:hover { opacity: 0.6 !important; transform: none !important; }
   .header__column--right .header-actions__action:active,
-  .header__icon--summary:active {
-    opacity: 0.4 !important;
-    transform: none !important;
-  }
+  .header__icon--summary:active { opacity: 0.4 !important; transform: none !important; }
 }
-
-/* Ensure search bar doesn't get hover scale */
 .header__column--left .search-action .header-actions__action:hover {
   transform: none !important;
 }
 
 /* ---------------------------------------------------------------
-   10. STICKY HEADER — Shadow on scroll
+   10. NAVIGATION BAR (desktop only) — "Best-Sellers | Girlies | Contact"
+   --------------------------------------------------------------- */
+@media screen and (min-width: 750px) {
+  .header__navigation-bar-row,
+  .header__row--bottom {
+    display: flex !important;
+  }
+  .header__row--bottom .header__columns {
+    padding-block: 0 !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+    justify-content: center !important;
+  }
+}
+@media screen and (max-width: 749px) {
+  .header__navigation-bar-row,
+  .header__row--bottom {
+    display: none !important;
+  }
+}
+
+/* Nav bar menu list */
+.menu-list { width: 100% !important; }
+.menu-list__scroll-container {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.menu-list__scroll-container::-webkit-scrollbar { display: none; }
+.menu-list__list {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  list-style: none !important;
+}
+.menu-list__item {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 12px 22px !important;
+  font-size: 0.875rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em !important;
+  color: var(--ni-black) !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+  position: relative !important;
+  transition: color var(--ni-transition-fast) !important;
+}
+.menu-list__item::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 22px !important;
+  right: 22px !important;
+  height: 2px !important;
+  background-color: var(--ni-black) !important;
+  border-radius: 1px !important;
+  transform: scaleX(0) !important;
+  transition: transform var(--ni-transition-fast) !important;
+}
+.menu-list__item[aria-current="page"]::after,
+.menu-list__item:hover::after {
+  transform: scaleX(1) !important;
+}
+
+/* ---------------------------------------------------------------
+   11. STICKY HEADER
    --------------------------------------------------------------- */
 .header[data-sticky-state='active'] {
   animation: ni-sticky-enter 0.3s cubic-bezier(0.16, 1, 0.3, 1) both !important;
   opacity: 1 !important;
 }
-
-/* Shadow when sticky is active */
 .header-section:has(> #header-component[sticky='always']:not([data-scroll-direction='none'])) {
   box-shadow: var(--ni-header-shadow) !important;
   transition: box-shadow var(--ni-transition-medium) !important;
 }
-
 .header-section:has(> #header-component[sticky='scroll-up'][data-sticky-state='active']) {
   box-shadow: var(--ni-header-shadow) !important;
   transition: box-shadow var(--ni-transition-medium) !important;
 }
-
-/* No shadow when at top of page (not scrolled) */
 .header-section:has(> #header-component[sticky='always'][data-scroll-direction='none']) {
   box-shadow: none !important;
 }
-
 @keyframes ni-sticky-enter {
-  0% { transform: translateY(-100%); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
+  0%   { transform: translateY(-100%); opacity: 0; }
+  100% { transform: translateY(0);     opacity: 1; }
 }
-
 .header[data-sticky-state='idle'] {
   opacity: 0 !important;
   transform: translateY(-20px);
   transition: opacity 0.2s ease, transform 0.2s ease !important;
 }
-
-/* Top row z-index for sticky overlap */
 .header__row--top {
   position: relative !important;
   z-index: 10001 !important;
 }
 
 /* ---------------------------------------------------------------
-   11. MENU DRAWER — Full-width dropdown
+   12. MENU DRAWER (mobile) — slides down
    --------------------------------------------------------------- */
 .menu-drawer {
   position: absolute !important;
@@ -330,8 +344,6 @@ details.menu-open .header-drawer-icon--close {
   left: 0 !important;
   right: 0 !important;
   width: 100% !important;
-  max-width: 100% !important;
-  height: auto !important;
   max-height: 0 !important;
   overflow: hidden !important;
   opacity: 0 !important;
@@ -346,10 +358,7 @@ details.menu-open .header-drawer-icon--close {
               opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
               visibility 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
-
-.menu-open > .menu-drawer,
-.menu-open > .menu-drawer__submenu:not(.menu-drawer__menu--childlist) {
-  transform: translateX(0) !important;
+.menu-open > .menu-drawer {
   visibility: visible !important;
   opacity: 1 !important;
   max-height: 300px !important;
@@ -357,26 +366,13 @@ details.menu-open .header-drawer-icon--close {
   display: flex !important;
   flex-direction: column !important;
 }
-
-.menu-drawer > .menu-drawer__close-button {
-  display: none !important;
-}
-
+.menu-drawer > .menu-drawer__close-button { display: none !important; }
 .menu-drawer__backdrop {
   backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
   background: transparent !important;
   z-index: 9998 !important;
 }
-
-/* ---------------------------------------------------------------
-   12. MENU ITEMS — Horizontal layout
-   --------------------------------------------------------------- */
-.menu-drawer__navigation {
-  padding: 0 !important;
-  margin-top: 0 !important;
-}
-
+.menu-drawer__navigation { padding: 0 !important; margin-top: 0 !important; }
 .menu-drawer__menu.has-submenu {
   display: flex !important;
   flex-direction: row !important;
@@ -388,56 +384,23 @@ details.menu-open .header-drawer-icon--close {
   margin: 0 !important;
   list-style: none !important;
 }
-
-.menu-drawer__menu.has-submenu,
-.menu-drawer__menu--childlist:not(:has(.menu-drawer__animated-element)) {
-  margin-block-end: 0 !important;
-}
-
 .menu-drawer__menu.has-submenu > li {
   display: inline-flex !important;
-  min-height: auto !important;
   flex: 0 0 auto !important;
 }
-
 .menu-drawer__menu-item--mainlist {
   font-size: 0.875rem !important;
   font-weight: 600 !important;
-  letter-spacing: 0.01em !important;
   padding: 8px 20px !important;
-  min-height: auto !important;
   color: var(--ni-black) !important;
   text-decoration: none !important;
-  position: relative !important;
-  transition: color var(--ni-transition-fast) !important;
   white-space: nowrap !important;
+  transition: color var(--ni-transition-fast) !important;
 }
-
-@media (hover: hover) {
-  .menu-drawer__menu-item--mainlist:hover {
-    color: var(--ni-gray-600) !important;
-    background-color: transparent !important;
-    padding-left: 20px !important;
-  }
-}
-
-.menu-drawer__menu-item--active.menu-drawer__menu-item--mainlist {
-  color: var(--ni-black) !important;
-}
-.menu-drawer__menu-item--active.menu-drawer__menu-item--mainlist::after {
-  content: '' !important;
-  position: absolute !important;
-  bottom: 2px !important;
-  left: 20px !important;
-  right: 20px !important;
-  height: 2px !important;
-  background-color: var(--ni-black) !important;
-}
-
 .menu-drawer__menu.has-submenu > li .icon-caret,
-.menu-drawer__menu.has-submenu > li .icon-plus {
-  display: none !important;
-}
+.menu-drawer__menu.has-submenu > li .icon-plus { display: none !important; }
+.menu-drawer__featured-content { display: none !important; }
+.menu-drawer__utility-links    { display: none !important; }
 
 /* Staggered entrance */
 .menu-drawer-container[open] .menu-drawer__menu.has-submenu > li {
@@ -448,109 +411,52 @@ details.menu-open .header-drawer-icon--close {
 .menu-drawer-container[open] .menu-drawer__menu.has-submenu > li:nth-child(3) { animation-delay: 0.13s !important; }
 .menu-drawer-container[open] .menu-drawer__menu.has-submenu > li:nth-child(4) { animation-delay: 0.16s !important; }
 .menu-drawer-container[open] .menu-drawer__menu.has-submenu > li:nth-child(5) { animation-delay: 0.18s !important; }
-.menu-drawer-container[open] .menu-drawer__menu.has-submenu > li:nth-child(6) { animation-delay: 0.20s !important; }
-
 @keyframes ni-tab-enter {
-  0% { opacity: 0; transform: translateY(-6px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
-.menu-drawer__featured-content { display: none !important; }
-.menu-drawer__utility-links { display: none !important; }
-
-/* ---------------------------------------------------------------
-   13. SUBMENU
-   --------------------------------------------------------------- */
-.menu-drawer__submenu {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  width: 100% !important;
-  height: auto !important;
-  max-height: 70dvh !important;
-  background-color: var(--ni-white) !important;
-  z-index: 10001 !important;
-  overflow-y: auto !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
-}
-
-.menu-drawer__submenu .menu-drawer__menu--childlist {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  justify-content: center !important;
-  gap: 4px 8px !important;
-  padding: 16px 24px !important;
-}
-
-.menu-drawer__back-button {
-  transition: transform var(--ni-transition-fast),
-              color var(--ni-transition-fast) !important;
-}
-
-@media (hover: hover) {
-  .menu-drawer__back-button:hover {
-    color: var(--ni-gray-600) !important;
-    transform: translateX(-4px) !important;
-  }
+  0%   { opacity: 0; transform: translateY(-6px); }
+  100% { opacity: 1; transform: translateY(0);    }
 }
 
 /* ---------------------------------------------------------------
-   14. CART DRAWER
+   13. CART DRAWER + BUBBLE
    --------------------------------------------------------------- */
 .cart-drawer__dialog {
   transition: transform var(--ni-transition-slow) !important;
   box-shadow: -4px 0 24px rgba(0, 0, 0, 0.10) !important;
   border-left: none !important;
 }
-
-.cart-drawer__close-button {
-  transition: transform var(--ni-transition-fast) !important;
-}
-
+.cart-drawer__close-button { transition: transform var(--ni-transition-fast) !important; }
 @media (hover: hover) {
   .cart-drawer__close-button:hover { transform: rotate(90deg) !important; }
 }
-
-/* ---------------------------------------------------------------
-   15. CART BUBBLE — Dark accent
-   --------------------------------------------------------------- */
 .cart-bubble__background { background-color: var(--ni-black) !important; }
-.cart-bubble__text { color: var(--ni-white) !important; }
-
+.cart-bubble__text       { color: var(--ni-white) !important; }
 .cart-bubble--animating .cart-bubble__background {
   animation: ni-cart-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
 }
-
 @keyframes ni-cart-pop {
-  0% { transform: scale(0.5); opacity: 0; }
-  50% { transform: scale(1.25); }
+  0%   { transform: scale(0.5); opacity: 0; }
+  50%  { transform: scale(1.25); }
   100% { transform: scale(1); opacity: 1; }
 }
 
 /* ---------------------------------------------------------------
-   16. SEARCH MODAL
+   14. SEARCH MODAL
    --------------------------------------------------------------- */
 .search-modal {
   animation: ni-search-enter 0.25s cubic-bezier(0.16, 1, 0.3, 1) both !important;
 }
-
 @keyframes ni-search-enter {
-  0% { opacity: 0; transform: translateY(-8px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0%   { opacity: 0; transform: translateY(-8px); }
+  100% { opacity: 1; transform: translateY(0);    }
 }
 
 /* ---------------------------------------------------------------
-   17. MOBILE RESPONSIVE
+   15. MOBILE OVERRIDES
    --------------------------------------------------------------- */
 @media screen and (max-width: 749px) {
-  /* Tighter padding on mobile */
-  .header__columns {
-    padding-block: 8px !important;
-  }
+  .header__columns { padding-block: 8px !important; }
 
-  /* Touch-friendly icon targets */
+  /* Touch targets */
   .header__icon--summary,
   .header-actions__action {
     min-width: 40px;
@@ -559,62 +465,46 @@ details.menu-open .header-drawer-icon--close {
     align-items: center;
     justify-content: center;
   }
+  .header__icon--summary { width: 36px !important; height: 36px !important; }
 
-  .header__icon--summary {
-    width: 36px !important;
-    height: 36px !important;
-  }
+  /* Search becomes bare icon on mobile */
+  .header__column--left .search-action,
+  .header__column--left search-button { flex: 0 0 auto !important; }
 
-  /* Smaller search bar on mobile */
   .header__column--left .search-action .header-actions__action,
   .header__column--left search-button .header-actions__action {
-    min-width: 120px !important;
-    max-width: 200px !important;
-    padding: 8px 12px !important;
-    font-size: 0.8rem !important;
-    gap: 6px !important;
+    min-width: unset !important;
+    max-width: unset !important;
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 50% !important;
+    background: transparent !important;
+    justify-content: center !important;
+    flex-direction: row !important;
+    gap: 0 !important;
   }
-
-  /* Shorter placeholder on mobile */
   .header__column--left .search-action .header-actions__action::after {
-    content: 'Search...' !important;
-    font-size: 0.8rem !important;
+    display: none !important;
   }
-
-  /* Search icon slightly smaller on mobile */
   .header__column--left .search-action .svg-wrapper svg {
-    width: 16px !important;
-    height: 16px !important;
+    width: 20px !important;
+    height: 20px !important;
+    color: var(--ni-black) !important;
   }
 
-  /* Smaller header icons on mobile */
+  /* Smaller icons */
   .header-actions__action:not(.account-button) svg,
   .header__column--right .header-actions__action svg,
   .header__column--right .account-button__icon {
     width: 20px !important;
     height: 20px !important;
   }
-
-  /* Drawer menu mobile scroll */
-  .menu-drawer__menu.has-submenu {
-    flex-wrap: nowrap !important;
-    overflow-x: auto !important;
-    justify-content: flex-start !important;
-    padding: 10px 16px !important;
-    gap: 0 !important;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-  .menu-drawer__menu.has-submenu::-webkit-scrollbar { display: none; }
-
-  .menu-drawer__menu-item--mainlist {
-    font-size: 0.82rem !important;
-    padding: 6px 14px !important;
-  }
 }
 
 /* ---------------------------------------------------------------
-   18. REDUCED MOTION
+   16. REDUCED MOTION
    --------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

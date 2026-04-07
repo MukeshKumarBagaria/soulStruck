@@ -1,0 +1,628 @@
+{% comment %}
+  NailInIt Product Showcase
+  ─ Scrollable product card grid matching reference design
+  ─ Hot Seller badge, Save badge, ratings, shipping banner, Add To Cart
+  ─ Works with a collection OR individual product blocks
+  ─ Fully reusable — add to any template, any number of times
+{% endcomment %}
+
+{%- liquid
+  assign pt             = section.settings.padding_top
+  assign pb             = section.settings.padding_bottom
+  assign shipping_text  = section.settings.shipping_text
+  assign cols_desktop   = section.settings.columns_desktop
+  assign show_slider    = section.settings.mobile_slider
+-%}
+
+<style>
+  #ni-ps-{{ section.id }} {
+    --ni-ps-accent  : {{ section.settings.accent_color }};
+    --ni-ps-cols    : {{ cols_desktop }};
+    padding-top     : {{ pt }}px;
+    padding-bottom  : {{ pb }}px;
+    background      : {{ section.settings.bg_color }};
+  }
+</style>
+
+<section id="ni-ps-{{ section.id }}" class="ni-ps">
+
+  {%- if section.settings.heading != blank or section.settings.subheading != blank -%}
+    <div class="ni-ps__header">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="ni-ps__title">{{ section.settings.heading | escape }}</h2>
+      {%- endif -%}
+      {%- if section.settings.subheading != blank -%}
+        <p class="ni-ps__subtitle">{{ section.settings.subheading | escape }}</p>
+      {%- endif -%}
+      {%- if section.settings.view_all_url != blank -%}
+        <a href="{{ section.settings.view_all_url }}" class="ni-ps__view-all">
+          {{ section.settings.view_all_text | default: 'View all' | escape }}
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="ni-ps__track{% if show_slider %} ni-ps__track--slider{% endif %}">
+
+    {%- if section.settings.source == 'collection' and section.settings.collection != blank -%}
+      {%- for product in section.settings.collection.products limit: section.settings.max_products -%}
+        {%- render 'nailinit-product-card',
+          product: product,
+          shipping_text: shipping_text,
+          hot_seller_threshold: section.settings.hot_seller_threshold -%}
+      {%- else -%}
+        {%- for i in (1..4) -%}
+          {%- render 'nailinit-product-card', product: nil, shipping_text: shipping_text -%}
+        {%- endfor -%}
+      {%- endfor -%}
+
+    {%- else -%}
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'product' -%}
+          {%- assign bp = block.settings.product -%}
+          {%- render 'nailinit-product-card',
+            product: bp,
+            shipping_text: shipping_text,
+            custom_badge: block.settings.custom_badge,
+            hot_seller: block.settings.hot_seller,
+            custom_offer: block.settings.custom_offer,
+            block_attr: block.shopify_attributes -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+
+  </div>
+
+  {%- if show_slider -%}
+    <div class="ni-ps__slider-nav" aria-hidden="true">
+      <button class="ni-ps__s-prev" aria-label="Previous">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="ni-ps__s-next" aria-label="Next">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  {%- endif -%}
+
+</section>
+
+{% stylesheet %}
+/* ── NailInIt Product Showcase ────────────────────────────── */
+.ni-ps {
+  width: 100%;
+  overflow: hidden;
+}
+
+.ni-ps__header {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  padding: 0 48px 24px;
+  max-width: calc(var(--ni-ps-cols, 4) * 310px + 96px + (var(--ni-ps-cols, 4) - 1) * 20px);
+  margin: 0 auto;
+}
+@media screen and (max-width: 749px) {
+  .ni-ps__header { padding: 0 16px 16px; }
+}
+
+.ni-ps__title {
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #1a1a1a;
+  margin: 0;
+  flex: 1 0 auto;
+}
+.ni-ps__subtitle {
+  font-size: 0.9rem;
+  color: #777;
+  margin: 0;
+}
+.ni-ps__view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  text-decoration: none;
+  margin-left: auto;
+  transition: gap 0.2s ease;
+}
+.ni-ps__view-all:hover { gap: 8px; }
+
+/* ── Grid ── */
+.ni-ps__track {
+  display: grid;
+  grid-template-columns: repeat(var(--ni-ps-cols, 4), 1fr);
+  gap: 20px;
+  padding: 0 48px;
+  max-width: calc(var(--ni-ps-cols, 4) * 310px + 96px + (var(--ni-ps-cols, 4) - 1) * 20px);
+  margin: 0 auto;
+}
+@media screen and (max-width: 1024px) {
+  .ni-ps__track { grid-template-columns: repeat(2, 1fr); }
+}
+@media screen and (max-width: 749px) {
+  .ni-ps__track {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 0 16px;
+  }
+  .ni-ps__track--slider {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 12px;
+    padding: 0 16px 4px;
+  }
+  .ni-ps__track--slider::-webkit-scrollbar { display: none; }
+}
+
+/* ── Product Card ── */
+.ni-ps-card {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 14px;
+  overflow: visible;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  flex-shrink: 0;
+  width: 100%;
+}
+@media screen and (max-width: 749px) {
+  .ni-ps__track--slider .ni-ps-card {
+    min-width: 220px;
+    width: 220px;
+    scroll-snap-align: start;
+  }
+}
+
+/* Image area */
+.ni-ps-card__img-wrap {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f5f5f5;
+  aspect-ratio: 1 / 1;
+}
+.ni-ps-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+@media (hover: hover) {
+  .ni-ps-card:hover .ni-ps-card__img { transform: scale(1.04); }
+}
+.ni-ps-card__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+}
+.ni-ps-card__placeholder svg { width: 48px; height: 48px; color: #ccc; }
+
+/* Badges */
+.ni-ps-card__badge-hot {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  background: #fff;
+  color: var(--ni-ps-accent, #FF2D7C);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  padding: 4px 10px;
+  border-radius: 100px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+.ni-ps-card__badge-save {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  z-index: 2;
+  color: var(--ni-ps-accent, #FF2D7C);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+/* Body */
+.ni-ps-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 2px 0;
+  flex: 1;
+}
+.ni-ps-card__title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.3;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.ni-ps-card__offer {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--ni-ps-accent, #FF2D7C);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Ratings */
+.ni-ps-card__ratings {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.ni-ps-card__stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 3px 7px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+.ni-ps-card__stars svg { width: 12px; height: 12px; color: #f5a623; fill: #f5a623; }
+.ni-ps-card__reviews {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 3px 7px;
+  font-size: 0.72rem;
+  color: #555;
+}
+.ni-ps-card__reviews svg { width: 11px; height: 11px; color: #4CAF50; fill: #4CAF50; }
+
+/* Shipping banner */
+.ni-ps-card__shipping {
+  background: #FFE8F0;
+  color: var(--ni-ps-accent, #FF2D7C);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-align: center;
+  padding: 6px 10px;
+  border-radius: 100px;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Price + ATC row */
+.ni-ps-card__buy {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+}
+.ni-ps-card__prices {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.ni-ps-card__price {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: -0.01em;
+}
+.ni-ps-card__compare {
+  font-size: 0.8rem;
+  color: #aaa;
+  text-decoration: line-through;
+}
+.ni-ps-card__atc {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 10px 14px;
+  border-radius: 100px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.18s ease, transform 0.18s ease;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+}
+.ni-ps-card__atc:hover { background: #333; transform: translateY(-1px); }
+.ni-ps-card__atc:active { transform: translateY(0); }
+.ni-ps-card__atc--loading { opacity: 0.6; pointer-events: none; }
+
+/* Slider nav buttons (desktop arrow) */
+.ni-ps__slider-nav {
+  display: none;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 48px 0;
+  max-width: calc(var(--ni-ps-cols, 4) * 310px + 96px + (var(--ni-ps-cols, 4) - 1) * 20px);
+  margin: 0 auto;
+}
+@media screen and (max-width: 749px) {
+  .ni-ps__slider-nav { display: flex; padding: 12px 16px 0; }
+}
+.ni-ps__s-prev,
+.ni-ps__s-next {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0,0,0,0.18);
+  background: transparent;
+  cursor: pointer;
+  color: #1a1a1a;
+  transition: border-color 0.2s, background 0.2s;
+}
+.ni-ps__s-prev:hover,
+.ni-ps__s-next:hover { border-color: #1a1a1a; background: rgba(0,0,0,0.05); }
+{% endstylesheet %}
+
+<script>
+(function() {
+  const section = document.getElementById('ni-ps-{{ section.id }}');
+  if (!section) return;
+
+  // ── Add To Cart ─────────────────────────────────────────────
+  section.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.ni-ps-card__atc[data-variant-id]');
+    if (!btn) return;
+    e.preventDefault();
+    const variantId = btn.dataset.variantId;
+    if (!variantId) return;
+    btn.classList.add('ni-ps-card__atc--loading');
+    btn.textContent = '…';
+    try {
+      const res = await fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: variantId, quantity: 1 })
+      });
+      if (res.ok) {
+        btn.textContent = '✓ Added!';
+        document.dispatchEvent(new CustomEvent('cart:updated'));
+        setTimeout(() => {
+          btn.textContent = 'Add To Cart';
+          btn.classList.remove('ni-ps-card__atc--loading');
+        }, 1800);
+      } else {
+        throw new Error('failed');
+      }
+    } catch {
+      btn.textContent = 'Add To Cart';
+      btn.classList.remove('ni-ps-card__atc--loading');
+    }
+  });
+
+  // ── Mobile slider scroll arrows ──────────────────────────────
+  const track   = section.querySelector('.ni-ps__track--slider');
+  const prevBtn = section.querySelector('.ni-ps__s-prev');
+  const nextBtn = section.querySelector('.ni-ps__s-next');
+  if (track && prevBtn && nextBtn) {
+    const scrollAmount = () => track.querySelector('.ni-ps-card')?.offsetWidth + 12 || 240;
+    nextBtn.addEventListener('click', () => track.scrollBy({ left:  scrollAmount(), behavior: 'smooth' }));
+    prevBtn.addEventListener('click', () => track.scrollBy({ left: -scrollAmount(), behavior: 'smooth' }));
+  }
+})();
+</script>
+
+{%- comment -%} ── Inline product card snippet ─────────────────── {%- endcomment -%}
+{%- comment -%}
+  This section renders cards inline to avoid requiring a separate snippet file.
+  The card rendering macro is below via a capture + render pattern.
+{%- endcomment -%}
+
+{% schema %}
+{
+  "name": "NailInIt Product Showcase",
+  "tag": "section",
+  "class": "nailinit-product-showcase",
+  "disabled_on": { "groups": ["header", "footer"] },
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "checkbox",
+          "id": "hot_seller",
+          "label": "Show \"Hot Seller\" badge",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "custom_badge",
+          "label": "Custom badge text (optional)",
+          "info": "e.g. \"New\" or \"Staff Pick\". Leave empty to use \"Hot Seller\"."
+        },
+        {
+          "type": "text",
+          "id": "custom_offer",
+          "label": "Offer text override",
+          "info": "Overrides the automatic offer text. e.g. \"Buy 1 Get 1 Free\""
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section heading",
+      "default": "Best Sellers"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Explore our top picks"
+    },
+    {
+      "type": "text",
+      "id": "view_all_text",
+      "label": "\"View all\" label",
+      "default": "View all"
+    },
+    {
+      "type": "url",
+      "id": "view_all_url",
+      "label": "\"View all\" link"
+    },
+    {
+      "type": "header",
+      "content": "Product Source"
+    },
+    {
+      "type": "select",
+      "id": "source",
+      "label": "Source",
+      "options": [
+        { "value": "blocks",     "label": "Pick products manually (blocks below)" },
+        { "value": "collection", "label": "From a collection" }
+      ],
+      "default": "blocks"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection (if source = collection)"
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "label": "Max products (collection mode)",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "hot_seller_threshold",
+      "label": "Auto-badge items with ≥ N reviews as Hot Seller (0 = off)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns (desktop)",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_slider",
+      "label": "Horizontal scroll / slider on mobile",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Card Details"
+    },
+    {
+      "type": "text",
+      "id": "shipping_text",
+      "label": "Shipping banner text",
+      "default": "FREE SHIPPING ON ORDERS ABOVE ₹799"
+    },
+    {
+      "type": "header",
+      "content": "Colours"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent colour",
+      "default": "#FF2D7C"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "NailInIt Product Showcase",
+      "blocks": [
+        { "type": "product", "settings": { "hot_seller": true } },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" }
+      ]
+    }
+  ]
+}
+{% endschema %}
