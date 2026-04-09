@@ -47,13 +47,13 @@
 
     {%- if section.settings.source == 'collection' and section.settings.collection != blank -%}
       {%- for product in section.settings.collection.products limit: section.settings.max_products -%}
-        {%- render 'nailinit-product-card',
+        {%- render 'soulstruck-product-card',
           product: product,
           shipping_text: shipping_text,
           hot_seller_threshold: section.settings.hot_seller_threshold -%}
       {%- else -%}
         {%- for i in (1..4) -%}
-          {%- render 'nailinit-product-card', product: nil, shipping_text: shipping_text -%}
+          {%- render 'soulstruck-product-card', product: nil, shipping_text: shipping_text -%}
         {%- endfor -%}
       {%- endfor -%}
 
@@ -61,7 +61,7 @@
       {%- for block in section.blocks -%}
         {%- if block.type == 'product' -%}
           {%- assign bp = block.settings.product -%}
-          {%- render 'nailinit-product-card',
+          {%- render 'soulstruck-product-card',
             product: bp,
             shipping_text: shipping_text,
             custom_badge: block.settings.custom_badge,
@@ -443,7 +443,7 @@
 
 {% schema %}
 {
-  "name": "SoulStruck Product Showcase",
+  "name": "SS Product Showcase",
   "tag": "section",
   "class": "soulstruck-product-showcase",
   "disabled_on": { "groups": ["header", "footer"] },
@@ -615,7 +615,7 @@
   ],
   "presets": [
     {
-      "name": "SoulStruck Product Showcase",
+      "name": "SS Product Showcase",
       "blocks": [
         { "type": "product", "settings": { "hot_seller": true } },
         { "type": "product" },
