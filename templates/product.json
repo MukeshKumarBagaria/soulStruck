@@ -7,7 +7,7 @@
  * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
- {
+{
   "sections": {
     "main": {
       "type": "product-information",
@@ -189,6 +189,16 @@
                 "max_width": "normal",
                 "alignment": "left",
                 "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "color": "var(--color-foreground)",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
@@ -244,22 +254,74 @@
               },
               "block_order": []
             },
-
             "complementary_products": {
               "type": "product-recommendations",
               "settings": {
-                "recommendation_type": "complementary"
+                "recommendation_type": "complementary",
+                "layout_type": "grid",
+                "carousel_on_mobile": true,
+                "max_products": 4,
+                "columns_gap": 16,
+                "rows_gap": 16,
+                "icons_style": "arrow",
+                "icons_shape": "none",
+                "gap": 12,
+                "border_radius": 0,
+                "inherit_color_scheme": true,
+                "color_scheme": "",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
               },
               "blocks": {
                 "reco_header": {
                   "type": "text",
                   "settings": {
                     "text": "<h5>Frequently Bought Together</h5>",
-                    "type_preset": "h5"
-                  }
+                    "width": "fit-content",
+                    "max_width": "normal",
+                    "alignment": "left",
+                    "type_preset": "h5",
+                    "font": "var(--font-body--family)",
+                    "font_size": "1rem",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "color": "var(--color-foreground)",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                },
+                "static-product-card": {
+                  "type": "_product-card",
+                  "static": true,
+                  "settings": {
+                    "product_card_gap": 16,
+                    "inherit_color_scheme": true,
+                    "color_scheme": "",
+                    "border": "none",
+                    "border_width": 1,
+                    "border_opacity": 100,
+                    "border_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
                 }
               },
-              "block_order": ["reco_header"]
+              "block_order": [
+                "reco_header"
+              ]
             },
             "accordion_group": {
               "type": "accordion",
@@ -282,59 +344,119 @@
                 "accordion_ingredients": {
                   "type": "_accordion-row",
                   "settings": {
-                    "heading": "Ingredients"
+                    "heading": "Contents",
+                    "open_by_default": false,
+                    "icon": "none",
+                    "width": 20
                   },
                   "blocks": {
                     "text_ingredients": {
                       "type": "text",
                       "settings": {
-                        "text": "<p>Our premium formula is crafted with carefully selected, skin-loving ingredients. Check the product packaging for the full ingredient list.</p>",
+                        "text": "<p></p>{{ closest.product.metafields.custom.contents | metafield_tag }}",
+                        "width": "100%",
+                        "max_width": "normal",
+                        "alignment": "left",
                         "type_preset": "rte",
                         "font": "var(--font-body--family)",
-                        "width": "100%",
-                        "alignment": "left"
-                      }
+                        "font_size": "1rem",
+                        "line_height": "normal",
+                        "letter_spacing": "normal",
+                        "case": "none",
+                        "wrap": "pretty",
+                        "color": "var(--color-foreground)",
+                        "background": false,
+                        "background_color": "#00000026",
+                        "corner_radius": 0,
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0
+                      },
+                      "blocks": {}
                     }
                   },
-                  "block_order": ["text_ingredients"]
+                  "block_order": [
+                    "text_ingredients"
+                  ]
                 },
                 "accordion_howtouse": {
                   "type": "_accordion-row",
                   "settings": {
-                    "heading": "How to Use"
+                    "heading": "Speciications",
+                    "open_by_default": false,
+                    "icon": "none",
+                    "width": 20
                   },
                   "blocks": {
                     "text_howtouse": {
                       "type": "text",
                       "settings": {
-                        "text": "<p>Apply evenly on clean, prepped skin. For best results, layer with complementary products from our range. Follow the recommended usage instructions on the packaging.</p>",
+                        "text": "<p></p>{{ closest.product.metafields.custom.specifications | metafield_tag }}",
+                        "width": "100%",
+                        "max_width": "normal",
+                        "alignment": "left",
                         "type_preset": "rte",
                         "font": "var(--font-body--family)",
-                        "width": "100%",
-                        "alignment": "left"
-                      }
+                        "font_size": "1rem",
+                        "line_height": "normal",
+                        "letter_spacing": "normal",
+                        "case": "none",
+                        "wrap": "pretty",
+                        "color": "var(--color-foreground)",
+                        "background": false,
+                        "background_color": "#00000026",
+                        "corner_radius": 0,
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0
+                      },
+                      "blocks": {}
                     }
                   },
-                  "block_order": ["text_howtouse"]
+                  "block_order": [
+                    "text_howtouse"
+                  ]
                 },
                 "accordion_shipping": {
                   "type": "_accordion-row",
                   "settings": {
-                    "heading": "Shipping & Returns"
+                    "heading": "Shipping & Returns",
+                    "open_by_default": false,
+                    "icon": "none",
+                    "width": 20
                   },
                   "blocks": {
                     "text_shipping": {
                       "type": "text",
                       "settings": {
                         "text": "<p>Free shipping on all prepaid orders. Orders are dispatched within 24-48 hours. Easy 7-day return policy for unopened products.</p>",
+                        "width": "100%",
+                        "max_width": "normal",
+                        "alignment": "left",
                         "type_preset": "rte",
                         "font": "var(--font-body--family)",
-                        "width": "100%",
-                        "alignment": "left"
-                      }
+                        "font_size": "1rem",
+                        "line_height": "normal",
+                        "letter_spacing": "normal",
+                        "case": "none",
+                        "wrap": "pretty",
+                        "color": "var(--color-foreground)",
+                        "background": false,
+                        "background_color": "#00000026",
+                        "corner_radius": 0,
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0
+                      },
+                      "blocks": {}
                     }
                   },
-                  "block_order": ["text_shipping"]
+                  "block_order": [
+                    "text_shipping"
+                  ]
                 }
               },
               "block_order": [
