@@ -1,5 +1,5 @@
 {% comment %}
-  NailInIt Custom Header — Fully Standalone
+  SoulStruck Custom Header — Fully Standalone
   ─ No dependency on any theme header CSS/JS
   ─ Desktop: search pill | centered logo | icons | nav bar below
   ─ Mobile: hamburger | search | logo | icons → drawer for nav
@@ -221,8 +221,8 @@
         {%- endif -%}
 
         {%- if show_cart -%}
-          <a
-            href="{{ routes.cart_url }}"
+          <button
+            type="button"
             class="ni-ch__icon-btn ni-ch__cart-btn"
             aria-label="{{ section.settings.cart_label | escape }}"
             id="ni-ch-cart-{{ section.id }}"
@@ -233,7 +233,7 @@
               id="ni-ch-cart-count-{{ section.id }}"
               aria-label="{{ cart_count }} items in cart"
             >{{ cart_count }}</span>
-          </a>
+          </button>
         {%- endif -%}
 
       </div><!-- /right -->
@@ -278,7 +278,7 @@
 
 <style>
 /* ═══════════════════════════════════════════════════════════════
-   NailInIt Custom Header
+   SoulStruck Custom Header
    ═══════════════════════════════════════════════════════════════ */
 
 /* ── Reset scope ──────────────────────────────────────────────── */
@@ -500,6 +500,13 @@
   color: var(--ni-ch-fg, #1a1a1a);
   transition: opacity 0.2s ease, background 0.2s ease;
   flex-shrink: 0;
+  /* Reset button defaults */
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  text-decoration: none;
 }
 @media (hover: hover) {
   .ni-ch__icon-btn:hover { opacity: 0.6; }
@@ -817,6 +824,18 @@
 
   if (!wrapper) return;
 
+  /* ── Cart drawer trigger ───────────────────────────────────── */
+  const cartBtn = document.getElementById('ni-ch-cart-' + SECTION_ID);
+  cartBtn?.addEventListener('click', () => {
+    const drawerEl = document.querySelector('cart-drawer-component');
+    if (drawerEl && typeof drawerEl.open === 'function') {
+      drawerEl.open();
+    } else {
+      // Fallback: navigate to cart if drawer not found
+      window.location.href = {{ routes.cart_url | json }};
+    }
+  });
+
   /* ── Scroll shadow ─────────────────────────────────────────── */
   let rafId = null;
   function onScroll() {
@@ -944,9 +963,9 @@
 
 {% schema %}
 {
-  "name": "NailInIt Custom Header",
+  "name": "SoulStruck Custom Header",
   "tag": "div",
-  "class": "nailinit-custom-header-section",
+  "class": "soulstruck-custom-header-section",
   "enabled_on": {
     "groups": ["header"]
   },
@@ -964,7 +983,7 @@
       "type": "text",
       "id": "logo_text",
       "label": "Logo text (if no image)",
-      "default": "nailinit"
+      "default": "SoulStruck"
     },
     {
       "type": "range",
@@ -1210,9 +1229,9 @@
   ],
   "presets": [
     {
-      "name": "NailInIt Custom Header",
+      "name": "SoulStruck Custom Header",
       "settings": {
-        "logo_text": "nailinit",
+        "logo_text": "SoulStruck",
         "logo_width": 120,
         "menu": "main-menu",
         "show_nav_bar": true,
