@@ -1,35 +1,43 @@
 {% comment %}
   SoulStruck Hero Slider
-  Split layout: left (text) | right (image card)
-  Premium animations, fully customisable blocks
+  Split layout: left (text) | right (image OR video)
+  ─ Unlimited slides (up to 20 blocks)
+  ─ Right side: image / Shopify video / YouTube / Vimeo
+  ─ Per-slide video controls: autoplay, loop, muted, player controls
+  ─ Accessible, touch/swipe, keyboard, autoplay pause on hover
 {% endcomment %}
 
-{%- assign autoplay_ms = section.settings.autoplay_speed | times: 1000 -%}
+{%- assign autoplay_ms  = section.settings.autoplay_speed | times: 1000 -%}
 {%- assign slide_count  = section.blocks | size -%}
 
 <style>
   #ni-hero-{{ section.id }} {
-    --ni-h-accent   : {{ section.settings.accent_color }};
-    --ni-h-bg       : {{ section.settings.bg_color }};
-    --ni-h-radius   : {{ section.settings.card_radius }}px;
-    --ni-h-pt       : {{ section.settings.padding_top }}px;
-    --ni-h-pb       : {{ section.settings.padding_bottom }}px;
+    --ni-h-accent : {{ section.settings.accent_color }};
+    --ni-h-bg     : {{ section.settings.bg_color }};
+    --ni-h-radius : {{ section.settings.card_radius }}px;
+    --ni-h-pt     : {{ section.settings.padding_top }}px;
+    --ni-h-pb     : {{ section.settings.padding_bottom }}px;
   }
 </style>
 
-<section id="ni-hero-{{ section.id }}" class="ni-hero-slider" data-autoplay="{{ section.settings.autoplay }}" data-speed="{{ autoplay_ms }}">
+<section
+  id="ni-hero-{{ section.id }}"
+  class="ni-hero-slider"
+  data-autoplay="{{ section.settings.autoplay }}"
+  data-speed="{{ autoplay_ms }}"
+>
 
   <div class="ni-hero__inner">
-
     {%- for block in section.blocks -%}
-      {%- assign is_active = false -%}
-      {%- if forloop.first -%}{%- assign is_active = true -%}{%- endif -%}
+      {%- assign is_active = forloop.first -%}
 
-      <div class="ni-hero__slide{% if is_active %} ni-hero__slide--active{% endif %}"
-           data-slide="{{ forloop.index0 }}"
-           {{ block.shopify_attributes }}>
+      <div
+        class="ni-hero__slide{% if is_active %} ni-hero__slide--active{% endif %}"
+        data-slide="{{ forloop.index0 }}"
+        {{ block.shopify_attributes }}
+      >
 
-        <!-- LEFT — text content -->
+        {%- comment -%} ── LEFT: text content ── {%- endcomment -%}
         <div class="ni-hero__left">
           {%- if block.settings.badge_text != blank -%}
             <div class="ni-hero__badge">
@@ -51,16 +59,15 @@
           {%- if block.settings.cta_text != blank -%}
             <a href="{{ block.settings.cta_url | default: '#' }}" class="ni-hero__cta">
               {{ block.settings.cta_text | escape }}
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
             </a>
           {%- endif -%}
         </div>
 
-        <!-- RIGHT — image card -->
+        {%- comment -%} ── RIGHT: media card ── {%- endcomment -%}
         <div class="ni-hero__right">
           <div class="ni-hero__card" style="background-color: {{ block.settings.card_bg_color }};">
 
-            {%- comment -%} Cloud / blob decorations {%- endcomment -%}
             {%- if block.settings.show_blobs -%}
               <span class="ni-hero__blob ni-hero__blob--tl" aria-hidden="true"></span>
               <span class="ni-hero__blob ni-hero__blob--tr" aria-hidden="true"></span>
@@ -68,19 +75,81 @@
               <span class="ni-hero__blob ni-hero__blob--br" aria-hidden="true"></span>
             {%- endif -%}
 
-            {%- if block.settings.card_image != blank -%}
-              <img
-                src="{{ block.settings.card_image | image_url: width: 900 }}"
-                srcset="{{ block.settings.card_image | image_url: width: 450 }} 450w,
-                        {{ block.settings.card_image | image_url: width: 900 }} 900w"
-                sizes="(max-width:749px) 100vw, 50vw"
-                alt="{{ block.settings.card_image.alt | default: block.settings.heading | escape }}"
-                width="900"
-                height="{{ 900 | divided_by: block.settings.card_image.aspect_ratio | round }}"
-                loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-                class="ni-hero__card-img">
+            {%- assign media_type = block.settings.media_type | default: 'image' -%}
+
+            {%- if media_type == 'video' -%}
+
+              {%- comment -%} ── Shopify-hosted video ── {%- endcomment -%}
+              {%- if block.settings.card_video != blank -%}
+                <video
+                  class="ni-hero__card-video ni-hero__card-media"
+                  {% if block.settings.video_autoplay and is_active %}autoplay{% endif %}
+                  {% if block.settings.video_loop %}loop{% endif %}
+                  {% if block.settings.video_muted %}muted{% endif %}
+                  {% if block.settings.video_controls %}controls{% endif %}
+                  playsinline
+                  preload="metadata"
+                  aria-label="{{ block.settings.heading | escape }}"
+                  data-video-autoplay="{{ block.settings.video_autoplay }}"
+                >
+                  {%- for source in block.settings.card_video.sources -%}
+                    <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                  {%- endfor -%}
+                </video>
+
+              {%- comment -%} ── YouTube / Vimeo embed ── {%- endcomment -%}
+              {%- elsif block.settings.card_video_url != blank -%}
+                {%- assign vtype = block.settings.card_video_url.type -%}
+                {%- assign vid   = block.settings.card_video_url.id -%}
+                {%- assign v_auto    = block.settings.video_autoplay | default: false -%}
+                {%- assign v_loop    = block.settings.video_loop     | default: false -%}
+                {%- assign v_muted   = block.settings.video_muted    | default: true  -%}
+                {%- assign v_ctrl    = block.settings.video_controls | default: false -%}
+
+                {%- if vtype == 'youtube' -%}
+                  {%- capture embed_src -%}https://www.youtube.com/embed/{{ vid }}?enablejsapi=1&rel=0&modestbranding=1&{% if v_auto and is_active %}autoplay=1&{% endif %}{% if v_muted %}mute=1&{% endif %}{% if v_loop %}loop=1&playlist={{ vid }}&{% endif %}controls={% if v_ctrl %}1{% else %}0{% endif %}{%- endcapture -%}
+                {%- elsif vtype == 'vimeo' -%}
+                  {%- capture embed_src -%}https://player.vimeo.com/video/{{ vid }}?{% if v_auto and is_active %}autoplay=1&{% endif %}{% if v_muted %}muted=1&{% endif %}{% if v_loop %}loop=1&{% endif %}controls={% if v_ctrl %}1{% else %}0{% endif %}&dnt=1{%- endcapture -%}
+                {%- endif -%}
+
+                {%- if embed_src != blank -%}
+                  <iframe
+                    class="ni-hero__card-iframe ni-hero__card-media"
+                    src="{{ embed_src }}"
+                    frameborder="0"
+                    allow="autoplay; fullscreen; picture-in-picture"
+                    allowfullscreen
+                    title="{{ block.settings.heading | default: 'Slide video' | escape }}"
+                    loading="{% if is_active %}eager{% else %}lazy{% endif %}"
+                    data-video-type="{{ vtype }}"
+                    data-video-autoplay="{{ v_auto }}"
+                    data-video-src-base="https://{% if vtype == 'youtube' %}www.youtube.com/embed/{{ vid }}{% elsif vtype == 'vimeo' %}player.vimeo.com/video/{{ vid }}{% endif %}?enablejsapi=1&rel=0&modestbranding=1&mute={% if v_muted %}1{% else %}0{% endif %}&loop={% if v_loop %}1{% else %}0{% endif %}{% if v_loop and vtype == 'youtube' %}&playlist={{ vid }}{% endif %}&controls={% if v_ctrl %}1{% else %}0{% endif %}"
+                  ></iframe>
+                {%- endif -%}
+              {%- endif -%}
+
+            {%- else -%}
+              {%- comment -%} ── Image ── {%- endcomment -%}
+              {%- if block.settings.card_image != blank -%}
+                <img
+                  src="{{ block.settings.card_image | image_url: width: 900 }}"
+                  srcset="
+                    {{ block.settings.card_image | image_url: width: 450 }} 450w,
+                    {{ block.settings.card_image | image_url: width: 750 }} 750w,
+                    {{ block.settings.card_image | image_url: width: 900 }} 900w,
+                    {{ block.settings.card_image | image_url: width: 1200 }} 1200w
+                  "
+                  sizes="(max-width: 749px) 100vw, 50vw"
+                  alt="{{ block.settings.card_image.alt | default: block.settings.heading | escape }}"
+                  width="900"
+                  height="{{ 900 | divided_by: block.settings.card_image.aspect_ratio | round }}"
+                  loading="{% if is_active %}eager{% else %}lazy{% endif %}"
+                  class="ni-hero__card-img ni-hero__card-media"
+                >
+              {%- endif -%}
             {%- endif -%}
 
+            {%- comment -%} ── Pricing overlay ── {%- endcomment -%}
             {%- if block.settings.price_line_1 != blank or block.settings.price_line_2 != blank -%}
               <div class="ni-hero__price-box">
                 {%- if block.settings.price_line_1 != blank -%}
@@ -102,31 +171,32 @@
             {%- endif -%}
 
           </div>
-        </div><!-- /right -->
+        </div>
 
-      </div><!-- /slide -->
+      </div>
     {%- endfor -%}
-  </div><!-- /inner -->
+  </div>
 
   {%- if slide_count > 1 -%}
-    <!-- Navigation -->
     <div class="ni-hero__nav">
       <button class="ni-hero__arrow ni-hero__arrow--prev" aria-label="Previous slide">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
 
-      <div class="ni-hero__dots" role="tablist" aria-label="Slides">
+      <div class="ni-hero__dots" role="tablist" aria-label="Slide navigation">
         {%- for block in section.blocks -%}
-          <button class="ni-hero__dot{% if forloop.first %} ni-hero__dot--active{% endif %}"
-                  role="tab"
-                  aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
-                  aria-label="Slide {{ forloop.index }}"
-                  data-index="{{ forloop.index0 }}"></button>
+          <button
+            class="ni-hero__dot{% if forloop.first %} ni-hero__dot--active{% endif %}"
+            role="tab"
+            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+            aria-label="Slide {{ forloop.index }}"
+            data-index="{{ forloop.index0 }}"
+          ></button>
         {%- endfor -%}
       </div>
 
       <button class="ni-hero__arrow ni-hero__arrow--next" aria-label="Next slide">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
     </div>
   {%- endif -%}
@@ -134,7 +204,9 @@
 </section>
 
 <style>
-/* ── SoulStruck Hero Slider ──────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════
+   SoulStruck Hero Slider
+   ═══════════════════════════════════════════════════════ */
 #ni-hero-{{ section.id }} {
   background: var(--ni-h-bg);
   padding: var(--ni-h-pt) 0 var(--ni-h-pb);
@@ -142,14 +214,14 @@
   overflow: hidden;
 }
 
-.ni-hero__inner {
+#ni-hero-{{ section.id }} .ni-hero__inner {
   position: relative;
   width: 100%;
   min-height: 340px;
 }
 
-/* Slides */
-.ni-hero__slide {
+/* ── Slides ── */
+#ni-hero-{{ section.id }} .ni-hero__slide {
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
@@ -165,27 +237,27 @@
               transform 0.55s cubic-bezier(0.16,1,0.3,1);
   pointer-events: none;
 }
-.ni-hero__slide--active {
+#ni-hero-{{ section.id }} .ni-hero__slide--active {
   opacity: 1;
   transform: translateX(0);
   pointer-events: auto;
   position: relative;
 }
-.ni-hero__slide--exit {
+#ni-hero-{{ section.id }} .ni-hero__slide--exit {
   opacity: 0;
   transform: translateX(-60px);
   position: absolute;
   pointer-events: none;
 }
 
-/* LEFT */
-.ni-hero__left {
+/* ── Left ── */
+#ni-hero-{{ section.id }} .ni-hero__left {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 20px;
 }
-.ni-hero__badge {
+#ni-hero-{{ section.id }} .ni-hero__badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -194,22 +266,24 @@
   color: #555;
   letter-spacing: 0.01em;
 }
-.ni-hero__badge-emoji { font-size: 1rem; }
-.ni-hero__heading {
+#ni-hero-{{ section.id }} .ni-hero__badge-emoji { font-size: 1rem; }
+#ni-hero-{{ section.id }} .ni-hero__heading {
   font-size: clamp(2rem, 4vw, 3.2rem);
   font-weight: 900;
   line-height: 1.08;
   letter-spacing: -0.02em;
   color: #1a1a1a;
   margin: 0;
+  white-space: pre-line;
 }
-.ni-hero__subtext {
+#ni-hero-{{ section.id }} .ni-hero__subtext {
   font-size: 0.95rem;
   color: #555;
   margin: 0;
   max-width: 320px;
+  line-height: 1.6;
 }
-.ni-hero__cta {
+#ni-hero-{{ section.id }} .ni-hero__cta {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -223,19 +297,16 @@
   letter-spacing: 0.01em;
   transition: background 0.2s ease, transform 0.2s ease;
 }
-.ni-hero__cta:hover {
+#ni-hero-{{ section.id }} .ni-hero__cta:hover {
   background: #333;
   transform: translateY(-1px);
 }
-.ni-hero__cta svg { transition: transform 0.2s ease; }
-.ni-hero__cta:hover svg { transform: translateX(3px); }
+#ni-hero-{{ section.id }} .ni-hero__cta svg { transition: transform 0.2s ease; }
+#ni-hero-{{ section.id }} .ni-hero__cta:hover svg { transform: translateX(3px); }
 
-/* RIGHT — card */
-.ni-hero__right {
-  display: flex;
-  align-items: stretch;
-}
-.ni-hero__card {
+/* ── Right card ── */
+#ni-hero-{{ section.id }} .ni-hero__right { display: flex; align-items: stretch; }
+#ni-hero-{{ section.id }} .ni-hero__card {
   position: relative;
   border-radius: var(--ni-h-radius);
   overflow: hidden;
@@ -244,31 +315,45 @@
   display: flex;
   align-items: flex-end;
 }
-.ni-hero__card-img {
+
+/* Shared media styles — image, video, iframe */
+#ni-hero-{{ section.id }} .ni-hero__card-media {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  display: block;
+}
+#ni-hero-{{ section.id }} .ni-hero__card-img {
   object-fit: cover;
   object-position: center top;
 }
+#ni-hero-{{ section.id }} .ni-hero__card-video {
+  object-fit: cover;
+  background: #000;
+}
+#ni-hero-{{ section.id }} .ni-hero__card-iframe {
+  border: none;
+  pointer-events: auto;
+}
 
-/* Blob decorations */
-.ni-hero__blob {
+/* ── Blob decorations ── */
+#ni-hero-{{ section.id }} .ni-hero__blob {
   position: absolute;
   width: 90px;
   height: 70px;
   background: rgba(255,255,255,0.55);
   border-radius: 50% 40% 55% 45%;
   z-index: 1;
+  pointer-events: none;
 }
-.ni-hero__blob--tl { top: -20px; left: 10px; }
-.ni-hero__blob--tr { top: -15px; right: 40px; width: 70px; height: 55px; }
-.ni-hero__blob--bl { bottom: -15px; left: 40px; width: 70px; height: 55px; }
-.ni-hero__blob--br { bottom: -20px; right: 10px; }
+#ni-hero-{{ section.id }} .ni-hero__blob--tl { top: -20px;  left: 10px;  }
+#ni-hero-{{ section.id }} .ni-hero__blob--tr { top: -15px;  right: 40px; width: 70px; height: 55px; }
+#ni-hero-{{ section.id }} .ni-hero__blob--bl { bottom: -15px; left: 40px; width: 70px; height: 55px; }
+#ni-hero-{{ section.id }} .ni-hero__blob--br { bottom: -20px; right: 10px; }
 
-/* Price box */
-.ni-hero__price-box {
+/* ── Price overlay ── */
+#ni-hero-{{ section.id }} .ni-hero__price-box {
   position: absolute;
   right: 28px;
   top: 50%;
@@ -276,28 +361,29 @@
   z-index: 2;
   text-align: center;
   color: #fff;
+  pointer-events: none;
 }
-.ni-hero__price-label {
+#ni-hero-{{ section.id }} .ni-hero__price-label {
   font-size: clamp(1rem, 2.2vw, 1.5rem);
   font-weight: 500;
   margin: 0 0 2px;
   opacity: 0.9;
 }
-.ni-hero__price-value {
+#ni-hero-{{ section.id }} .ni-hero__price-value {
   font-size: clamp(1.6rem, 3.5vw, 2.8rem);
   font-weight: 900;
   letter-spacing: -0.02em;
   margin: 0 0 6px;
   line-height: 1;
 }
-.ni-hero__price-divider {
+#ni-hero-{{ section.id }} .ni-hero__price-divider {
   border: none;
   border-top: 1px solid rgba(255,255,255,0.5);
   margin: 8px 0;
 }
 
-/* Navigation */
-.ni-hero__nav {
+/* ── Navigation ── */
+#ni-hero-{{ section.id }} .ni-hero__nav {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -305,7 +391,7 @@
   max-width: 1200px;
   margin: 0 auto;
 }
-.ni-hero__arrow {
+#ni-hero-{{ section.id }} .ni-hero__arrow {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -319,10 +405,12 @@
   transition: border-color 0.2s ease, background 0.2s ease;
   flex-shrink: 0;
 }
-.ni-hero__arrow:hover { border-color: #1a1a1a; background: rgba(0,0,0,0.05); }
-
-.ni-hero__dots { display: flex; gap: 6px; align-items: center; }
-.ni-hero__dot {
+#ni-hero-{{ section.id }} .ni-hero__arrow:hover {
+  border-color: #1a1a1a;
+  background: rgba(0,0,0,0.05);
+}
+#ni-hero-{{ section.id }} .ni-hero__dots { display: flex; gap: 6px; align-items: center; }
+#ni-hero-{{ section.id }} .ni-hero__dot {
   height: 8px;
   width: 8px;
   border-radius: 100px;
@@ -330,93 +418,144 @@
   border: none;
   cursor: pointer;
   padding: 0;
-  transition: width 0.35s cubic-bezier(0.16,1,0.3,1),
-              background 0.25s ease;
+  transition: width 0.35s cubic-bezier(0.16,1,0.3,1), background 0.25s ease;
 }
-.ni-hero__dot--active {
+#ni-hero-{{ section.id }} .ni-hero__dot--active {
   width: 28px;
   background: #1a1a1a;
 }
 
-/* Mobile */
-@media screen and (max-width: 749px) {
-  .ni-hero__slide {
+/* ── Mobile ── */
+@media (max-width: 749px) {
+  #ni-hero-{{ section.id }} .ni-hero__slide {
     grid-template-columns: 1fr;
     padding: 0 20px;
     gap: 24px;
   }
-  .ni-hero__inner { min-height: auto; }
-  .ni-hero__heading { font-size: 2rem; }
-  .ni-hero__card { aspect-ratio: 1 / 0.85; }
-  .ni-hero__price-box { right: 16px; }
-  .ni-hero__nav { padding: 16px 20px 0; }
-  .ni-hero__left { gap: 14px; }
+  #ni-hero-{{ section.id }} .ni-hero__inner  { min-height: auto; }
+  #ni-hero-{{ section.id }} .ni-hero__heading { font-size: 2rem; }
+  #ni-hero-{{ section.id }} .ni-hero__card   { aspect-ratio: 1 / 0.85; }
+  #ni-hero-{{ section.id }} .ni-hero__price-box { right: 16px; }
+  #ni-hero-{{ section.id }} .ni-hero__nav    { padding: 16px 20px 0; }
+  #ni-hero-{{ section.id }} .ni-hero__left   { gap: 14px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ni-hero__slide { transition: none; }
-  .ni-hero__dot  { transition: none; }
+  #ni-hero-{{ section.id }} .ni-hero__slide { transition: none; }
+  #ni-hero-{{ section.id }} .ni-hero__dot   { transition: none; }
 }
 </style>
 
 <script>
-(function() {
-  const section = document.getElementById('ni-hero-{{ section.id }}');
+(function () {
+  'use strict';
+
+  const section  = document.getElementById('ni-hero-{{ section.id }}');
   if (!section) return;
 
-  const slides    = section.querySelectorAll('.ni-hero__slide');
-  const dots      = section.querySelectorAll('.ni-hero__dot');
-  const prevBtn   = section.querySelector('.ni-hero__arrow--prev');
-  const nextBtn   = section.querySelector('.ni-hero__arrow--next');
-  const autoplay  = section.dataset.autoplay === 'true';
-  const speed     = parseInt(section.dataset.speed) || 5000;
-  let   current   = 0;
-  let   timer     = null;
+  const slides   = Array.from(section.querySelectorAll('.ni-hero__slide'));
+  const dots     = Array.from(section.querySelectorAll('.ni-hero__dot'));
+  const prevBtn  = section.querySelector('.ni-hero__arrow--prev');
+  const nextBtn  = section.querySelector('.ni-hero__arrow--next');
+  const doAuto   = section.dataset.autoplay === 'true';
+  const speed    = parseInt(section.dataset.speed) || 5000;
 
-  if (slides.length < 2) return;
+  if (slides.length < 2) {
+    // Single slide — still handle video autoplay
+    const v = slides[0]?.querySelector('.ni-hero__card-video');
+    if (v && v.dataset.videoAutoplay === 'true') v.play().catch(() => {});
+    return;
+  }
 
+  let current = 0;
+  let timer   = null;
+
+  /* ── Video helpers ── */
+  function pauseSlideMedia(slide) {
+    // Native video
+    slide.querySelectorAll('.ni-hero__card-video').forEach(v => v.pause());
+
+    // YouTube / Vimeo iframe — swap src to version without autoplay
+    slide.querySelectorAll('.ni-hero__card-iframe').forEach(iframe => {
+      const base = iframe.dataset.videoSrcBase;
+      if (base) iframe.src = base; // reset to non-autoplay src
+    });
+  }
+
+  function playSlideMedia(slide) {
+    // Native video
+    slide.querySelectorAll('.ni-hero__card-video').forEach(v => {
+      if (v.dataset.videoAutoplay === 'true') v.play().catch(() => {});
+    });
+
+    // YouTube / Vimeo iframe — swap src to version with autoplay
+    slide.querySelectorAll('.ni-hero__card-iframe').forEach(iframe => {
+      const base = iframe.dataset.videoSrcBase;
+      const want = iframe.dataset.videoAutoplay === 'true';
+      if (base && want) iframe.src = base + '&autoplay=1';
+    });
+  }
+
+  /* ── Core goTo ── */
   function goTo(index) {
     const prev = current;
     current = (index + slides.length) % slides.length;
+    if (prev === current) return;
 
+    // Exit previous
+    pauseSlideMedia(slides[prev]);
     slides[prev].classList.add('ni-hero__slide--exit');
     slides[prev].classList.remove('ni-hero__slide--active');
     dots[prev]?.classList.remove('ni-hero__dot--active');
     dots[prev]?.setAttribute('aria-selected', 'false');
 
+    // Enter next
     slides[current].classList.add('ni-hero__slide--active');
     slides[current].classList.remove('ni-hero__slide--exit');
     dots[current]?.classList.add('ni-hero__dot--active');
     dots[current]?.setAttribute('aria-selected', 'true');
+    playSlideMedia(slides[current]);
 
-    setTimeout(() => slides[prev].classList.remove('ni-hero__slide--exit'), 600);
+    setTimeout(() => slides[prev].classList.remove('ni-hero__slide--exit'), 650);
   }
 
+  /* ── Autoplay ── */
   function startAutoplay() {
-    if (!autoplay) return;
+    if (!doAuto) return;
     timer = setInterval(() => goTo(current + 1), speed);
   }
-  function stopAutoplay() { clearInterval(timer); }
+  function stopAutoplay() { clearInterval(timer); timer = null; }
 
+  /* ── Controls ── */
   nextBtn?.addEventListener('click', () => { stopAutoplay(); goTo(current + 1); startAutoplay(); });
   prevBtn?.addEventListener('click', () => { stopAutoplay(); goTo(current - 1); startAutoplay(); });
-  dots.forEach(dot => dot.addEventListener('click', (e) => {
+
+  dots.forEach(dot => dot.addEventListener('click', e => {
     stopAutoplay();
     goTo(parseInt(e.currentTarget.dataset.index));
     startAutoplay();
   }));
 
+  // Pause autoplay on hover (not when interacting with video)
   section.addEventListener('mouseenter', stopAutoplay);
   section.addEventListener('mouseleave', startAutoplay);
 
   // Touch swipe
-  let touchStartX = 0;
-  section.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
-  section.addEventListener('touchend',   (e) => {
-    const delta = e.changedTouches[0].clientX - touchStartX;
-    if (Math.abs(delta) > 50) { stopAutoplay(); goTo(current + (delta < 0 ? 1 : -1)); startAutoplay(); }
+  let touchX = 0;
+  section.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+  section.addEventListener('touchend',   e => {
+    const d = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(d) > 50) { stopAutoplay(); goTo(current + (d < 0 ? 1 : -1)); startAutoplay(); }
   }, { passive: true });
 
+  // Keyboard arrows when focused inside section
+  section.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft')  { stopAutoplay(); goTo(current - 1); startAutoplay(); }
+    if (e.key === 'ArrowRight') { stopAutoplay(); goTo(current + 1); startAutoplay(); }
+  });
+
+  // Init first slide media
+  playSlideMedia(slides[0]);
   startAutoplay();
 })();
 </script>
@@ -427,7 +566,7 @@
   "tag": "section",
   "class": "soulstruck-hero-section",
   "disabled_on": { "groups": ["header", "footer"] },
-  "max_blocks": 8,
+  "max_blocks": 20,
   "blocks": [
     {
       "type": "slide",
@@ -458,7 +597,7 @@
         {
           "type": "text",
           "id": "subtext",
-          "label": "Subtext (optional)",
+          "label": "Subtext",
           "default": "Shop the best deals on press-on nails"
         },
         {
@@ -474,12 +613,71 @@
         },
         {
           "type": "header",
-          "content": "Right — Image Card"
+          "content": "Right — Media Card"
+        },
+        {
+          "type": "select",
+          "id": "media_type",
+          "label": "Media type",
+          "options": [
+            { "value": "image", "label": "Image" },
+            { "value": "video", "label": "Video" }
+          ],
+          "default": "image",
+          "info": "Choose Image or Video for the right panel"
         },
         {
           "type": "image_picker",
           "id": "card_image",
-          "label": "Card image"
+          "label": "Image",
+          "info": "Used when media type is Image"
+        },
+        {
+          "type": "video",
+          "id": "card_video",
+          "label": "Video (Shopify hosted)",
+          "info": "Upload a video from your Shopify files"
+        },
+        {
+          "type": "video_url",
+          "id": "card_video_url",
+          "label": "Video URL (YouTube / Vimeo)",
+          "accept": ["youtube", "vimeo"],
+          "info": "Paste a YouTube or Vimeo URL. Used if no Shopify video is set."
+        },
+        {
+          "type": "header",
+          "content": "Video Options"
+        },
+        {
+          "type": "checkbox",
+          "id": "video_autoplay",
+          "label": "Autoplay video",
+          "default": true,
+          "info": "Video plays automatically when this slide is active"
+        },
+        {
+          "type": "checkbox",
+          "id": "video_loop",
+          "label": "Loop video",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "video_muted",
+          "label": "Mute video",
+          "default": true,
+          "info": "Required for autoplay in most browsers"
+        },
+        {
+          "type": "checkbox",
+          "id": "video_controls",
+          "label": "Show player controls",
+          "default": false
+        },
+        {
+          "type": "header",
+          "content": "Card Style"
         },
         {
           "type": "color",
@@ -490,7 +688,7 @@
         {
           "type": "checkbox",
           "id": "show_blobs",
-          "label": "Show cloud / blob decorations",
+          "label": "Show blob decorations",
           "default": true
         },
         {
@@ -540,7 +738,7 @@
     {
       "type": "range",
       "id": "card_radius",
-      "label": "Card border radius",
+      "label": "Card corner radius",
       "min": 0,
       "max": 40,
       "step": 2,
@@ -562,7 +760,7 @@
       "id": "autoplay_speed",
       "label": "Autoplay interval (seconds)",
       "min": 2,
-      "max": 12,
+      "max": 15,
       "step": 1,
       "default": 5
     },
@@ -602,6 +800,7 @@
             "badge_text": "limited time offer",
             "heading": "more nails,\nmore savings",
             "cta_text": "save now",
+            "media_type": "image",
             "card_bg_color": "#FF2D7C",
             "show_blobs": true,
             "price_line_1": "Any 2 at",
@@ -617,8 +816,25 @@
             "badge_text": "new arrivals",
             "heading": "nail your\nperfect look",
             "cta_text": "shop now",
+            "media_type": "image",
             "card_bg_color": "#1a1a1a",
             "show_blobs": true
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "badge_emoji": "🎬",
+            "badge_text": "watch & shop",
+            "heading": "see it in\naction",
+            "cta_text": "explore",
+            "media_type": "video",
+            "card_bg_color": "#0f0f0f",
+            "show_blobs": false,
+            "video_autoplay": true,
+            "video_loop": true,
+            "video_muted": true,
+            "video_controls": false
           }
         }
       ]
