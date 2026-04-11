@@ -1,0 +1,818 @@
+{% comment %}
+  SoulStruck How To Section
+  ─ Tabbed step-by-step guide with 2x2 image grid + content panel
+  ─ Accessible tabs with arrow-key navigation
+  ─ Fully customizable, mobile responsive, fast loading
+{% endcomment %}
+
+{%- liquid
+  assign pt = section.settings.section_padding_top
+  assign pb = section.settings.section_padding_bottom
+-%}
+
+<section
+  id="ss-ht-{{ section.id }}"
+  class="ss-ht"
+  style="
+    --ss-ht-bg: {{ section.settings.bg_color }};
+    --ss-ht-fg: {{ section.settings.text_color }};
+    --ss-ht-tab-active: {{ section.settings.tab_active_color }};
+    --ss-ht-tab-inactive: {{ section.settings.tab_inactive_color }};
+    --ss-ht-border: {{ section.settings.border_color }};
+    --ss-ht-badge-bg: {{ section.settings.badge_bg }};
+    --ss-ht-badge-fg: {{ section.settings.badge_color }};
+    --ss-ht-radius: {{ section.settings.image_radius }}px;
+    --ss-ht-pt: {{ pt }}px;
+    --ss-ht-pb: {{ pb }}px;
+  "
+>
+  <div class="ss-ht__container">
+
+    {%- if section.settings.heading != blank -%}
+      <h2 class="ss-ht__heading">{{ section.settings.heading | escape }}</h2>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+
+      {%- comment -%} ── Tab navigation ── {%- endcomment -%}
+      {%- if section.blocks.size > 1 -%}
+        <div class="ss-ht__tabs" role="tablist" aria-label="{{ section.settings.heading | escape }}">
+          {%- for block in section.blocks -%}
+            <button
+              class="ss-ht__tab{% if forloop.first %} ss-ht__tab--active{% endif %}"
+              role="tab"
+              aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+              aria-controls="ss-ht-panel-{{ block.id }}"
+              id="ss-ht-tab-{{ block.id }}"
+              data-tab="{{ forloop.index0 }}"
+              tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
+              {{ block.shopify_attributes }}
+            >
+              {{- block.settings.tab_label | escape -}}
+            </button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} ── Tab panels ── {%- endcomment -%}
+      {%- for block in section.blocks -%}
+        <div
+          class="ss-ht__panel{% if forloop.first %} ss-ht__panel--active{% endif %}"
+          id="ss-ht-panel-{{ block.id }}"
+          role="tabpanel"
+          aria-labelledby="ss-ht-tab-{{ block.id }}"
+          {% unless forloop.first %}hidden{% endunless %}
+          {{ block.shopify_attributes }}
+        >
+          <div class="ss-ht__layout">
+
+            {%- comment -%} Left: 2x2 step image grid {%- endcomment -%}
+            <div class="ss-ht__steps">
+              {%- for i in (1..4) -%}
+                {%- liquid
+                  case i
+                    when 1
+                      assign s_img   = block.settings.step1_image
+                      assign s_label = block.settings.step1_label
+                    when 2
+                      assign s_img   = block.settings.step2_image
+                      assign s_label = block.settings.step2_label
+                    when 3
+                      assign s_img   = block.settings.step3_image
+                      assign s_label = block.settings.step3_label
+                    when 4
+                      assign s_img   = block.settings.step4_image
+                      assign s_label = block.settings.step4_label
+                  endcase
+                -%}
+                <div class="ss-ht__step">
+                  <div class="ss-ht__step-wrap">
+                    <span class="ss-ht__badge" aria-hidden="true">{{ i }}</span>
+                    {%- if s_img != blank -%}
+                      <img
+                        src="{{ s_img | image_url: width: 480 }}"
+                        srcset="
+                          {{ s_img | image_url: width: 240 }} 240w,
+                          {{ s_img | image_url: width: 360 }} 360w,
+                          {{ s_img | image_url: width: 480 }} 480w,
+                          {{ s_img | image_url: width: 600 }} 600w
+                        "
+                        sizes="(min-width: 1024px) 22vw, (min-width: 750px) 28vw, 44vw"
+                        alt="{{ s_label | default: 'Step ' | append: i | escape }}"
+                        width="480"
+                        height="480"
+                        loading="lazy"
+                        class="ss-ht__step-img"
+                      >
+                    {%- else -%}
+                      <div class="ss-ht__step-placeholder">
+                        {{ 'image' | placeholder_svg_tag: 'ss-ht__placeholder-svg' }}
+                      </div>
+                    {%- endif -%}
+                  </div>
+                  {%- if s_label != blank -%}
+                    <p class="ss-ht__step-label">{{ s_label | escape }}</p>
+                  {%- endif -%}
+                </div>
+              {%- endfor -%}
+            </div>
+
+            {%- comment -%} Right: content panel {%- endcomment -%}
+            <div class="ss-ht__content">
+              {%- if block.settings.heading != blank -%}
+                <h3 class="ss-ht__content-heading">{{ block.settings.heading }}</h3>
+              {%- endif -%}
+              {%- if block.settings.description != blank -%}
+                <p class="ss-ht__content-desc">{{ block.settings.description }}</p>
+              {%- endif -%}
+
+              {%- assign has_bullets = false -%}
+              {%- if block.settings.bullet1_text != blank or block.settings.bullet2_text != blank or block.settings.bullet3_text != blank -%}
+                {%- assign has_bullets = true -%}
+              {%- endif -%}
+
+              {%- if has_bullets -%}
+                <ul class="ss-ht__bullets" role="list">
+                  {%- for j in (1..3) -%}
+                    {%- liquid
+                      case j
+                        when 1
+                          assign b_text = block.settings.bullet1_text
+                          assign b_icon = block.settings.bullet1_icon
+                        when 2
+                          assign b_text = block.settings.bullet2_text
+                          assign b_icon = block.settings.bullet2_icon
+                        when 3
+                          assign b_text = block.settings.bullet3_text
+                          assign b_icon = block.settings.bullet3_icon
+                      endcase
+                    -%}
+                    {%- if b_text != blank -%}
+                      <li class="ss-ht__bullet">
+                        <span class="ss-ht__bullet-icon" aria-hidden="true">
+                          {%- case b_icon -%}
+                            {%- when 'globe' -%}
+                              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                            {%- when 'heart' -%}
+                              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                            {%- when 'smile' -%}
+                              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                            {%- when 'leaf' -%}
+                              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8C8 10 5.9 16.17 3.82 19.34"/><path d="M2 12C2 12 5 7 12 7s10 5 10 10c0 0-3 2-10 2S2 14 2 12z"/></svg>
+                            {%- when 'star' -%}
+                              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            {%- when 'shield' -%}
+                              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            {%- when 'zap' -%}
+                              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            {%- when 'clock' -%}
+                              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            {%- when 'recycle' -%}
+                              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="1.5 8.5 1.5 3.5 6.5 3.5"/><path d="M1.5 3.5 A10 10 0 0 1 21.5 12"/><polyline points="22.5 15.5 22.5 20.5 17.5 20.5"/><path d="M22.5 20.5 A10 10 0 0 1 2.5 12"/></svg>
+                            {%- else -%}
+                              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                          {%- endcase -%}
+                        </span>
+                        <span class="ss-ht__bullet-text">{{ b_text | escape }}</span>
+                      </li>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+            </div>
+
+          </div>
+        </div>
+      {%- endfor -%}
+
+    {%- else -%}
+      {%- if request.design_mode -%}
+        <div class="ss-ht__empty">Add a tab block to get started.</div>
+      {%- endif -%}
+    {%- endif -%}
+
+  </div>
+</section>
+
+<style>
+/* ═══════════════════════════════════════════════════════
+   SoulStruck How To
+   ═══════════════════════════════════════════════════════ */
+#ss-ht-{{ section.id }} {
+  background: var(--ss-ht-bg, #fff);
+  color: var(--ss-ht-fg, #1a1a1a);
+  padding-top: var(--ss-ht-pt, 64px);
+  padding-bottom: var(--ss-ht-pb, 64px);
+}
+
+#ss-ht-{{ section.id }} .ss-ht__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ── Heading ── */
+#ss-ht-{{ section.id }} .ss-ht__heading {
+  text-align: center;
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 28px;
+  line-height: 1.15;
+}
+
+/* ── Tabs ── */
+#ss-ht-{{ section.id }} .ss-ht__tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  border-bottom: 1.5px solid var(--ss-ht-border, #e0e0e0);
+  margin-bottom: 48px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+#ss-ht-{{ section.id }} .ss-ht__tabs::-webkit-scrollbar { display: none; }
+
+#ss-ht-{{ section.id }} .ss-ht__tab {
+  background: transparent;
+  border: none;
+  border-bottom: 2.5px solid transparent;
+  margin-bottom: -1.5px;
+  padding: 10px 28px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--ss-ht-tab-inactive, #999);
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+#ss-ht-{{ section.id }} .ss-ht__tab:hover {
+  color: var(--ss-ht-fg, #1a1a1a);
+}
+#ss-ht-{{ section.id }} .ss-ht__tab--active {
+  color: var(--ss-ht-tab-active, #1a1a1a);
+  border-bottom-color: var(--ss-ht-tab-active, #1a1a1a);
+}
+#ss-ht-{{ section.id }} .ss-ht__tab:focus-visible {
+  outline: 2px solid var(--ss-ht-tab-active, #1a1a1a);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ── Panels ── */
+#ss-ht-{{ section.id }} .ss-ht__panel {
+  display: none;
+  animation: ss-ht-fade 0.28s ease;
+}
+#ss-ht-{{ section.id }} .ss-ht__panel--active {
+  display: block;
+}
+@keyframes ss-ht-fade {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Layout: images left, content right ── */
+#ss-ht-{{ section.id }} .ss-ht__layout {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 48px 64px;
+  align-items: center;
+}
+
+/* ── 2x2 step grid ── */
+#ss-ht-{{ section.id }} .ss-ht__steps {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+#ss-ht-{{ section.id }} .ss-ht__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+#ss-ht-{{ section.id }} .ss-ht__step-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--ss-ht-radius, 16px);
+  overflow: hidden;
+  background: #f5f3f0;
+}
+
+#ss-ht-{{ section.id }} .ss-ht__step-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+#ss-ht-{{ section.id }} .ss-ht__step-wrap:hover .ss-ht__step-img {
+  transform: scale(1.04);
+}
+
+#ss-ht-{{ section.id }} .ss-ht__step-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#ss-ht-{{ section.id }} .ss-ht__placeholder-svg {
+  width: 55%;
+  height: 55%;
+  opacity: 0.25;
+}
+
+#ss-ht-{{ section.id }} .ss-ht__badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--ss-ht-badge-bg, #1a1a1a);
+  color: var(--ss-ht-badge-fg, #fff);
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  pointer-events: none;
+}
+
+#ss-ht-{{ section.id }} .ss-ht__step-label {
+  font-size: 0.875rem;
+  color: var(--ss-ht-fg, #1a1a1a);
+  text-align: center;
+  margin: 0;
+  opacity: 0.65;
+  font-weight: 400;
+}
+
+/* ── Content panel ── */
+#ss-ht-{{ section.id }} .ss-ht__content {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+#ss-ht-{{ section.id }} .ss-ht__content-heading {
+  font-size: clamp(1.375rem, 2.2vw, 1.875rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+#ss-ht-{{ section.id }} .ss-ht__content-desc {
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  opacity: 0.65;
+  margin: 0;
+}
+
+/* ── Bullets ── */
+#ss-ht-{{ section.id }} .ss-ht__bullets {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+#ss-ht-{{ section.id }} .ss-ht__bullet {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+#ss-ht-{{ section.id }} .ss-ht__bullet-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--ss-ht-fg, #1a1a1a);
+}
+
+/* ── Editor placeholder ── */
+#ss-ht-{{ section.id }} .ss-ht__empty {
+  text-align: center;
+  padding: 48px;
+  opacity: 0.4;
+  font-size: 0.875rem;
+}
+
+/* ── Mobile ── */
+@media (max-width: 749px) {
+  #ss-ht-{{ section.id }} {
+    --ss-ht-pt: 40px;
+    --ss-ht-pb: 40px;
+  }
+  #ss-ht-{{ section.id }} .ss-ht__tabs {
+    justify-content: flex-start;
+    margin-bottom: 32px;
+  }
+  #ss-ht-{{ section.id }} .ss-ht__tab {
+    padding: 10px 18px;
+    font-size: 0.875rem;
+  }
+  #ss-ht-{{ section.id }} .ss-ht__layout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  #ss-ht-{{ section.id }} .ss-ht__content {
+    order: -1;
+  }
+  #ss-ht-{{ section.id }} .ss-ht__steps {
+    gap: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #ss-ht-{{ section.id }} .ss-ht__panel { animation: none; }
+  #ss-ht-{{ section.id }} .ss-ht__step-img { transition: none; }
+}
+</style>
+
+<script>
+(function () {
+  'use strict';
+  const root = document.getElementById('ss-ht-{{ section.id }}');
+  if (!root) return;
+
+  const tabs   = Array.from(root.querySelectorAll('.ss-ht__tab'));
+  const panels = Array.from(root.querySelectorAll('.ss-ht__panel'));
+  if (!tabs.length) return;
+
+  function activate(index) {
+    tabs.forEach((tab, i) => {
+      const on = i === index;
+      tab.classList.toggle('ss-ht__tab--active', on);
+      tab.setAttribute('aria-selected', on ? 'true' : 'false');
+      tab.setAttribute('tabindex', on ? '0' : '-1');
+    });
+    panels.forEach((panel, i) => {
+      const on = i === index;
+      panel.classList.toggle('ss-ht__panel--active', on);
+      if (on) { panel.removeAttribute('hidden'); }
+      else    { panel.setAttribute('hidden', ''); }
+    });
+  }
+
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => activate(i));
+    tab.addEventListener('keydown', (e) => {
+      let next = i;
+      if (e.key === 'ArrowRight') { next = (i + 1) % tabs.length; }
+      else if (e.key === 'ArrowLeft') { next = (i - 1 + tabs.length) % tabs.length; }
+      else if (e.key === 'Home') { next = 0; }
+      else if (e.key === 'End')  { next = tabs.length - 1; }
+      else return;
+      e.preventDefault();
+      activate(next);
+      tabs[next].focus();
+    });
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SS How To",
+  "tag": "section",
+  "class": "soulstruck-how-to",
+  "disabled_on": { "groups": ["header", "footer"] },
+  "max_blocks": 5,
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "How To Tab",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Tab"
+        },
+        {
+          "type": "text",
+          "id": "tab_label",
+          "label": "Tab label",
+          "default": "apply with glue"
+        },
+        {
+          "type": "header",
+          "content": "Content Panel"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Super Sticky Glue (stays ~2-3 weeks)"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Prep. Press. Pose. Three steps to perfect nails."
+        },
+        {
+          "type": "header",
+          "content": "Feature Bullets"
+        },
+        {
+          "type": "select",
+          "id": "bullet1_icon",
+          "label": "Bullet 1 icon",
+          "options": [
+            { "value": "globe",   "label": "Globe"   },
+            { "value": "heart",   "label": "Heart"   },
+            { "value": "smile",   "label": "Smile"   },
+            { "value": "leaf",    "label": "Leaf"    },
+            { "value": "star",    "label": "Star"    },
+            { "value": "shield",  "label": "Shield"  },
+            { "value": "zap",     "label": "Zap"     },
+            { "value": "clock",   "label": "Clock"   },
+            { "value": "recycle", "label": "Recycle" },
+            { "value": "check",   "label": "Check"   }
+          ],
+          "default": "globe"
+        },
+        {
+          "type": "text",
+          "id": "bullet1_text",
+          "label": "Bullet 1 text",
+          "default": "world's strongest nail glue"
+        },
+        {
+          "type": "select",
+          "id": "bullet2_icon",
+          "label": "Bullet 2 icon",
+          "options": [
+            { "value": "globe",   "label": "Globe"   },
+            { "value": "heart",   "label": "Heart"   },
+            { "value": "smile",   "label": "Smile"   },
+            { "value": "leaf",    "label": "Leaf"    },
+            { "value": "star",    "label": "Star"    },
+            { "value": "shield",  "label": "Shield"  },
+            { "value": "zap",     "label": "Zap"     },
+            { "value": "clock",   "label": "Clock"   },
+            { "value": "recycle", "label": "Recycle" },
+            { "value": "check",   "label": "Check"   }
+          ],
+          "default": "heart"
+        },
+        {
+          "type": "text",
+          "id": "bullet2_text",
+          "label": "Bullet 2 text",
+          "default": "zero nail damage"
+        },
+        {
+          "type": "select",
+          "id": "bullet3_icon",
+          "label": "Bullet 3 icon",
+          "options": [
+            { "value": "globe",   "label": "Globe"   },
+            { "value": "heart",   "label": "Heart"   },
+            { "value": "smile",   "label": "Smile"   },
+            { "value": "leaf",    "label": "Leaf"    },
+            { "value": "star",    "label": "Star"    },
+            { "value": "shield",  "label": "Shield"  },
+            { "value": "zap",     "label": "Zap"     },
+            { "value": "clock",   "label": "Clock"   },
+            { "value": "recycle", "label": "Recycle" },
+            { "value": "check",   "label": "Check"   }
+          ],
+          "default": "smile"
+        },
+        {
+          "type": "text",
+          "id": "bullet3_text",
+          "label": "Bullet 3 text",
+          "default": "vegan & cruelty-free"
+        },
+        {
+          "type": "header",
+          "content": "Step 1"
+        },
+        {
+          "type": "image_picker",
+          "id": "step1_image",
+          "label": "Step 1 image"
+        },
+        {
+          "type": "text",
+          "id": "step1_label",
+          "label": "Step 1 label",
+          "default": "prep"
+        },
+        {
+          "type": "header",
+          "content": "Step 2"
+        },
+        {
+          "type": "image_picker",
+          "id": "step2_image",
+          "label": "Step 2 image"
+        },
+        {
+          "type": "text",
+          "id": "step2_label",
+          "label": "Step 2 label",
+          "default": "pick"
+        },
+        {
+          "type": "header",
+          "content": "Step 3"
+        },
+        {
+          "type": "image_picker",
+          "id": "step3_image",
+          "label": "Step 3 image"
+        },
+        {
+          "type": "text",
+          "id": "step3_label",
+          "label": "Step 3 label",
+          "default": "apply"
+        },
+        {
+          "type": "header",
+          "content": "Step 4"
+        },
+        {
+          "type": "image_picker",
+          "id": "step4_image",
+          "label": "Step 4 image"
+        },
+        {
+          "type": "text",
+          "id": "step4_label",
+          "label": "Step 4 label",
+          "default": "press"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section heading",
+      "default": "how to"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "tab_active_color",
+      "label": "Active tab color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "tab_inactive_color",
+      "label": "Inactive tab color",
+      "default": "#999999"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Tab underline color",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "color",
+      "id": "badge_bg",
+      "label": "Step number background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "badge_color",
+      "label": "Step number text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "image_radius",
+      "label": "Image corner radius",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS How To",
+      "blocks": [
+        {
+          "type": "tab",
+          "settings": {
+            "tab_label": "apply with glue",
+            "heading": "Super Sticky Glue (stays ~2-3 weeks)",
+            "description": "Prep. Press. Pose. Three steps to perfect nails.",
+            "bullet1_icon": "globe",
+            "bullet1_text": "world's strongest nail glue",
+            "bullet2_icon": "heart",
+            "bullet2_text": "zero nail damage",
+            "bullet3_icon": "smile",
+            "bullet3_text": "vegan & cruelty-free",
+            "step1_label": "prep",
+            "step2_label": "pick",
+            "step3_label": "apply",
+            "step4_label": "press"
+          }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "tab_label": "apply with tabs",
+            "heading": "Gentle Adhesive Tabs (stays ~1 week)",
+            "description": "Perfect for sensitive nails or short-term wear.",
+            "bullet1_icon": "leaf",
+            "bullet1_text": "damage-free removal",
+            "bullet2_icon": "heart",
+            "bullet2_text": "reusable nails",
+            "bullet3_icon": "clock",
+            "bullet3_text": "ready in 10 minutes",
+            "step1_label": "prep",
+            "step2_label": "pick",
+            "step3_label": "apply tab",
+            "step4_label": "press"
+          }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "tab_label": "remove press-ons",
+            "heading": "Easy Removal, Zero Damage",
+            "description": "Soak, lift, and go. Your natural nails stay healthy.",
+            "bullet1_icon": "shield",
+            "bullet1_text": "no peel or force needed",
+            "bullet2_icon": "leaf",
+            "bullet2_text": "safe for natural nails",
+            "bullet3_icon": "recycle",
+            "bullet3_text": "nails ready to reuse",
+            "step1_label": "soak",
+            "step2_label": "lift",
+            "step3_label": "clean",
+            "step4_label": "store"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
