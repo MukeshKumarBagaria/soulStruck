@@ -418,51 +418,11 @@
                   "block_order": [
                     "text_howtouse"
                   ]
-                },
-                "accordion_shipping": {
-                  "type": "_accordion-row",
-                  "settings": {
-                    "heading": "Shipping & Returns",
-                    "open_by_default": false,
-                    "icon": "none",
-                    "width": 20
-                  },
-                  "blocks": {
-                    "text_shipping": {
-                      "type": "text",
-                      "settings": {
-                        "text": "<p>Free shipping on all prepaid orders. Orders are dispatched within 24-48 hours. Easy 7-day return policy for unopened products.</p>",
-                        "width": "100%",
-                        "max_width": "normal",
-                        "alignment": "left",
-                        "type_preset": "rte",
-                        "font": "var(--font-body--family)",
-                        "font_size": "1rem",
-                        "line_height": "normal",
-                        "letter_spacing": "normal",
-                        "case": "none",
-                        "wrap": "pretty",
-                        "color": "var(--color-foreground)",
-                        "background": false,
-                        "background_color": "#00000026",
-                        "corner_radius": 0,
-                        "padding-block-start": 0,
-                        "padding-block-end": 0,
-                        "padding-inline-start": 0,
-                        "padding-inline-end": 0
-                      },
-                      "blocks": {}
-                    }
-                  },
-                  "block_order": [
-                    "text_shipping"
-                  ]
                 }
               },
               "block_order": [
                 "accordion_ingredients",
-                "accordion_howtouse",
-                "accordion_shipping"
+                "accordion_howtouse"
               ]
             }
           },
