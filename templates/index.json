@@ -21,6 +21,51 @@
             "hover_text": ""
           }
         },
+        "circle_VbRG6N": {
+          "type": "circle",
+          "settings": {
+            "collection": "marble",
+            "custom_label": "",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        },
+        "circle_dzMnxr": {
+          "type": "circle",
+          "settings": {
+            "collection": "lavender-purple",
+            "custom_label": "",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        },
+        "circle_CrUcAB": {
+          "type": "circle",
+          "settings": {
+            "collection": "green",
+            "custom_label": "",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        },
+        "circle_nN4qtn": {
+          "type": "circle",
+          "settings": {
+            "collection": "golds-silvers",
+            "custom_label": "",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        },
+        "circle_YecL7X": {
+          "type": "circle",
+          "settings": {
+            "collection": "glossy",
+            "custom_label": "",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        },
         "circle_bDnVkQ": {
           "type": "circle",
           "settings": {
@@ -78,8 +123,8 @@
         "circle_86VPTL": {
           "type": "circle",
           "settings": {
-            "collection": "",
-            "custom_label": "3D design",
+            "collection": "bride-vibe-only",
+            "custom_label": "",
             "custom_url": "",
             "hover_text": ""
           }
@@ -87,8 +132,8 @@
         "circle_H4aPdW": {
           "type": "circle",
           "settings": {
-            "collection": "",
-            "custom_label": "summer",
+            "collection": "glitter",
+            "custom_label": "",
             "custom_url": "",
             "hover_text": ""
           }
@@ -96,6 +141,11 @@
       },
       "block_order": [
         "circle_Wbmikq",
+        "circle_VbRG6N",
+        "circle_dzMnxr",
+        "circle_CrUcAB",
+        "circle_nN4qtn",
+        "circle_YecL7X",
         "circle_bDnVkQ",
         "circle_AenENK",
         "circle_7gNnDg",
