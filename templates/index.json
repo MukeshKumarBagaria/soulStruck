@@ -15,8 +15,8 @@
         "circle_Wbmikq": {
           "type": "circle",
           "settings": {
-            "collection": "",
-            "custom_label": "all",
+            "collection": "bestseller",
+            "custom_label": "",
             "custom_url": "",
             "hover_text": ""
           }
@@ -24,8 +24,8 @@
         "circle_bDnVkQ": {
           "type": "circle",
           "settings": {
-            "collection": "",
-            "custom_label": "cat eye",
+            "collection": "3d-nails",
+            "custom_label": "",
             "custom_url": "",
             "hover_text": ""
           }
@@ -33,8 +33,8 @@
         "circle_AenENK": {
           "type": "circle",
           "settings": {
-            "collection": "",
-            "custom_label": "chrome",
+            "collection": "animal-print",
+            "custom_label": "",
             "custom_url": "",
             "hover_text": ""
           }
@@ -42,8 +42,8 @@
         "circle_7gNnDg": {
           "type": "circle",
           "settings": {
-            "collection": "",
-            "custom_label": "french",
+            "collection": "blacks-whites",
+            "custom_label": "",
             "custom_url": "",
             "hover_text": ""
           }
@@ -51,8 +51,8 @@
         "circle_kXwwKC": {
           "type": "circle",
           "settings": {
-            "collection": "",
-            "custom_label": "ombre",
+            "collection": "blues",
+            "custom_label": "",
             "custom_url": "",
             "hover_text": ""
           }
@@ -60,8 +60,8 @@
         "circle_YMDPAw": {
           "type": "circle",
           "settings": {
-            "collection": "",
-            "custom_label": "matte",
+            "collection": "french-manicure",
+            "custom_label": "",
             "custom_url": "",
             "hover_text": ""
           }
@@ -69,8 +69,8 @@
         "circle_C9ykja": {
           "type": "circle",
           "settings": {
-            "collection": "",
-            "custom_label": "glossy",
+            "collection": "gemstone",
+            "custom_label": "",
             "custom_url": "",
             "hover_text": ""
           }
@@ -107,7 +107,7 @@
       ],
       "name": "SS Collection Circles",
       "settings": {
-        "heading": "Shop by Style",
+        "heading": "",
         "view_all_text": "View all",
         "view_all_url": "",
         "show_hover_overlay": true,
@@ -123,7 +123,7 @@
         "bg_color": "#ffffff",
         "label_color": "#1a1a1a",
         "label_hover_color": "#1a1a1a",
-        "accent_color": "#FF2D7C",
+        "accent_color": "#ff2d7c",
         "border_color": "#e8e8e8",
         "border_hover_color": "#1a1a1a",
         "hover_overlay_color": "#000000",
@@ -136,8 +136,8 @@
         "gap": 20,
         "label_size": 13,
         "label_weight": "500",
-        "padding_top": 40,
-        "padding_bottom": 40
+        "padding_top": 0,
+        "padding_bottom": 0
       }
     },
     "soulstruck_hero_slider_hTNKR3": {
@@ -185,7 +185,7 @@
       "name": "SoulStruck Hero Slider",
       "settings": {
         "bg_color": "#ffffff",
-        "accent_color": "#FF2D7C",
+        "accent_color": "#ff2d7c",
         "card_radius": 20,
         "autoplay": true,
         "autoplay_speed": 5,
