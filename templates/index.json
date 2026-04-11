@@ -219,6 +219,7 @@
             "subtext": "Shop the best deals on press-on nails",
             "cta_text": "shop now",
             "cta_url": "",
+            "card_image": "shopify://shop_images/banner-1.jpg",
             "card_bg_color": "#1a1a1a",
             "show_blobs": true,
             "price_line_1": "Any 2 at",
