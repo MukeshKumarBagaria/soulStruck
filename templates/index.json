@@ -252,7 +252,7 @@
         "accent_color": "#ff2d7c",
         "card_radius": 20,
         "autoplay": true,
-        "autoplay_speed": 5,
+        "autoplay_speed": 4,
         "padding_top": 48,
         "padding_bottom": 48
       }
