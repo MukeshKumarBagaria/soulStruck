@@ -181,7 +181,7 @@
         "hover_text_color": "#ffffff",
         "arrow_bg_color": "#ffffff",
         "arrow_icon_color": "#1a1a1a",
-        "circle_size": 108,
+        "circle_size": 76,
         "border_width": 2,
         "gap": 20,
         "label_size": 13,
