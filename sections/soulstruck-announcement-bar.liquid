@@ -1,0 +1,766 @@
+{% comment %}
+  SoulStruck Announcement Bar
+  ─ Up to 10 slides, 3 animation types (slide / slide-up / fade)
+  ─ Autoplay, arrows, dots, progress bar, dismiss button
+  ─ Text always centered; fully customisable colours & typography
+{% endcomment %}
+
+{%- liquid
+  assign slides   = section.blocks
+  assign count    = slides.size
+  assign anim     = section.settings.animation_type
+  assign dur      = section.settings.animation_duration
+  assign speed_ms = section.settings.autoplay_speed | times: 1000
+-%}
+
+{%- if count > 0 -%}
+
+<style>
+  #ss-ann-{{ section.id }} {
+    --bg          : {{ section.settings.bg_color }};
+    --fg          : {{ section.settings.text_color }};
+    --link        : {{ section.settings.link_color }};
+    --link-hover  : {{ section.settings.link_hover_color }};
+    --ctrl        : {{ section.settings.controls_color }};
+    --progress    : {{ section.settings.progress_color }};
+    --border-clr  : {{ section.settings.border_color }};
+    --border-h    : {{ section.settings.border_height }}px;
+    --bar-h       : {{ section.settings.bar_height }}px;
+    --font-sz     : {{ section.settings.font_size }}px;
+    --font-wt     : {{ section.settings.font_weight }};
+    --letter-sp   : {{ section.settings.letter_spacing }}px;
+    --text-tf     : {{ section.settings.text_transform }};
+    --anim-dur    : {{ dur }}ms;
+    --speed       : {{ speed_ms }}ms;
+  }
+</style>
+
+<div
+  id="ss-ann-{{ section.id }}"
+  class="ss-ann"
+  data-anim="{{ anim }}"
+  data-count="{{ count }}"
+  data-speed="{{ speed_ms }}"
+  data-dur="{{ dur }}"
+  data-autoplay="{{ section.settings.autoplay }}"
+  data-pause="{{ section.settings.pause_on_hover }}"
+  data-loop="{{ section.settings.loop }}"
+  role="region"
+  aria-label="Announcement bar"
+>
+
+  {%- comment -%} ── Main bar ──────────────────────────────────── {%- endcomment -%}
+  <div class="ss-ann__bar">
+
+    {%- if section.settings.show_arrows and count > 1 -%}
+      <button
+        class="ss-ann__ctrl ss-ann__ctrl--prev"
+        aria-label="Previous announcement"
+        tabindex="0"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+    {%- endif -%}
+
+    <div class="ss-ann__viewport" aria-live="polite" aria-atomic="true">
+      {%- for block in slides -%}
+        <div
+          class="ss-ann__slide{% if forloop.first %} is-active{% endif %}"
+          data-index="{{ forloop.index0 }}"
+          {{ block.shopify_attributes }}
+        >
+          <p class="ss-ann__text">
+            {%- if block.settings.link != blank -%}
+              <a
+                href="{{ block.settings.link }}"
+                class="ss-ann__link"
+                {% if block.settings.link_new_tab %}target="_blank" rel="noopener"{% endif %}
+              >
+                {{- block.settings.text -}}
+              </a>
+            {%- else -%}
+              {{- block.settings.text -}}
+            {%- endif -%}
+          </p>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.show_arrows and count > 1 -%}
+      <button
+        class="ss-ann__ctrl ss-ann__ctrl--next"
+        aria-label="Next announcement"
+        tabindex="0"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    {%- endif -%}
+
+    {%- if section.settings.show_close -%}
+      <button
+        class="ss-ann__ctrl ss-ann__ctrl--close"
+        aria-label="Dismiss announcements"
+        tabindex="0"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    {%- endif -%}
+
+  </div>
+
+  {%- comment -%} ── Dots ──────────────────────────────────────── {%- endcomment -%}
+  {%- if section.settings.show_dots and count > 1 -%}
+    <div class="ss-ann__dots" aria-hidden="true">
+      {%- for block in slides -%}
+        <button
+          class="ss-ann__dot{% if forloop.first %} is-active{% endif %}"
+          data-index="{{ forloop.index0 }}"
+          aria-label="Announcement {{ forloop.index }}"
+        ></button>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} ── Progress bar ──────────────────────────────── {%- endcomment -%}
+  {%- if section.settings.show_progress and count > 1 and section.settings.autoplay -%}
+    <div class="ss-ann__progress" aria-hidden="true">
+      <div class="ss-ann__progress-fill"></div>
+    </div>
+  {%- endif -%}
+
+</div>
+
+{%- endif -%}
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   SoulStruck Announcement Bar
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Wrapper ────────────────────────────────────────────────── */
+.ss-ann {
+  background: var(--bg, #ffffff);
+  color: var(--fg, #1a1a1a);
+  border-top: var(--border-h, 0px) solid var(--border-clr, transparent);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+  font-size: var(--font-sz, 13px);
+  font-weight: var(--font-wt, 500);
+  letter-spacing: var(--letter-sp, 0.13px);
+  text-transform: var(--text-tf, none);
+}
+
+/* ── Bar row ─────────────────────────────────────────────────── */
+.ss-ann__bar {
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
+  align-items: stretch;
+  height: var(--bar-h, 40px);
+  position: relative;
+}
+/* When no arrows: collapse the columns */
+.ss-ann[data-count="1"] .ss-ann__bar,
+.ss-ann:not(:has(.ss-ann__ctrl--prev)) .ss-ann__bar {
+  grid-template-columns: 1fr;
+}
+
+/* ── Viewport ────────────────────────────────────────────────── */
+.ss-ann__viewport {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+/* ── Slides ──────────────────────────────────────────────────── */
+.ss-ann__slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+.ss-ann__slide.is-active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+.ss-ann__text {
+  margin: 0;
+  text-align: center;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.ss-ann__link {
+  color: var(--link, inherit);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  transition: opacity 0.15s ease;
+}
+@media (hover: hover) {
+  .ss-ann__link:hover {
+    color: var(--link-hover, inherit);
+    opacity: 0.75;
+  }
+}
+
+/* ── Animation: SLIDE (horizontal) ──────────────────────────── */
+.ss-ann[data-anim="slide"] .ss-ann__slide {
+  opacity: 1;
+  transform: translateX(100%);
+  transition: transform var(--anim-dur, 480ms) cubic-bezier(0.25, 1, 0.5, 1);
+}
+.ss-ann[data-anim="slide"] .ss-ann__slide.is-active {
+  transform: translateX(0);
+}
+
+/* ── Animation: FADE ─────────────────────────────────────────── */
+.ss-ann[data-anim="fade"] .ss-ann__slide {
+  opacity: 0;
+  transform: none;
+  transition: opacity var(--anim-dur, 400ms) ease;
+}
+.ss-ann[data-anim="fade"] .ss-ann__slide.is-active {
+  opacity: 1;
+}
+
+/* ── Animation: SLIDE UP (vertical ticker) ───────────────────── */
+.ss-ann[data-anim="slide-up"] .ss-ann__slide {
+  opacity: 0;
+  transform: translateY(100%);
+  transition: transform var(--anim-dur, 420ms) cubic-bezier(0.25, 1, 0.5, 1),
+              opacity calc(var(--anim-dur, 420ms) * 0.6) ease;
+}
+.ss-ann[data-anim="slide-up"] .ss-ann__slide.is-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Controls: Prev / Next / Close ──────────────────────────── */
+.ss-ann__ctrl {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ctrl, inherit);
+  opacity: 0.55;
+  transition: opacity 0.15s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+@media (hover: hover) {
+  .ss-ann__ctrl:hover { opacity: 1; }
+}
+.ss-ann__ctrl:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: -3px;
+  opacity: 1;
+}
+/* Close sits in absolute position so it doesn't shift the grid */
+.ss-ann__ctrl--close {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: var(--bar-h, 40px);
+  z-index: 2;
+}
+
+/* ── Dots ────────────────────────────────────────────────────── */
+.ss-ann__dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 0 5px;
+}
+.ss-ann__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--ctrl, currentColor);
+  opacity: 0.3;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  flex-shrink: 0;
+}
+.ss-ann__dot.is-active {
+  opacity: 1;
+  transform: scale(1.35);
+}
+
+/* ── Progress bar ────────────────────────────────────────────── */
+.ss-ann__progress {
+  height: 2px;
+  background: rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+}
+.ss-ann__progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--progress, currentColor);
+  opacity: 0.6;
+}
+@keyframes ss-ann-progress {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+
+/* ── Dismiss animation ───────────────────────────────────────── */
+.ss-ann--dismissing {
+  overflow: hidden;
+  transition: height 0.3s ease, opacity 0.3s ease !important;
+  opacity: 0 !important;
+  height: 0 !important;
+}
+
+/* ── Reduced motion ──────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .ss-ann__slide,
+  .ss-ann__ctrl,
+  .ss-ann__dot { transition: none !important; }
+  .ss-ann__progress-fill { animation: none !important; }
+  .ss-ann__slide { transform: none !important; }
+}
+</style>
+
+<script>
+(function () {
+  'use strict';
+
+  const el = document.getElementById('ss-ann-{{ section.id }}');
+  if (!el) return;
+
+  /* ── Dismiss: skip render if already closed this session ── */
+  const DISMISS_KEY = 'ss-ann-closed-{{ section.id }}';
+  if (sessionStorage.getItem(DISMISS_KEY)) {
+    el.style.display = 'none';
+    return;
+  }
+
+  const slides  = Array.from(el.querySelectorAll('.ss-ann__slide'));
+  const dots    = Array.from(el.querySelectorAll('.ss-ann__dot'));
+  const prevBtn = el.querySelector('.ss-ann__ctrl--prev');
+  const nextBtn = el.querySelector('.ss-ann__ctrl--next');
+  const closeBtn= el.querySelector('.ss-ann__ctrl--close');
+  const progFill= el.querySelector('.ss-ann__progress-fill');
+
+  const count    = slides.length;
+  const anim     = el.dataset.anim;
+  const dur      = parseInt(el.dataset.dur,   10) || 480;
+  const speed    = parseInt(el.dataset.speed, 10) || 4000;
+  const autoplay = el.dataset.autoplay === 'true';
+  const doPause  = el.dataset.pause    === 'true';
+  const loop     = el.dataset.loop     === 'true';
+
+  let current = 0;
+  let timer   = null;
+  let locked  = false;
+
+  /* ── Core transition ─────────────────────────────────────── */
+  function goTo(next, dir) {
+    if (locked || next === current || count < 2) return;
+    if (!loop) {
+      if (dir === 'next' && next === 0)          return;
+      if (dir === 'prev' && next === count - 1)  return;
+    }
+
+    locked = true;
+
+    const fromSlide = slides[current];
+    const toSlide   = slides[next];
+
+    /* ── Determine enter / exit transforms by animation type ── */
+    if (anim === 'slide') {
+      const enterX = dir === 'next' ? '100%' : '-100%';
+      const exitX  = dir === 'next' ? '-100%' : '100%';
+
+      /* Position the entering slide off-screen without transition */
+      toSlide.style.transition = 'none';
+      toSlide.style.transform  = `translateX(${enterX})`;
+      void toSlide.offsetWidth; /* force reflow */
+      toSlide.style.transition = '';
+      toSlide.style.transform  = ''; /* CSS .is-active handles translateX(0) */
+
+      /* Exit current slide */
+      fromSlide.style.transform = `translateX(${exitX})`;
+
+    } else if (anim === 'slide-up') {
+      const enterY = dir === 'next' ? '100%' : '-100%';
+      const exitY  = dir === 'next' ? '-100%' : '100%';
+
+      toSlide.style.transition = 'none';
+      toSlide.style.transform  = `translateY(${enterY})`;
+      toSlide.style.opacity    = '0';
+      void toSlide.offsetWidth;
+      toSlide.style.transition = '';
+      toSlide.style.transform  = '';
+      toSlide.style.opacity    = '';
+
+      fromSlide.style.transform = `translateY(${exitY})`;
+      fromSlide.style.opacity   = '0';
+    }
+    /* fade: CSS handles opacity via is-active alone */
+
+    /* Swap active class */
+    fromSlide.classList.remove('is-active');
+    toSlide.classList.add('is-active');
+
+    /* Dots */
+    dots[current]?.classList.remove('is-active');
+    dots[next]?.classList.add('is-active');
+    current = next;
+
+    /* Reset progress bar */
+    resetProgress();
+
+    /* Cleanup inline styles after transition */
+    setTimeout(() => {
+      fromSlide.style.transform = '';
+      fromSlide.style.opacity   = '';
+      locked = false;
+    }, dur + 60);
+  }
+
+  const next = () => goTo((current + 1) % count, 'next');
+  const prev = () => goTo((current - 1 + count) % count, 'prev');
+
+  /* ── Progress bar ────────────────────────────────────────── */
+  function resetProgress() {
+    if (!progFill) return;
+    progFill.style.animation = 'none';
+    void progFill.offsetWidth;
+    progFill.style.animation = `ss-ann-progress ${speed}ms linear forwards`;
+  }
+
+  /* ── Autoplay timer ──────────────────────────────────────── */
+  function startTimer() {
+    if (!autoplay || count < 2) return;
+    clearInterval(timer);
+    timer = setInterval(next, speed);
+  }
+  function stopTimer() { clearInterval(timer); }
+
+  /* ── Dismiss ─────────────────────────────────────────────── */
+  function dismiss() {
+    stopTimer();
+    const h = el.offsetHeight;
+    el.style.height   = h + 'px';
+    el.style.overflow = 'hidden';
+    requestAnimationFrame(() => {
+      el.style.transition = 'height 0.3s ease, opacity 0.3s ease';
+      el.style.height  = '0';
+      el.style.opacity = '0';
+    });
+    setTimeout(() => {
+      el.style.display = 'none';
+      sessionStorage.setItem(DISMISS_KEY, '1');
+    }, 320);
+  }
+
+  /* ── Event listeners ─────────────────────────────────────── */
+  nextBtn?.addEventListener('click', () => { next(); startTimer(); });
+  prevBtn?.addEventListener('click', () => { prev(); startTimer(); });
+  closeBtn?.addEventListener('click', dismiss);
+
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', () => {
+      goTo(i, i > current ? 'next' : 'prev');
+      startTimer();
+    });
+  });
+
+  /* Keyboard: left/right arrows when focused inside bar */
+  el.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') { next(); startTimer(); }
+    if (e.key === 'ArrowLeft')  { prev(); startTimer(); }
+  });
+
+  if (doPause) {
+    el.addEventListener('mouseenter', stopTimer, { passive: true });
+    el.addEventListener('mouseleave', startTimer, { passive: true });
+  }
+
+  /* ── Init ────────────────────────────────────────────────── */
+  startTimer();
+  resetProgress();
+
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SS Announcement Bar",
+  "tag": "div",
+  "class": "shopify-section-ss-ann",
+  "enabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "label": "Animation type",
+      "options": [
+        { "value": "slide",    "label": "Slide (horizontal)" },
+        { "value": "slide-up", "label": "Slide (vertical ticker)" },
+        { "value": "fade",     "label": "Fade" }
+      ],
+      "default": "slide"
+    },
+    {
+      "type": "range",
+      "id": "animation_duration",
+      "label": "Transition speed (ms)",
+      "min": 200,
+      "max": 900,
+      "step": 50,
+      "default": 450
+    },
+    {
+      "type": "header",
+      "content": "Autoplay"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Auto-advance slides",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Seconds per slide",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 4,
+      "unit": "s"
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Loop continuously",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "Pause on hover",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Controls"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show prev / next arrows",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dots",
+      "label": "Show navigation dots",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_progress",
+      "label": "Show autoplay progress bar",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_close",
+      "label": "Show dismiss (×) button",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "range",
+      "id": "bar_height",
+      "label": "Bar height (px)",
+      "min": 28,
+      "max": 64,
+      "step": 2,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "link_color",
+      "label": "Link",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "link_hover_color",
+      "label": "Link hover",
+      "default": "#555555"
+    },
+    {
+      "type": "color",
+      "id": "controls_color",
+      "label": "Arrows & dots",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "progress_color",
+      "label": "Progress bar",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Top border colour",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "range",
+      "id": "border_height",
+      "label": "Top border width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "default": 2,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "default": 13,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Font weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "range",
+      "id": "letter_spacing",
+      "label": "Letter spacing",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "default": 1,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "text_transform",
+      "label": "Text case",
+      "options": [
+        { "value": "none",       "label": "As written" },
+        { "value": "uppercase",  "label": "UPPERCASE" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "announcement",
+      "name": "Announcement",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Announcement text",
+          "default": "Free shipping on orders over ₹999 🎉"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link URL (optional)"
+        },
+        {
+          "type": "checkbox",
+          "id": "link_new_tab",
+          "label": "Open link in new tab",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "max_blocks": 10,
+  "presets": [
+    {
+      "name": "SS Announcement Bar",
+      "blocks": [
+        {
+          "type": "announcement",
+          "settings": {
+            "text": "💅 Press-Ons — Any 2 @ ₹999 / 3 @ ₹1199"
+          }
+        },
+        {
+          "type": "announcement",
+          "settings": {
+            "text": "🚚 Free shipping on orders over ₹999"
+          }
+        },
+        {
+          "type": "announcement",
+          "settings": {
+            "text": "✨ New arrivals every week — Shop now"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
