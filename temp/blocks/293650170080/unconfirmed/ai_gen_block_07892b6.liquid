@@ -1,6 +1,649 @@
+{% doc %}
+  @prompt
+    create an exact product addon feature in block where i can add multiple addon prooduct for with the default product once if user select the addon that too wil be counted for purchase 
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-product-addons-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    padding: {{ block.settings.container_padding }}px;
+    background-color: {{ block.settings.background_color }};
+    border-radius: {{ block.settings.border_radius }}px;
+  }
+
+  .ai-product-addons__header-{{ ai_gen_id }} {
+    margin-bottom: 20px;
+  }
+
+  .ai-product-addons__title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.title_size }}px;
+    color: {{ block.settings.text_color }};
+    margin: 0 0 8px 0;
+    font-weight: 600;
+  }
+
+  .ai-product-addons__description-{{ ai_gen_id }} {
+    font-size: {{ block.settings.description_size }}px;
+    color: {{ block.settings.text_color }};
+    opacity: 0.8;
+    margin: 0;
+  }
+
+  .ai-product-addons__list-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .ai-product-addon-item-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background-color: {{ block.settings.item_background_color }};
+    border: 1px solid {{ block.settings.item_border_color }};
+    border-radius: {{ block.settings.item_border_radius }}px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .ai-product-addon-item-{{ ai_gen_id }}:hover {
+    border-color: {{ block.settings.item_hover_border_color }};
+    background-color: {{ block.settings.item_hover_background_color }};
+  }
+
+  .ai-product-addon-item-{{ ai_gen_id }}.selected {
+    border-color: {{ block.settings.item_selected_border_color }};
+    background-color: {{ block.settings.item_selected_background_color }};
+  }
+
+  .ai-product-addon-checkbox-{{ ai_gen_id }} {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: {{ block.settings.checkbox_color }};
+  }
+
+  .ai-product-addon-image-{{ ai_gen_id }} {
+    flex-shrink: 0;
+    width: {{ block.settings.image_size }}px;
+    height: {{ block.settings.image_size }}px;
+    border-radius: {{ block.settings.image_border_radius }}px;
+    overflow: hidden;
+  }
+
+  .ai-product-addon-image-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-product-addon-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background-color: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-product-addon-placeholder-{{ ai_gen_id }} svg {
+    width: 60%;
+    height: 60%;
+    opacity: 0.3;
+  }
+
+  .ai-product-addon-info-{{ ai_gen_id }} {
+    flex-grow: 1;
+    min-width: 0;
+  }
+
+  .ai-product-addon-name-{{ ai_gen_id }} {
+    font-size: 16px;
+    font-weight: 500;
+    color: {{ block.settings.text_color }};
+    margin: 0 0 4px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ai-product-addon-variant-{{ ai_gen_id }} {
+    font-size: 13px;
+    color: {{ block.settings.text_color }};
+    opacity: 0.7;
+    margin: 0;
+  }
+
+  .ai-product-addon-price-{{ ai_gen_id }} {
+    flex-shrink: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: {{ block.settings.text_color }};
+  }
+
+  .ai-product-addons__empty-{{ ai_gen_id }} {
+    padding: 40px 20px;
+    text-align: center;
+    color: {{ block.settings.text_color }};
+    opacity: 0.6;
+    font-size: 14px;
+  }
+
+  .ai-product-addons__total-{{ ai_gen_id }} {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid {{ block.settings.item_border_color }};
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .ai-product-addons__total-label-{{ ai_gen_id }} {
+    font-size: 16px;
+    font-weight: 600;
+    color: {{ block.settings.text_color }};
+  }
+
+  .ai-product-addons__total-price-{{ ai_gen_id }} {
+    font-size: 20px;
+    font-weight: 700;
+    color: {{ block.settings.text_color }};
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-product-addons-{{ ai_gen_id }} {
+      width: 100%;
+    }
+
+    .ai-product-addon-item-{{ ai_gen_id }} {
+      padding: 12px;
+    }
+
+    .ai-product-addon-image-{{ ai_gen_id }} {
+      width: {{ block.settings.image_size | times: 0.8 }}px;
+      height: {{ block.settings.image_size | times: 0.8 }}px;
+    }
+  }
+{% endstyle %}
+
+<product-addons-{{ ai_gen_id }}
+  class="ai-product-addons-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+  data-product-id="{{ product.id }}"
+>
+  {% if block.settings.title != blank or block.settings.description != blank %}
+    <div class="ai-product-addons__header-{{ ai_gen_id }}">
+      {% if block.settings.title != blank %}
+        <h3 class="ai-product-addons__title-{{ ai_gen_id }}">{{ block.settings.title }}</h3>
+      {% endif %}
+      {% if block.settings.description != blank %}
+        <p class="ai-product-addons__description-{{ ai_gen_id }}">{{ block.settings.description }}</p>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {% liquid
+    assign has_addons = false
+    for i in (1..6)
+      assign addon_key = 'addon_product_' | append: i
+      assign addon_product = block.settings[addon_key]
+      if addon_product != blank
+        assign has_addons = true
+        break
+      endif
+    endfor
+  %}
+
+  {% if has_addons %}
+    <div class="ai-product-addons__list-{{ ai_gen_id }}">
+      {% for i in (1..6) %}
+        {% liquid
+          assign addon_key = 'addon_product_' | append: i
+          assign addon_product = block.settings[addon_key]
+        %}
+
+        {% if addon_product != blank %}
+          {% assign first_available_variant = addon_product.selected_or_first_available_variant %}
+          
+          <div class="ai-product-addon-item-{{ ai_gen_id }}" data-addon-index="{{ i }}">
+            <input
+              type="checkbox"
+              class="ai-product-addon-checkbox-{{ ai_gen_id }}"
+              id="addon-{{ ai_gen_id }}-{{ i }}"
+              data-variant-id="{{ first_available_variant.id }}"
+              data-product-id="{{ addon_product.id }}"
+              data-price="{{ first_available_variant.price }}"
+            >
+
+            <label for="addon-{{ ai_gen_id }}-{{ i }}" style="display: contents; cursor: pointer;">
+              <div class="ai-product-addon-image-{{ ai_gen_id }}">
+                {% if addon_product.featured_image %}
+                  <img
+                    src="{{ addon_product.featured_image | image_url: width: 200 }}"
+                    alt="{{ addon_product.featured_image.alt | escape }}"
+                    loading="lazy"
+                    width="200"
+                    height="200"
+                  >
+                {% else %}
+                  <div class="ai-product-addon-placeholder-{{ ai_gen_id }}">
+                    {{ 'product-1' | placeholder_svg_tag }}
+                  </div>
+                {% endif %}
+              </div>
+
+              <div class="ai-product-addon-info-{{ ai_gen_id }}">
+                <h4 class="ai-product-addon-name-{{ ai_gen_id }}">{{ addon_product.title }}</h4>
+                {% if first_available_variant.title != 'Default Title' %}
+                  <p class="ai-product-addon-variant-{{ ai_gen_id }}">{{ first_available_variant.title }}</p>
+                {% endif %}
+              </div>
+
+              <div class="ai-product-addon-price-{{ ai_gen_id }}">
+                {{ first_available_variant.price | money }}
+              </div>
+            </label>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    {% if block.settings.show_total %}
+      <div class="ai-product-addons__total-{{ ai_gen_id }}">
+        <span class="ai-product-addons__total-label-{{ ai_gen_id }}">{{ block.settings.total_label }}</span>
+        <span class="ai-product-addons__total-price-{{ ai_gen_id }}" data-total-price>{{ product.selected_or_first_available_variant.price | money }}</span>
+      </div>
+    {% endif %}
+  {% else %}
+    <div class="ai-product-addons__empty-{{ ai_gen_id }}">
+      Add addon products in the theme editor to display them here
+    </div>
+  {% endif %}
+</product-addons-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class ProductAddons{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.checkboxes = [];
+        this.selectedAddons = [];
+        this.mainProductPrice = 0;
+      }
+
+      connectedCallback() {
+        this.checkboxes = this.querySelectorAll('.ai-product-addon-checkbox-{{ ai_gen_id }}');
+        this.totalPriceElement = this.querySelector('[data-total-price]');
+        this.items = this.querySelectorAll('.ai-product-addon-item-{{ ai_gen_id }}');
+        
+        const mainProduct = document.querySelector('[data-product-id="{{ product.id }}"]');
+        if (mainProduct) {
+          const priceElement = mainProduct.querySelector('[data-price]');
+          if (priceElement) {
+            this.mainProductPrice = parseInt(priceElement.getAttribute('data-price')) || {{ product.selected_or_first_available_variant.price }};
+          } else {
+            this.mainProductPrice = {{ product.selected_or_first_available_variant.price }};
+          }
+        } else {
+          this.mainProductPrice = {{ product.selected_or_first_available_variant.price }};
+        }
+
+        this.setupEventListeners();
+        this.observeMainProductChanges();
+      }
+
+      setupEventListeners() {
+        this.checkboxes.forEach((checkbox, index) => {
+          checkbox.addEventListener('change', (e) => {
+            this.handleAddonToggle(e, index);
+          });
+
+          const item = this.items[index];
+          if (item) {
+            item.addEventListener('click', (e) => {
+              if (e.target !== checkbox && e.target.tagName !== 'LABEL') {
+                checkbox.checked = !checkbox.checked;
+                checkbox.dispatchEvent(new Event('change'));
+              }
+            });
+          }
+        });
+
+        document.addEventListener('product:variant-change', (e) => {
+          if (e.detail && e.detail.variant && e.detail.variant.price) {
+            this.mainProductPrice = e.detail.variant.price;
+            this.updateTotal();
+          }
+        });
+      }
+
+      observeMainProductChanges() {
+        const productForm = document.querySelector('product-form');
+        if (productForm) {
+          const observer = new MutationObserver(() => {
+            const priceElement = document.querySelector('[data-price]');
+            if (priceElement) {
+              const newPrice = parseInt(priceElement.textContent.replace(/[^0-9]/g, ''));
+              if (newPrice && newPrice !== this.mainProductPrice) {
+                this.mainProductPrice = newPrice;
+                this.updateTotal();
+              }
+            }
+          });
+
+          observer.observe(productForm, {
+            childList: true,
+            subtree: true,
+            characterData: true
+          });
+        }
+      }
+
+      handleAddonToggle(event, index) {
+        const checkbox = event.target;
+        const item = this.items[index];
+        const variantId = checkbox.getAttribute('data-variant-id');
+        const productId = checkbox.getAttribute('data-product-id');
+        const price = parseInt(checkbox.getAttribute('data-price'));
+
+        if (checkbox.checked) {
+          item.classList.add('selected');
+          this.selectedAddons.push({
+            variantId: variantId,
+            productId: productId,
+            price: price
+          });
+        } else {
+          item.classList.remove('selected');
+          this.selectedAddons = this.selectedAddons.filter(addon => addon.variantId !== variantId);
+        }
+
+        this.updateTotal();
+        this.updateCart();
+      }
+
+      updateTotal() {
+        if (!this.totalPriceElement) return;
+
+        const addonsTotal = this.selectedAddons.reduce((sum, addon) => sum + addon.price, 0);
+        const total = this.mainProductPrice + addonsTotal;
+
+        this.totalPriceElement.textContent = this.formatMoney(total);
+      }
+
+      formatMoney(cents) {
+        const amount = (cents / 100).toFixed(2);
+        return '{{ cart.currency.symbol }}' + amount;
+      }
+
+      updateCart() {
+        const addToCartButton = document.querySelector('[name="add"]');
+        
+        if (addToCartButton) {
+          const form = addToCartButton.closest('form');
+          
+          if (form) {
+            const existingAddonInputs = form.querySelectorAll('[name^="items["][name$="][id]"]');
+            existingAddonInputs.forEach(input => {
+              if (!input.name.includes('items[0]')) {
+                input.remove();
+              }
+            });
+
+            const existingQtyInputs = form.querySelectorAll('[name^="items["][name$="][quantity]"]');
+            existingQtyInputs.forEach(input => {
+              if (!input.name.includes('items[0]')) {
+                input.remove();
+              }
+            });
+
+            this.selectedAddons.forEach((addon, index) => {
+              const itemIndex = index + 1;
+              
+              const variantInput = document.createElement('input');
+              variantInput.type = 'hidden';
+              variantInput.name = `items[${itemIndex}][id]`;
+              variantInput.value = addon.variantId;
+              form.appendChild(variantInput);
+
+              const qtyInput = document.createElement('input');
+              qtyInput.type = 'hidden';
+              qtyInput.name = `items[${itemIndex}][quantity]`;
+              qtyInput.value = '1';
+              form.appendChild(qtyInput);
+            });
+          }
+        }
+      }
+    }
+
+    customElements.define('product-addons-{{ ai_gen_id }}', ProductAddons{{ ai_gen_id }});
+  })();
+</script>
+
 {% schema %}
- {
-   "name": "AI_Block",
-   "tag": "shopify-ai-generated-block"
- }
+{
+  "name": "Product addons",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Complete your purchase"
+    },
+    {
+      "type": "text",
+      "id": "description",
+      "label": "Description",
+      "default": "Add these products to your order"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_total",
+      "label": "Show total price",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "total_label",
+      "label": "Total label",
+      "default": "Total"
+    },
+    {
+      "type": "header",
+      "content": "Addon products"
+    },
+    {
+      "type": "product",
+      "id": "addon_product_1",
+      "label": "Addon product 1"
+    },
+    {
+      "type": "product",
+      "id": "addon_product_2",
+      "label": "Addon product 2"
+    },
+    {
+      "type": "product",
+      "id": "addon_product_3",
+      "label": "Addon product 3"
+    },
+    {
+      "type": "product",
+      "id": "addon_product_4",
+      "label": "Addon product 4"
+    },
+    {
+      "type": "product",
+      "id": "addon_product_5",
+      "label": "Addon product 5"
+    },
+    {
+      "type": "product",
+      "id": "addon_product_6",
+      "label": "Addon product 6"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "container_padding",
+      "label": "Container padding",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Container border radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "image_size",
+      "label": "Image size",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "label": "Image border radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "item_border_radius",
+      "label": "Item border radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Title size",
+      "min": 14,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "description_size",
+      "label": "Description size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "item_background_color",
+      "label": "Item background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "item_border_color",
+      "label": "Item border",
+      "default": "#e6e6e6"
+    },
+    {
+      "type": "color",
+      "id": "item_hover_background_color",
+      "label": "Item hover background",
+      "default": "#fafafa"
+    },
+    {
+      "type": "color",
+      "id": "item_hover_border_color",
+      "label": "Item hover border",
+      "default": "#cccccc"
+    },
+    {
+      "type": "color",
+      "id": "item_selected_background_color",
+      "label": "Item selected background",
+      "default": "#f0f0f0"
+    },
+    {
+      "type": "color",
+      "id": "item_selected_border_color",
+      "label": "Item selected border",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "checkbox_color",
+      "label": "Checkbox",
+      "default": "#000000"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product addons"
+    }
+  ]
+}
 {% endschema %}
