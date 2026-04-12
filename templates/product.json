@@ -262,7 +262,7 @@
                 "recommendation_type": "complementary",
                 "layout_type": "grid",
                 "carousel_on_mobile": true,
-                "max_products": 4,
+                "max_products": 10,
                 "columns_gap": 16,
                 "rows_gap": 16,
                 "icons_style": "arrow",
@@ -457,32 +457,6 @@
     "product_recommendations_section": {
       "type": "product-recommendations",
       "blocks": {
-        "reco_title": {
-          "type": "text",
-          "name": "Recommendations Header",
-          "settings": {
-            "text": "<h3>You May Also Like</h3>",
-            "width": "fit-content",
-            "max_width": "normal",
-            "alignment": "left",
-            "type_preset": "h4",
-            "font": "var(--font-primary--family)",
-            "font_size": "",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "color": "",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        },
         "static-product-card": {
           "type": "_product-card",
           "name": "Product Card",
@@ -572,9 +546,6 @@
           ]
         }
       },
-      "block_order": [
-        "reco_title"
-      ],
       "name": "Product Recommendations",
       "settings": {
         "product": "{{ closest.product }}",
