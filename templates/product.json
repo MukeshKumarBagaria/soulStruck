@@ -669,11 +669,94 @@
         "padding-block-start": 0,
         "padding-block-end": 0
       }
+    },
+    "soulstruck_how_to_rfWMyj": {
+      "type": "soulstruck-how-to",
+      "blocks": {
+        "tab_cQKUEE": {
+          "type": "tab",
+          "settings": {
+            "tab_label": "apply with glue",
+            "heading": "Super Sticky Glue (stays ~2-3 weeks)",
+            "description": "Prep. Press. Pose. Three steps to perfect nails.",
+            "bullet1_icon": "globe",
+            "bullet1_text": "world's strongest nail glue",
+            "bullet2_icon": "heart",
+            "bullet2_text": "zero nail damage",
+            "bullet3_icon": "smile",
+            "bullet3_text": "vegan & cruelty-free",
+            "step1_image": "shopify://shop_images/with-glue-1.webp",
+            "step1_label": "prep",
+            "step2_image": "shopify://shop_images/with-glue-2.webp",
+            "step2_label": "pick",
+            "step3_image": "shopify://shop_images/with-glue-3.webp",
+            "step3_label": "apply",
+            "step4_image": "shopify://shop_images/with-glue-4.webp",
+            "step4_label": "press"
+          }
+        },
+        "tab_n469R6": {
+          "type": "tab",
+          "settings": {
+            "tab_label": "apply with tabs",
+            "heading": "Gentle Adhesive Tabs (stays ~1 week)",
+            "description": "Perfect for sensitive nails or short-term wear.",
+            "bullet1_icon": "leaf",
+            "bullet1_text": "damage-free removal",
+            "bullet2_icon": "heart",
+            "bullet2_text": "reusable nails",
+            "bullet3_icon": "clock",
+            "bullet3_text": "ready in 10 minutes",
+            "step1_label": "prep",
+            "step2_label": "pick",
+            "step3_label": "apply tab",
+            "step4_label": "press"
+          }
+        },
+        "tab_VEHK7c": {
+          "type": "tab",
+          "settings": {
+            "tab_label": "remove press-ons",
+            "heading": "Easy Removal, Zero Damage",
+            "description": "Soak, lift, and go. Your natural nails stay healthy.",
+            "bullet1_icon": "shield",
+            "bullet1_text": "no peel or force needed",
+            "bullet2_icon": "leaf",
+            "bullet2_text": "safe for natural nails",
+            "bullet3_icon": "recycle",
+            "bullet3_text": "nails ready to reuse",
+            "step1_label": "soak",
+            "step2_label": "lift",
+            "step3_label": "clean",
+            "step4_label": "store"
+          }
+        }
+      },
+      "block_order": [
+        "tab_cQKUEE",
+        "tab_n469R6",
+        "tab_VEHK7c"
+      ],
+      "name": "SS How To",
+      "settings": {
+        "heading": "how to",
+        "bg_color": "#ffffff",
+        "text_color": "#1a1a1a",
+        "tab_active_color": "#1a1a1a",
+        "tab_inactive_color": "#999999",
+        "border_color": "#e0e0e0",
+        "badge_bg": "#1a1a1a",
+        "badge_color": "#ffffff",
+        "image_radius": 16,
+        "section_padding_top": 64,
+        "section_padding_bottom": 64
+      }
     }
   },
   "order": [
     "main",
     "product_recommendations_section",
-    "177602750288e40ae4"
+    "177602750288e40ae4",
+    "soulstruck_how_to_rfWMyj"
   ]
 }
