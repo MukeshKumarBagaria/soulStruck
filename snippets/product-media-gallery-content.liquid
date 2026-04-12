@@ -318,6 +318,17 @@
   {% endif %}
 
   :root { --gallery-media-border-radius: {{ block_settings.media_radius }}px; }
+
+  /* Arrow color overrides — apply only when set via block settings */
+  .media-gallery--carousel slideshow-arrows .slideshow-control {
+    color: var(--ss-arrow-icon-color, var(--color-white));
+  }
+
+  .media-gallery--carousel slideshow-arrows .slideshow-control.slideshow-control--shape-square,
+  .media-gallery--carousel slideshow-arrows .slideshow-control.slideshow-control--shape-circle {
+    background-color: var(--ss-arrow-bg-color, var(--color-primary-button-background));
+    color: var(--ss-arrow-icon-color, var(--color-primary-button-text));
+  }
 {% endstyle %}
 
 {% if closest.product == blank %}
@@ -348,7 +359,7 @@
         media-gallery--extend
       {% endif %}
     "
-    style="{% render 'spacing-style', settings: block_settings %} --thumbnail-width: {{ block_settings.thumbnail_width }}px; --media-radius: {{ block_settings.media_radius }}px;{% if block_settings.icons_style contains 'large' %} --slideshow-icon-padding: 0px;{% endif %}--image-gap: {{ block_settings.image_gap }}px;{% unless block_settings.aspect_ratio == 'adapt' %} --gallery-aspect-ratio: {{ block_settings.aspect_ratio }};{% endunless %}"
+    style="{% render 'spacing-style', settings: block_settings %} --thumbnail-width: {{ block_settings.thumbnail_width }}px; --media-radius: {{ block_settings.media_radius }}px;{% if block_settings.icons_style contains 'large' %} --slideshow-icon-padding: 0px;{% endif %}--image-gap: {{ block_settings.image_gap }}px;{% unless block_settings.aspect_ratio == 'adapt' %} --gallery-aspect-ratio: {{ block_settings.aspect_ratio }};{% endunless %}{% unless block_settings.arrow_icon_color == blank or block_settings.arrow_icon_color == 'rgba(0,0,0,0)' %} --ss-arrow-icon-color: {{ block_settings.arrow_icon_color }};{% endunless %}{% unless block_settings.arrow_bg_color == blank or block_settings.arrow_bg_color == 'rgba(0,0,0,0)' %} --ss-arrow-bg-color: {{ block_settings.arrow_bg_color }};{% endunless %}"
     data-presentation="{{ media_presentation }}"
     {{ block_shopify_attributes }}
   >

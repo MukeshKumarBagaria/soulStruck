@@ -97,6 +97,19 @@
       "visible_if": "{{ block.settings.media_presentation == 'carousel' }}"
     },
     {
+      "type": "color",
+      "id": "arrow_icon_color",
+      "label": "Arrow icon color",
+      "visible_if": "{{ block.settings.media_presentation == 'carousel' }}"
+    },
+    {
+      "type": "color",
+      "id": "arrow_bg_color",
+      "label": "Arrow background color",
+      "info": "Applies when icon shape is circle or square",
+      "visible_if": "{{ block.settings.media_presentation == 'carousel' }}"
+    },
+    {
       "type": "select",
       "id": "slideshow_controls_style",
       "label": "t:settings.desktop_pagination",
@@ -243,7 +256,7 @@
       "id": "media_radius",
       "label": "t:settings.border_radius",
       "min": 0,
-      "max": 32,
+      "max": 50,
       "step": 1,
       "unit": "px",
       "default": 4
