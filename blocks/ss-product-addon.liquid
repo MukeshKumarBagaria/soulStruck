@@ -1,0 +1,607 @@
+{%- liquid
+  assign s              = block.settings
+  assign addon_product  = s.addon_product
+  assign addon_variant  = addon_product.selected_or_first_available_variant
+  assign has_discount   = false
+  if addon_variant.compare_at_price > addon_variant.price
+    assign has_discount = true
+    assign savings_amt  = addon_variant.compare_at_price | minus: addon_variant.price
+    assign savings_pct  = savings_amt | times: 100 | divided_by: addon_variant.compare_at_price | round
+  endif
+-%}
+
+{% if addon_product != blank %}
+  <div
+    class="ss-addon spacing-style"
+    id="ss-addon-{{ block.id }}"
+    data-checked="{{ s.default_checked }}"
+    style="
+      {% render 'spacing-style', settings: s %}
+      --addon-accent:  {{ s.accent_color }};
+      --addon-bg:      {{ s.card_bg_color }};
+      --addon-radius:  {{ s.corner_radius }}px;
+    "
+    {{ block.shopify_attributes }}
+  >
+
+    {%- if s.heading != blank -%}
+      <p class="ss-addon__heading">{{ s.heading }}</p>
+    {%- endif -%}
+
+    <div class="ss-addon__card">
+      <div class="ss-addon__row">
+
+        {%- comment -%} ── Checkbox ──────────────────────────────────────── {%- endcomment -%}
+        <label class="ss-addon__toggle" for="ss-addon-cb-{{ block.id }}" aria-label="{{ 'Add ' | append: addon_product.title | append: ' to your order' }}">
+          <input
+            type="checkbox"
+            id="ss-addon-cb-{{ block.id }}"
+            class="ss-addon__checkbox visually-hidden"
+            data-addon-variant="{{ addon_variant.id }}"
+            data-addon-product="{{ addon_product.id }}"
+            {% if s.default_checked %}checked{% endif %}
+          >
+          <span class="ss-addon__check-box" aria-hidden="true">
+            <svg class="ss-addon__check-icon" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 5L4.5 8.5L11 1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </label>
+
+        {%- comment -%} ── Product image ────────────────────────────────── {%- endcomment -%}
+        {%- if s.show_image -%}
+          <div class="ss-addon__image">
+            {%- if addon_product.featured_image -%}
+              {{
+                addon_product.featured_image
+                | image_url: width: 180
+                | image_tag:
+                  loading: 'lazy',
+                  alt: addon_product.title,
+                  class: 'ss-addon__img',
+                  width: 90,
+                  height: 90
+              }}
+            {%- else -%}
+              {{ 'product-1' | placeholder_svg_tag: 'ss-addon__img ss-addon__img--placeholder' }}
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} ── Product info ─────────────────────────────────── {%- endcomment -%}
+        <div class="ss-addon__body">
+          <div class="ss-addon__meta">
+            {%- if s.badge_text != blank -%}
+              <span class="ss-addon__badge">{{ s.badge_text }}</span>
+            {%- endif -%}
+            {%- if has_discount and s.show_savings -%}
+              <span class="ss-addon__savings-pill">{{ savings_pct }}% off</span>
+            {%- endif -%}
+          </div>
+
+          <p class="ss-addon__name">{{ addon_product.title | escape }}</p>
+
+          {%- unless addon_product.has_only_default_variant -%}
+            <p class="ss-addon__variant-label">{{ addon_variant.title | escape }}</p>
+          {%- endunless -%}
+
+          <div class="ss-addon__pricing">
+            <span class="ss-addon__price">
+              {%- if settings.currency_code_enabled_product_pages -%}
+                {{- addon_variant.price | money_with_currency -}}
+              {%- else -%}
+                {{- addon_variant.price | money -}}
+              {%- endif -%}
+            </span>
+            {%- if has_discount -%}
+              <s class="ss-addon__compare-price">
+                {%- if settings.currency_code_enabled_product_pages -%}
+                  {{- addon_variant.compare_at_price | money_with_currency -}}
+                {%- else -%}
+                  {{- addon_variant.compare_at_price | money -}}
+                {%- endif -%}
+              </s>
+            {%- endif -%}
+          </div>
+        </div>
+
+      </div>{%- comment -%}end .ss-addon__row{%- endcomment -%}
+
+      {%- comment -%} ── Variant selector ─────────────────────────────── {%- endcomment -%}
+      {%- unless addon_product.has_only_default_variant -%}
+        <div class="ss-addon__variants">
+          <select
+            class="ss-addon__variant-select"
+            id="ss-addon-variants-{{ block.id }}"
+            aria-label="{{ addon_product.title }} — select variant"
+          >
+            {%- for variant in addon_product.variants -%}
+              <option
+                value="{{ variant.id }}"
+                data-price="{{ variant.price }}"
+                data-compare-price="{{ variant.compare_at_price }}"
+                {%- unless variant.available -%} disabled{%- endunless -%}
+                {%- if variant == addon_variant -%} selected{%- endif -%}
+              >
+                {{- variant.title -}}
+                {%- if variant.available == false -%} — {{ 'products.product.sold_out' | t }}{%- endif -%}
+              </option>
+            {%- endfor -%}
+          </select>
+        </div>
+      {%- endunless -%}
+
+    </div>{%- comment -%}end .ss-addon__card{%- endcomment -%}
+
+  </div>
+
+  {%- comment -%} ── JavaScript ───────────────────────────────────────────── {%- endcomment -%}
+  <script>
+    (function () {
+      'use strict';
+
+      var BLOCK_ID      = '{{ block.id | escape }}';
+      var MAIN_PRODUCT  = {{ closest.product.id | default: 'null' }};
+
+      var wrap     = document.getElementById('ss-addon-' + BLOCK_ID);
+      if (!wrap) return;
+
+      var checkbox = wrap.querySelector('.ss-addon__checkbox');
+      var card     = wrap.querySelector('.ss-addon__card');
+      var varSel   = wrap.querySelector('.ss-addon__variant-select');
+      var priceEl  = wrap.querySelector('.ss-addon__price');
+      var cmpEl    = wrap.querySelector('.ss-addon__compare-price');
+
+      var pending  = false;
+
+      /* ── helpers ─────────────────────────────────── */
+      function variantId() {
+        return varSel ? parseInt(varSel.value, 10) : parseInt(checkbox.dataset.addonVariant, 10);
+      }
+
+      function syncCard() {
+        wrap.dataset.checked = checkbox.checked ? 'true' : 'false';
+      }
+
+      function updatePrice() {
+        if (!varSel) return;
+        var opt = varSel.options[varSel.selectedIndex];
+        if (!opt) return;
+        var p  = parseInt(opt.dataset.price, 10);
+        var cp = parseInt(opt.dataset.comparePrice, 10);
+        var fmt = window.Shopify && Shopify.formatMoney
+          ? function(cents) { return Shopify.formatMoney(cents, Shopify.money_format); }
+          : function(cents) { return (cents / 100).toFixed(2); };
+        if (priceEl)  priceEl.textContent = fmt(p);
+        if (cmpEl) {
+          if (cp && cp > p) { cmpEl.textContent = fmt(cp); cmpEl.hidden = false; }
+          else              { cmpEl.hidden = true; }
+        }
+        checkbox.dataset.addonVariant = varSel.value;
+      }
+
+      async function addAddonToCart() {
+        if (pending) return;
+        pending = true;
+        wrap.dataset.adding = 'true';
+        try {
+          var res = await fetch(window.Shopify.routes.root + 'cart/add.js', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            body:    JSON.stringify({ id: variantId(), quantity: 1 })
+          });
+          var cart = await res.json();
+          /* Fire the same cart:update event the theme uses */
+          document.dispatchEvent(new CustomEvent('cart:update', {
+            bubbles: true,
+            detail:  { resource: cart, sourceId: 'ss-product-addon-' + BLOCK_ID, data: { source: 'ss-product-addon', itemCount: 1 } }
+          }));
+        } catch (err) {
+          console.warn('[ss-product-addon] Could not add add-on to cart:', err);
+        } finally {
+          pending = false;
+          wrap.removeAttribute('data-adding');
+        }
+      }
+
+      /* ── event listeners ─────────────────────────── */
+      checkbox.addEventListener('change', syncCard);
+      syncCard();
+
+      if (varSel) {
+        varSel.addEventListener('change', updatePrice);
+        /* Prevent card label from re-toggling when interacting with select */
+        varSel.addEventListener('click', function (e) { e.stopPropagation(); });
+      }
+
+      /* Listen for main product added to cart */
+      document.addEventListener('cart:update', function (e) {
+        var d = e.detail;
+        if (!d || !d.data) return;
+        /* Only react to actual add-to-cart, not our own addon event */
+        if (d.data.source !== 'product-form-component') return;
+        if (d.data.didError) return;
+        /* If productId is provided, only trigger for the current product */
+        if (MAIN_PRODUCT && d.data.productId && String(d.data.productId) !== String(MAIN_PRODUCT)) return;
+        if (!checkbox.checked) return;
+        addAddonToCart();
+      });
+
+    })();
+  </script>
+
+{% endif %}
+
+{% stylesheet %}
+  /* ═══════════════════════════════════════════════════════════════
+     SS Product Addon Block
+  ═══════════════════════════════════════════════════════════════ */
+
+  .ss-addon {
+    width: 100%;
+  }
+
+  .ss-addon__heading {
+    font-size: var(--font-size--sm);
+    font-weight: var(--font-weight-semibold, 600);
+    color: rgb(var(--color-foreground-rgb) / 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin: 0 0 var(--gap-sm);
+  }
+
+  /* ── Card ──────────────────────────────────────── */
+  .ss-addon__card {
+    border: 1.5px solid rgb(var(--color-foreground-rgb) / 0.12);
+    border-radius: var(--addon-radius, 12px);
+    background: var(--addon-bg, var(--color-background));
+    padding: var(--padding-md);
+    transition:
+      border-color  0.25s ease,
+      box-shadow    0.25s ease,
+      background    0.25s ease;
+    cursor: pointer;
+  }
+
+  /* Checked state — highlighted card */
+  .ss-addon[data-checked='true'] .ss-addon__card {
+    border-color: var(--addon-accent, var(--color-foreground));
+    box-shadow: 0 0 0 1px var(--addon-accent, var(--color-foreground));
+    background: color-mix(in srgb, var(--addon-accent, var(--color-foreground)) 4%, var(--color-background));
+  }
+
+  /* Adding overlay state */
+  .ss-addon[data-adding='true'] .ss-addon__card {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  /* ── Row layout ────────────────────────────────── */
+  .ss-addon__row {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-md);
+  }
+
+  /* ── Checkbox toggle ───────────────────────────── */
+  .ss-addon__toggle {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .ss-addon__check-box {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 1.5px solid rgb(var(--color-foreground-rgb) / 0.3);
+    background: var(--color-background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+      background  0.2s ease,
+      border-color 0.2s ease,
+      transform   0.15s ease;
+    color: transparent;
+    flex-shrink: 0;
+  }
+
+  .ss-addon__check-icon {
+    width: 12px;
+    height: 10px;
+    display: block;
+    transition: color 0.15s ease;
+  }
+
+  /* Checked styles for checkbox visual */
+  .ss-addon__checkbox:checked + .ss-addon__check-box {
+    background: var(--addon-accent, var(--color-foreground));
+    border-color: var(--addon-accent, var(--color-foreground));
+    color: var(--color-background);
+    transform: scale(1.05);
+  }
+
+  .ss-addon__toggle:hover .ss-addon__check-box {
+    border-color: var(--addon-accent, var(--color-foreground));
+  }
+
+  /* ── Image ─────────────────────────────────────── */
+  .ss-addon__image {
+    flex-shrink: 0;
+    width: 68px;
+    height: 68px;
+    border-radius: calc(var(--addon-radius, 12px) - 2px);
+    overflow: hidden;
+    background: rgb(var(--color-foreground-rgb) / 0.05);
+  }
+
+  .ss-addon__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+
+  .ss-addon__card:hover .ss-addon__img {
+    transform: scale(1.04);
+  }
+
+  .ss-addon__img--placeholder {
+    padding: 8px;
+    opacity: 0.3;
+  }
+
+  /* ── Body / info ───────────────────────────────── */
+  .ss-addon__body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .ss-addon__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-xs);
+    flex-wrap: wrap;
+  }
+
+  /* Badge */
+  .ss-addon__badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--addon-accent, var(--color-foreground));
+    background: color-mix(in srgb, var(--addon-accent, var(--color-foreground)) 10%, transparent);
+    padding: 2px 6px;
+    border-radius: 4px;
+    line-height: 1.5;
+  }
+
+  /* Savings pill */
+  .ss-addon__savings-pill {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--color-background);
+    background: #22a849;
+    padding: 2px 6px;
+    border-radius: 4px;
+    line-height: 1.5;
+  }
+
+  /* Product name */
+  .ss-addon__name {
+    margin: 0;
+    font-size: var(--font-size--sm);
+    font-weight: var(--font-weight-semibold, 600);
+    color: var(--color-foreground);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+  }
+
+  .ss-addon__variant-label {
+    margin: 0;
+    font-size: var(--font-size--xs);
+    color: rgb(var(--color-foreground-rgb) / 0.55);
+  }
+
+  /* Pricing */
+  .ss-addon__pricing {
+    display: flex;
+    align-items: baseline;
+    gap: var(--gap-xs);
+    margin-top: 2px;
+  }
+
+  .ss-addon__price {
+    font-size: var(--font-size--sm);
+    font-weight: var(--font-weight-semibold, 600);
+    color: var(--color-foreground);
+  }
+
+  .ss-addon__compare-price {
+    font-size: var(--font-size--xs);
+    color: rgb(var(--color-foreground-rgb) / 0.45);
+    text-decoration: line-through;
+  }
+
+  /* ── Variant selector ──────────────────────────── */
+  .ss-addon__variants {
+    margin-top: var(--gap-sm);
+    padding-top: var(--gap-sm);
+    border-top: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+  }
+
+  .ss-addon__variant-select {
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    background: rgb(var(--color-foreground-rgb) / 0.04) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23888' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E") no-repeat right 10px center;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.2);
+    border-radius: 6px;
+    padding: var(--padding-xs) 28px var(--padding-xs) var(--padding-sm);
+    font-size: var(--font-size--sm);
+    color: var(--color-foreground);
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+
+  .ss-addon__variant-select:focus {
+    border-color: var(--addon-accent, var(--color-foreground));
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--addon-accent, var(--color-foreground)) 20%, transparent);
+  }
+
+  /* ── Unchecked dimming ─────────────────────────── */
+  .ss-addon[data-checked='false'] .ss-addon__image,
+  .ss-addon[data-checked='false'] .ss-addon__name,
+  .ss-addon[data-checked='false'] .ss-addon__pricing,
+  .ss-addon[data-checked='false'] .ss-addon__variant-label,
+  .ss-addon[data-checked='false'] .ss-addon__variants {
+    opacity: 0.45;
+    transition: opacity 0.25s ease;
+  }
+
+  .ss-addon[data-checked='true'] .ss-addon__image,
+  .ss-addon[data-checked='true'] .ss-addon__name,
+  .ss-addon[data-checked='true'] .ss-addon__pricing,
+  .ss-addon[data-checked='true'] .ss-addon__variant-label,
+  .ss-addon[data-checked='true'] .ss-addon__variants {
+    opacity: 1;
+    transition: opacity 0.25s ease;
+  }
+
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product Add-on",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Add-on product"
+    },
+    {
+      "type": "product",
+      "id": "addon_product",
+      "label": "Add-on product"
+    },
+    {
+      "type": "checkbox",
+      "id": "default_checked",
+      "label": "Checked by default",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section heading",
+      "default": "Complete your look"
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge label",
+      "default": "Add-on"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image",
+      "label": "Show product image",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_savings",
+      "label": "Show savings badge when on sale",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent / checked color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "card_bg_color",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "corner_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "Left",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "Right",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Add-on"
+    }
+  ]
+}
+{% endschema %}
