@@ -11,34 +11,64 @@
   "type": "header",
   "name": "t:names.header",
   "sections": {
-    "header_announcements_9jGBFp": {
-      "type": "header-announcements",
+    "soulstruck_announcement_bar_qDXRDm": {
+      "type": "soulstruck-announcement-bar",
       "blocks": {
-        "announcement_BxgCk9": {
-          "type": "_announcement",
+        "announcement_3JxJBb": {
+          "type": "announcement",
           "settings": {
-            "text": "Welcome to our store",
+            "text": "💅 Press-Ons — Any 2 @ ₹999 / 3 @ ₹1199",
             "link": "",
-            "font": "var(--font-subheading--family)",
-            "font_size": "0.75rem",
-            "weight": "",
-            "letter_spacing": "normal",
-            "case": "none"
-          },
-          "blocks": {}
+            "link_new_tab": false
+          }
+        },
+        "announcement_LgQYGU": {
+          "type": "announcement",
+          "settings": {
+            "text": "🚚 Free shipping on orders over ₹999",
+            "link": "",
+            "link_new_tab": false
+          }
+        },
+        "announcement_L4rwJL": {
+          "type": "announcement",
+          "settings": {
+            "text": "✨ New arrivals every week — Shop now",
+            "link": "",
+            "link_new_tab": false
+          }
         }
       },
       "block_order": [
-        "announcement_BxgCk9"
+        "announcement_3JxJBb",
+        "announcement_LgQYGU",
+        "announcement_L4rwJL"
       ],
-      "name": "t:names.announcement_bar",
+      "name": "SS Announcement Bar",
       "settings": {
-        "speed": 5,
-        "section_width": "full-width",
-        "color_scheme": "scheme-1",
-        "divider_width": 0,
-        "padding-block-start": 8,
-        "padding-block-end": 8
+        "animation_type": "slide",
+        "animation_duration": 450,
+        "autoplay": true,
+        "autoplay_speed": 4,
+        "loop": true,
+        "pause_on_hover": true,
+        "show_arrows": true,
+        "show_dots": false,
+        "show_progress": false,
+        "show_close": false,
+        "bar_height": 40,
+        "bg_color": "#ffffff",
+        "text_color": "#1a1a1a",
+        "link_color": "#1a1a1a",
+        "link_hover_color": "#555555",
+        "controls_color": "#1a1a1a",
+        "progress_color": "#1a1a1a",
+        "border_color": "#1a1a1a",
+        "border_height": 2,
+        "font_size": 13,
+        "font_weight": "500",
+        "letter_spacing": 1,
+        "text_transform": "none"
       }
     },
     "header_section": {
@@ -158,7 +188,7 @@
     }
   },
   "order": [
-    "header_announcements_9jGBFp",
+    "soulstruck_announcement_bar_qDXRDm",
     "header_section",
     "soulstruck_custom_header_RGh7Qz"
   ]
