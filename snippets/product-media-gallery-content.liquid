@@ -319,15 +319,74 @@
 
   :root { --gallery-media-border-radius: {{ block_settings.media_radius }}px; }
 
-  /* Arrow color overrides — apply only when set via block settings */
-  .media-gallery--carousel slideshow-arrows .slideshow-control {
-    color: var(--ss-arrow-icon-color, var(--color-white));
+  /* ── Product gallery arrow buttons ────────────────────────────────────
+     Default: white circle bg, black icon.
+     Hover:   black circle fills in (radial scale animation), icon → white.
+     CSS vars --ss-arrow-icon-color / --ss-arrow-bg-color can override
+     the defaults via the "Arrow icon color" / "Arrow background color"
+     block settings in the theme editor.
+  ──────────────────────────────────────────────────────────────────── */
+
+  /* Disable difference blend-mode so our white/black colours render correctly */
+  .media-gallery--carousel slideshow-arrows {
+    mix-blend-mode: normal;
   }
 
-  .media-gallery--carousel slideshow-arrows .slideshow-control.slideshow-control--shape-square,
-  .media-gallery--carousel slideshow-arrows .slideshow-control.slideshow-control--shape-circle {
-    background-color: var(--ss-arrow-bg-color, var(--color-primary-button-background));
-    color: var(--ss-arrow-icon-color, var(--color-primary-button-text));
+  .media-gallery--carousel slideshow-arrows .slideshow-control {
+    position: relative;
+    /* Icon colour: default black; overridable via setting */
+    color: var(--ss-arrow-icon-color, #000);
+    transition: color 0.3s ease;
+    /* Keep touch-target padding but clear inline padding so circle centres */
+    padding-inline: var(--padding-sm);
+  }
+
+  /* White circle background */
+  .media-gallery--carousel slideshow-arrows .slideshow-control::before {
+    content: '';
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--ss-arrow-bg-color, #fff);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Black fill that scales in on hover */
+  .media-gallery--carousel slideshow-arrows .slideshow-control::after {
+    content: '';
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #000;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Lift icon above the two pseudo-element circles */
+  .media-gallery--carousel slideshow-arrows .slideshow-control .svg-wrapper {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Hover / focus: fill animates in, icon turns white */
+  .media-gallery--carousel slideshow-arrows .slideshow-control:hover::after,
+  .media-gallery--carousel slideshow-arrows .slideshow-control:focus-visible::after {
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+
+  .media-gallery--carousel slideshow-arrows .slideshow-control:hover,
+  .media-gallery--carousel slideshow-arrows .slideshow-control:focus-visible {
+    color: #fff;
   }
 {% endstyle %}
 
