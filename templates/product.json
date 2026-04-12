@@ -632,7 +632,8 @@
             "label_4": "sample4",
             "image_5": "shopify://shop_images/included-5.png",
             "label_5": "sample5",
-            "label_6": ""
+            "image_6": "shopify://shop_images/included-6.png",
+            "label_6": "sample6"
           },
           "blocks": {}
         }
