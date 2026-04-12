@@ -52,7 +52,7 @@
         "autoplay_speed": 4,
         "loop": true,
         "pause_on_hover": true,
-        "show_arrows": true,
+        "show_arrows": false,
         "show_dots": false,
         "show_progress": false,
         "show_close": false,
