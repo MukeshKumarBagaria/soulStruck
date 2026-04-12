@@ -46,7 +46,7 @@
       ],
       "name": "SS Announcement Bar",
       "settings": {
-        "animation_type": "slide",
+        "animation_type": "fade",
         "animation_duration": 450,
         "autoplay": true,
         "autoplay_speed": 4,
