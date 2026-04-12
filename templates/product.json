@@ -641,6 +641,7 @@
       "block_order": [
         "ai_gen_block_ad53c03_BKmDJD"
       ],
+      "name": "What's Included in the box",
       "settings": {
         "content_direction": "column",
         "vertical_on_mobile": true,
