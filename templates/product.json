@@ -256,6 +256,26 @@
               },
               "block_order": []
             },
+            "ss_product_addon_NmLAkC": {
+              "type": "ss-product-addon",
+              "name": "Product Add-on",
+              "settings": {
+                "addon_product": "adhesive-tab",
+                "default_checked": true,
+                "heading": "Complete your look",
+                "badge_text": "Add-on",
+                "show_image": true,
+                "show_savings": true,
+                "accent_color": "#000000",
+                "card_bg_color": "#ffffff",
+                "corner_radius": 12,
+                "padding-block-start": 8,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
             "complementary_products": {
               "type": "product-recommendations",
               "settings": {
@@ -437,6 +457,7 @@
             "description_block",
             "variant_picker",
             "buy_buttons",
+            "ss_product_addon_NmLAkC",
             "complementary_products",
             "accordion_group"
           ]
