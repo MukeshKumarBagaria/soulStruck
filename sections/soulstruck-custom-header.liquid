@@ -133,10 +133,14 @@
   </div>
 </aside>
 
+{%- comment -%} ── Sticky spacer — JS sets height when header goes fixed ── {%- endcomment -%}
+<div id="ni-ch-spacer-{{ section.id }}" class="ni-ch__spacer" aria-hidden="true"></div>
+
 {%- comment -%} ── MAIN HEADER ───────────────────────────────────────── {%- endcomment -%}
 <div
   id="ni-ch-{{ section.id }}"
-  class="ni-ch{% if sticky %} ni-ch--sticky{% endif %}"
+  class="ni-ch"
+  data-sticky="{{ sticky }}"
   data-section-id="{{ section.id }}"
 >
   <header class="ni-ch__header" role="banner">
@@ -221,19 +225,124 @@
         {%- endif -%}
 
         {%- if show_cart -%}
-          <button
-            type="button"
-            class="ni-ch__icon-btn ni-ch__cart-btn"
-            aria-label="{{ section.settings.cart_label | escape }}"
-            id="ni-ch-cart-{{ section.id }}"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-            <span
-              class="ni-ch__cart-count{% if cart_count == 0 %} ni-ch__cart-count--hidden{% endif %}"
-              id="ni-ch-cart-count-{{ section.id }}"
-              aria-label="{{ cart_count }} items in cart"
-            >{{ cart_count }}</span>
-          </button>
+          {%- if settings.cart_type == 'drawer' and template.name != 'cart' -%}
+
+            {%- comment -%} Load the cart drawer JS (same as default header) {%- endcomment -%}
+            <script src="{{ 'cart-drawer.js' | asset_url }}" type="module" fetchpriority="low"></script>
+
+            {%- comment -%} Empty-cart template (injected by cart-drawer-component when cart is empty) {%- endcomment -%}
+            {%- capture ni_empty_cart -%}
+              <div class="cart-drawer__header">
+                <button
+                  ref="closeButton"
+                  on:click="cart-drawer-component/close"
+                  class="button close-button cart-drawer__close-button button-unstyled"
+                  aria-label="{{ 'actions.close_dialog' | t }}"
+                >
+                  <span class="svg-wrapper">{{- 'icon-close.svg' | inline_asset_content -}}</span>
+                </button>
+              </div>
+              <div class="cart-drawer__content" aria-label="{{ 'accessibility.cart' | t }}">
+                <h2 class="cart-drawer__heading h4 cart-drawer__heading--empty" id="ni-ch-cart-empty-{{ section.id }}">
+                  {{ 'content.your_cart_is_empty' | t }}
+                </h2>
+                <div class="cart-drawer__items">
+                  {%- render 'cart-products', force_empty: true -%}
+                </div>
+              </div>
+            {%- endcapture -%}
+
+            <cart-drawer-component
+              class="ni-ch__cart-drawer-wrap"
+              {% if settings.auto_open_cart_drawer %}auto-open{% endif %}
+            >
+              <template id="ni-ch-empty-cart-{{ section.id }}">{{ ni_empty_cart }}</template>
+
+              {%- comment -%} Our styled icon button — on:click="/open" is the drawer trigger {%- endcomment -%}
+              <button
+                class="ni-ch__icon-btn ni-ch__cart-btn"
+                on:click="/open"
+                aria-haspopup="dialog"
+                aria-label="{{ section.settings.cart_label | escape }}"
+                aria-describedby="ni-ch-cart-count-{{ section.id }}"
+                id="ni-ch-cart-{{ section.id }}"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                <span
+                  class="ni-ch__cart-count{% if cart_count == 0 %} ni-ch__cart-count--hidden{% endif %}"
+                  id="ni-ch-cart-count-{{ section.id }}"
+                  aria-label="{{ cart_count }} items in cart"
+                >{{ cart_count }}</span>
+              </button>
+
+              {%- comment -%} The actual drawer dialog {%- endcomment -%}
+              <dialog
+                ref="dialog"
+                class="cart-drawer__dialog dialog-modal dialog-drawer color-{{ settings.drawer_color_scheme }}{% if cart.empty? %} cart-drawer--empty{% endif %}"
+                aria-labelledby="{% if cart.empty? %}ni-ch-cart-empty-{{ section.id }}{% else %}ni-ch-cart-heading-{{ section.id }}{% endif %}"
+                scroll-lock
+                cart-summary-sticky="true"
+              >
+                <div class="cart-drawer__inner" data-hydration-key="cart-drawer-inner">
+                  <cart-items-component
+                    class="cart-items-component"
+                    data-drawer
+                    data-section-id="{{ section.id }}"
+                  >
+                    {%- if cart.empty? -%}
+                      {{ ni_empty_cart }}
+                    {%- else -%}
+                      <div class="cart-drawer__header" id="ni-ch-cart-drawer-header-{{ section.id }}">
+                        <h2 class="cart-drawer__heading h4" id="ni-ch-cart-heading-{{ section.id }}">
+                          {{ 'content.cart_title' | t }}
+                          {%- render 'cart-bubble' -%}
+                        </h2>
+                        <button
+                          ref="closeButton"
+                          on:click="cart-drawer-component/close"
+                          class="button close-button cart-drawer__close-button button-unstyled"
+                          aria-label="{{ 'actions.close_dialog' | t }}"
+                        >
+                          <span class="svg-wrapper">{{- 'icon-close.svg' | inline_asset_content -}}</span>
+                        </button>
+                      </div>
+                      <scroll-hint
+                        class="cart-drawer__content"
+                        aria-label="{{ 'accessibility.cart' | t }}"
+                        style="--header-height: 60px;"
+                      >
+                        <scroll-hint class="cart-drawer__items">
+                          {%- render 'cart-products', drawer_context: 'drawer' -%}
+                        </scroll-hint>
+                        <div class="cart-drawer__summary">
+                          {%- render 'cart-summary', section_id: section.id -%}
+                        </div>
+                      </scroll-hint>
+                    {%- endif -%}
+                  </cart-items-component>
+                </div>
+              </dialog>
+
+            </cart-drawer-component>
+
+          {%- else -%}
+
+            {%- comment -%} Cart type is not drawer — plain link {%- endcomment -%}
+            <a
+              href="{{ routes.cart_url }}"
+              class="ni-ch__icon-btn ni-ch__cart-btn"
+              aria-label="{{ section.settings.cart_label | escape }}"
+              id="ni-ch-cart-{{ section.id }}"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              <span
+                class="ni-ch__cart-count{% if cart_count == 0 %} ni-ch__cart-count--hidden{% endif %}"
+                id="ni-ch-cart-count-{{ section.id }}"
+                aria-label="{{ cart_count }} items in cart"
+              >{{ cart_count }}</span>
+            </a>
+
+          {%- endif -%}
         {%- endif -%}
 
       </div><!-- /right -->
@@ -293,21 +402,32 @@
 .ni-ch ul   { list-style: none; }
 .ni-ch button { background: none; border: none; cursor: pointer; font: inherit; }
 
+/* ── Spacer (prevents layout jump when header becomes fixed) ── */
+.ni-ch__spacer {
+  display: none;
+}
+
 /* ── Wrapper ──────────────────────────────────────────────────── */
 .ni-ch {
   background: var(--ni-ch-bg, #fff);
   width: 100%;
   z-index: 9999;
-}
-.ni-ch--sticky {
-  position: sticky;
-  top: 0;
+  /* No position here — JS adds ni-ch--fixed when sticky kicks in */
 }
 
-/* Shadow appears on scroll via JS */
-.ni-ch--scrolled {
-  box-shadow: var(--ni-ch-shadow, 0 2px 16px rgba(0,0,0,0.08));
-  transition: box-shadow 0.3s ease;
+/* JS adds this once page scrolls past the header's natural position */
+.ni-ch--fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  box-shadow: var(--ni-ch-shadow, 0 2px 12px rgba(0,0,0,0.10));
+  animation: ni-ch-slide-in 0.28s cubic-bezier(0.16,1,0.3,1) both;
+}
+@keyframes ni-ch-slide-in {
+  from { transform: translateY(-100%); opacity: 0.6; }
+  to   { transform: translateY(0);     opacity: 1; }
 }
 
 /* ── Main bar ─────────────────────────────────────────────────── */
@@ -488,6 +608,11 @@
   align-items: center;
   justify-content: flex-end;
   gap: 4px;
+}
+/* cart-drawer-component is a custom element — make it inline so it
+   doesn't break the flex row layout of our icon buttons */
+.ni-ch__cart-drawer-wrap {
+  display: contents;
 }
 .ni-ch__icon-btn {
   display: flex;
@@ -824,29 +949,70 @@
 
   if (!wrapper) return;
 
-  /* ── Cart drawer trigger ───────────────────────────────────── */
-  const cartBtn = document.getElementById('ni-ch-cart-' + SECTION_ID);
-  cartBtn?.addEventListener('click', () => {
-    const drawerEl = document.querySelector('cart-drawer-component');
-    if (drawerEl && typeof drawerEl.open === 'function') {
-      drawerEl.open();
-    } else {
-      // Fallback: navigate to cart if drawer not found
-      window.location.href = {{ routes.cart_url | json }};
-    }
-  });
+  /* ── Sticky / fixed-position logic ────────────────────────── */
+  const isSticky = wrapper.dataset.sticky === 'true';
+  const spacer   = document.getElementById('ni-ch-spacer-' + SECTION_ID);
+  let   isFixed  = false;
+  let   rafId    = null;
 
-  /* ── Scroll shadow ─────────────────────────────────────────── */
-  let rafId = null;
+  // Record the natural top position of the header (relative to document)
+  // Recalculated on resize in case things above it change size.
+  let headerNaturalTop = 0;
+  function measureHeaderTop() {
+    if (isFixed) {
+      // While fixed, spacer is in the natural position — use it
+      headerNaturalTop = spacer
+        ? spacer.getBoundingClientRect().top + window.scrollY
+        : 0;
+    } else {
+      headerNaturalTop = wrapper.getBoundingClientRect().top + window.scrollY;
+    }
+  }
+  measureHeaderTop();
+
+  function applyFixed() {
+    if (isFixed) return;
+    isFixed = true;
+    const h = wrapper.offsetHeight;
+    wrapper.classList.add('ni-ch--fixed');
+    if (spacer) {
+      spacer.style.display = 'block';
+      spacer.style.height  = h + 'px';
+    }
+  }
+
+  function removeFixed() {
+    if (!isFixed) return;
+    isFixed = false;
+    wrapper.classList.remove('ni-ch--fixed');
+    if (spacer) {
+      spacer.style.display = 'none';
+      spacer.style.height  = '0';
+    }
+  }
+
   function onScroll() {
     if (rafId) return;
     rafId = requestAnimationFrame(() => {
-      wrapper.classList.toggle('ni-ch--scrolled', window.scrollY > 10);
+      const scrollY = window.scrollY;
+
+      if (isSticky) {
+        if (scrollY >= headerNaturalTop) {
+          applyFixed();
+        } else {
+          removeFixed();
+        }
+      }
+
+      // Shadow also when at non-zero scroll (looks like nailinit reference)
+      wrapper.classList.toggle('ni-ch--scrolled', scrollY > 2);
+
       rafId = null;
     });
   }
+
   window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll(); // initialise
+  onScroll(); // run once on load to set correct initial state
 
   /* ── Mobile search expand ──────────────────────────────────── */
   const searchForm = wrapper.querySelector('.ni-ch__search-form');
@@ -950,12 +1116,16 @@
   document.addEventListener('cart:updated',   (e) => updateCartCount(e.detail?.itemCount ?? e.detail?.item_count ?? 0));
   document.addEventListener('cart:item-added', () => fetch('/cart.js').then(r => r.json()).then(d => updateCartCount(d.item_count)).catch(() => {}));
 
-  /* ── Resize: close drawer + reset search on desktop ────────── */
+  /* ── Resize: close drawer + reset search + re-measure ──────── */
   window.addEventListener('resize', () => {
     if (window.innerWidth > 749 && drawerOpen) closeDrawer();
     if (window.innerWidth > 749 && searchForm) {
       searchForm.classList.remove('ni-ch__search-form--expanded');
     }
+    // Re-measure header position and update spacer height
+    measureHeaderTop();
+    if (isFixed && spacer) spacer.style.height = wrapper.offsetHeight + 'px';
+    onScroll();
   }, { passive: true });
 
 })();
