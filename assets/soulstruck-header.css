@@ -419,11 +419,6 @@ details.menu-open .header-drawer-icon--close {
 /* ---------------------------------------------------------------
    13. CART DRAWER + BUBBLE
    --------------------------------------------------------------- */
-.cart-drawer__dialog {
-  transition: transform var(--ni-transition-slow) !important;
-  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.10) !important;
-  border-left: none !important;
-}
 .cart-drawer__close-button { transition: transform var(--ni-transition-fast) !important; }
 @media (hover: hover) {
   .cart-drawer__close-button:hover { transform: rotate(90deg) !important; }
