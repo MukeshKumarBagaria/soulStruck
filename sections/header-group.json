@@ -152,7 +152,7 @@
       "settings": {
         "logo": "shopify://shop_images/logo.png",
         "logo_text": "SoulStruck",
-        "logo_width": 216,
+        "logo_width": 140,
         "menu": "main-menu",
         "show_nav_bar": true,
         "nav_aria_label": "Main navigation",
