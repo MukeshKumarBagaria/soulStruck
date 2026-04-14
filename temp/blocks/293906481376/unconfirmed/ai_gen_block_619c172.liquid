@@ -1,6 +1,607 @@
+{% doc %}
+  @prompt
+    Create a custom Shopify section 
+    
+    🎯 Section Requirements:
+    
+    Layout:
+    
+    Two-column layout (desktop):
+    Left side: Features list with icons and text
+    Right side: Large image (hand with nails)
+    On mobile: Stack vertically (image below or above content)
+    🧱 Content Structure:
+    
+    Top Heading (center aligned):
+    
+    Text: Why Soul Struck is Your Nail Bff
+    Styling:
+    “Your Nail Bff” should be highlighted in a different color (accent color)
+    
+    Left Side (Features Grid):
+    
+    6 feature items arranged in 2 columns × 3 rows
+    
+    Each feature includes:
+    
+    Icon (SVG or image)
+    Title (short tagline)
+    
+    Feature List:
+    
+    Where Style meets the Soul
+    Bold Nails, Bigger Energy
+    Comfort with Quality
+    Your Nail’s Style Headquarters
+    Cruelty-free & Vegan
+    Customer Centric
+    🎨 Design Style:
+    Clean, modern, minimal
+    Use brand colors:
+    #E06285 (primary)
+    #A08CCB (secondary)
+    White background
+    Gold accents (optional)
+    Icons should be:
+    Rounded
+    Same color as primary
+    Text alignment: center for each feature block
+    🖼️ Right Side Image:
+    Large responsive image
+    Slight rounded corners
+    Maintain aspect ratio
+    Optional subtle hover zoom effect
+    📱 Responsiveness:
+    Tablet: 2 columns still okay, reduce spacing
+    Mobile:
+    Single column
+    Features become 1 per row or 2 per row
+    Image moves below content
+    ⚙️ Shopify Schema:
+    
+    Include:
+    
+    Section settings:
+    Heading text
+    Highlight text color
+    Image upload
+    Blocks:
+    Feature item (icon + text editable)
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-nail-bff-section-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    padding: {{ block.settings.section_padding_top }}px 20px {{ block.settings.section_padding_bottom }}px;
+    background-color: {{ block.settings.background_color }};
+  }
+
+  .ai-nail-bff-container-{{ ai_gen_id }} {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .ai-nail-bff-heading-{{ ai_gen_id }} {
+    text-align: center;
+    font-size: {{ block.settings.heading_size }}px;
+    margin: 0 0 {{ block.settings.heading_spacing }}px;
+    color: {{ block.settings.heading_color }};
+    line-height: 1.2;
+  }
+
+  .ai-nail-bff-highlight-{{ ai_gen_id }} {
+    color: {{ block.settings.highlight_color }};
+  }
+
+  .ai-nail-bff-content-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .ai-nail-bff-features-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: {{ block.settings.feature_gap }}px;
+  }
+
+  .ai-nail-bff-feature-{{ ai_gen_id }} {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .ai-nail-bff-icon-wrapper-{{ ai_gen_id }} {
+    width: {{ block.settings.icon_size }}px;
+    height: {{ block.settings.icon_size }}px;
+    border-radius: 50%;
+    background-color: {{ block.settings.icon_background }};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .ai-nail-bff-icon-{{ ai_gen_id }} {
+    width: calc({{ block.settings.icon_size }}px * 0.5);
+    height: calc({{ block.settings.icon_size }}px * 0.5);
+    color: {{ block.settings.icon_color }};
+  }
+
+  .ai-nail-bff-feature-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.feature_text_size }}px;
+    color: {{ block.settings.feature_text_color }};
+    margin: 0;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+
+  .ai-nail-bff-image-wrapper-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: {{ block.settings.image_border_radius }}px;
+  }
+
+  .ai-nail-bff-image-{{ ai_gen_id }} {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: {{ block.settings.image_border_radius }}px;
+    transition: transform 0.3s ease;
+  }
+
+  {% if block.settings.enable_image_hover %}
+    .ai-nail-bff-image-wrapper-{{ ai_gen_id }}:hover .ai-nail-bff-image-{{ ai_gen_id }} {
+      transform: scale(1.05);
+    }
+  {% endif %}
+
+  .ai-nail-bff-image-placeholder-{{ ai_gen_id }} {
+    background-color: #f4f4f4;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: {{ block.settings.image_border_radius }}px;
+  }
+
+  .ai-nail-bff-image-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    max-width: 300px;
+    max-height: 300px;
+    opacity: 0.3;
+  }
+
+  @media screen and (max-width: 989px) {
+    .ai-nail-bff-content-{{ ai_gen_id }} {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+
+    {% if block.settings.mobile_image_position == 'top' %}
+      .ai-nail-bff-image-wrapper-{{ ai_gen_id }} {
+        order: -1;
+      }
+    {% endif %}
+
+    .ai-nail-bff-heading-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.heading_size }}px * 0.7);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-nail-bff-section-{{ ai_gen_id }} {
+      padding: {{ block.settings.section_padding_top | times: 0.6 }}px 16px {{ block.settings.section_padding_bottom | times: 0.6 }}px;
+    }
+
+    {% if block.settings.mobile_columns == '1' %}
+      .ai-nail-bff-features-{{ ai_gen_id }} {
+        grid-template-columns: 1fr;
+        gap: {{ block.settings.feature_gap | times: 0.8 }}px;
+      }
+    {% endif %}
+
+    .ai-nail-bff-heading-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.heading_size }}px * 0.6);
+      margin-bottom: {{ block.settings.heading_spacing | times: 0.7 }}px;
+    }
+
+    .ai-nail-bff-icon-wrapper-{{ ai_gen_id }} {
+      width: {{ block.settings.icon_size | times: 0.8 }}px;
+      height: {{ block.settings.icon_size | times: 0.8 }}px;
+    }
+
+    .ai-nail-bff-icon-{{ ai_gen_id }} {
+      width: calc({{ block.settings.icon_size | times: 0.8 }}px * 0.5);
+      height: calc({{ block.settings.icon_size | times: 0.8 }}px * 0.5);
+    }
+
+    .ai-nail-bff-feature-title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.feature_text_size | times: 0.9 }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-nail-bff-section-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-nail-bff-container-{{ ai_gen_id }}">
+    {% if block.settings.heading != blank %}
+      <h2 class="ai-nail-bff-heading-{{ ai_gen_id }}">
+        {{ block.settings.heading_part_1 }}
+        {% if block.settings.heading_part_2 != blank %}
+          <span class="ai-nail-bff-highlight-{{ ai_gen_id }}">{{ block.settings.heading_part_2 }}</span>
+        {% endif %}
+      </h2>
+    {% endif %}
+
+    <div class="ai-nail-bff-content-{{ ai_gen_id }}">
+      <div class="ai-nail-bff-features-{{ ai_gen_id }}">
+        <div class="ai-nail-bff-feature-{{ ai_gen_id }}">
+          <div class="ai-nail-bff-icon-wrapper-{{ ai_gen_id }}">
+            <svg class="ai-nail-bff-icon-{{ ai_gen_id }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+              <path d="M2 17l10 5 10-5"></path>
+              <path d="M2 12l10 5 10-5"></path>
+            </svg>
+          </div>
+          {% if block.settings.feature_1_title != blank %}
+            <h3 class="ai-nail-bff-feature-title-{{ ai_gen_id }}">{{ block.settings.feature_1_title }}</h3>
+          {% endif %}
+        </div>
+
+        <div class="ai-nail-bff-feature-{{ ai_gen_id }}">
+          <div class="ai-nail-bff-icon-wrapper-{{ ai_gen_id }}">
+            <svg class="ai-nail-bff-icon-{{ ai_gen_id }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </div>
+          {% if block.settings.feature_2_title != blank %}
+            <h3 class="ai-nail-bff-feature-title-{{ ai_gen_id }}">{{ block.settings.feature_2_title }}</h3>
+          {% endif %}
+        </div>
+
+        <div class="ai-nail-bff-feature-{{ ai_gen_id }}">
+          <div class="ai-nail-bff-icon-wrapper-{{ ai_gen_id }}">
+            <svg class="ai-nail-bff-icon-{{ ai_gen_id }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          {% if block.settings.feature_3_title != blank %}
+            <h3 class="ai-nail-bff-feature-title-{{ ai_gen_id }}">{{ block.settings.feature_3_title }}</h3>
+          {% endif %}
+        </div>
+
+        <div class="ai-nail-bff-feature-{{ ai_gen_id }}">
+          <div class="ai-nail-bff-icon-wrapper-{{ ai_gen_id }}">
+            <svg class="ai-nail-bff-icon-{{ ai_gen_id }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+          </div>
+          {% if block.settings.feature_4_title != blank %}
+            <h3 class="ai-nail-bff-feature-title-{{ ai_gen_id }}">{{ block.settings.feature_4_title }}</h3>
+          {% endif %}
+        </div>
+
+        <div class="ai-nail-bff-feature-{{ ai_gen_id }}">
+          <div class="ai-nail-bff-icon-wrapper-{{ ai_gen_id }}">
+            <svg class="ai-nail-bff-icon-{{ ai_gen_id }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v20M2 12h20"></path>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+          </div>
+          {% if block.settings.feature_5_title != blank %}
+            <h3 class="ai-nail-bff-feature-title-{{ ai_gen_id }}">{{ block.settings.feature_5_title }}</h3>
+          {% endif %}
+        </div>
+
+        <div class="ai-nail-bff-feature-{{ ai_gen_id }}">
+          <div class="ai-nail-bff-icon-wrapper-{{ ai_gen_id }}">
+            <svg class="ai-nail-bff-icon-{{ ai_gen_id }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+          </div>
+          {% if block.settings.feature_6_title != blank %}
+            <h3 class="ai-nail-bff-feature-title-{{ ai_gen_id }}">{{ block.settings.feature_6_title }}</h3>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="ai-nail-bff-image-wrapper-{{ ai_gen_id }}">
+        {% if block.settings.image %}
+          <img
+            src="{{ block.settings.image | image_url: width: 1000 }}"
+            alt="{{ block.settings.image.alt | escape }}"
+            loading="lazy"
+            width="{{ block.settings.image.width }}"
+            height="{{ block.settings.image.height }}"
+            class="ai-nail-bff-image-{{ ai_gen_id }}"
+          >
+        {% else %}
+          <div class="ai-nail-bff-image-placeholder-{{ ai_gen_id }}">
+            {{ 'image' | placeholder_svg_tag }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
 {% schema %}
- {
-   "name": "AI_Block",
-   "tag": "shopify-ai-generated-block"
- }
+{
+  "name": "Nail BFF features",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Full heading text",
+      "default": "Why Soul Struck is Your Nail Bff",
+      "info": "This is used for accessibility. Split the heading into two parts below for styling."
+    },
+    {
+      "type": "text",
+      "id": "heading_part_1",
+      "label": "Heading part 1",
+      "default": "Why Soul Struck is"
+    },
+    {
+      "type": "text",
+      "id": "heading_part_2",
+      "label": "Heading part 2 (highlighted)",
+      "default": "Your Nail Bff"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 20,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "heading_spacing",
+      "label": "Heading bottom spacing",
+      "min": 20,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "highlight_color",
+      "label": "Highlight color",
+      "default": "#E06285"
+    },
+    {
+      "type": "header",
+      "content": "Feature 1 - Style"
+    },
+    {
+      "type": "text",
+      "id": "feature_1_title",
+      "label": "Title",
+      "default": "Where Style meets the Soul"
+    },
+    {
+      "type": "header",
+      "content": "Feature 2 - Energy"
+    },
+    {
+      "type": "text",
+      "id": "feature_2_title",
+      "label": "Title",
+      "default": "Bold Nails, Bigger Energy"
+    },
+    {
+      "type": "header",
+      "content": "Feature 3 - Quality"
+    },
+    {
+      "type": "text",
+      "id": "feature_3_title",
+      "label": "Title",
+      "default": "Comfort with Quality"
+    },
+    {
+      "type": "header",
+      "content": "Feature 4 - Headquarters"
+    },
+    {
+      "type": "text",
+      "id": "feature_4_title",
+      "label": "Title",
+      "default": "Your Nail's Style Headquarters"
+    },
+    {
+      "type": "header",
+      "content": "Feature 5 - Vegan"
+    },
+    {
+      "type": "text",
+      "id": "feature_5_title",
+      "label": "Title",
+      "default": "Cruelty-free & Vegan"
+    },
+    {
+      "type": "header",
+      "content": "Feature 6 - Customer"
+    },
+    {
+      "type": "text",
+      "id": "feature_6_title",
+      "label": "Title",
+      "default": "Customer Centric"
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "label": "Image border radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_image_hover",
+      "label": "Enable hover zoom effect",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Features style"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon size",
+      "min": 40,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "color",
+      "id": "icon_background",
+      "label": "Icon background",
+      "default": "#E06285"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "range",
+      "id": "feature_text_size",
+      "label": "Feature text size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "feature_text_color",
+      "label": "Feature text color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "feature_gap",
+      "label": "Gap between features",
+      "min": 16,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "header",
+      "content": "Section style"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Mobile settings"
+    },
+    {
+      "type": "select",
+      "id": "mobile_image_position",
+      "label": "Image position on mobile",
+      "options": [
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        }
+      ],
+      "default": "bottom"
+    },
+    {
+      "type": "select",
+      "id": "mobile_columns",
+      "label": "Columns on mobile",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "2"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Nail BFF features"
+    }
+  ]
+}
 {% endschema %}
