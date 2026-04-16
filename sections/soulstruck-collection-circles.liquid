@@ -505,35 +505,49 @@
 @media screen and (max-width: 749px) {
   /*
    * Layout maths (single source of truth):
-   *   track padding each side = 40px  → total = 80px
-   *   4 items + 3 gaps of 10px        → gap total = 30px
-   *   item width = (100vw - 80px - 30px) / 4 = (100vw - 110px) / 4
+   *   track padding each side = 16px  → total = 32px
+   *   4 items + 3 gaps of 8px         → gap total = 24px
+   *   item width = (100vw - 32px - 24px) / 4 = (100vw - 56px) / 4
+   *
+   * Using a CSS custom property keeps width/height in sync without
+   * relying on aspect-ratio or height:auto (unreliable in iOS Safari
+   * flex containers when a --variable is already set on the element).
    */
   .ni-cc__track {
-    gap: 10px;
-    padding: 8px 40px 20px;
-    scroll-padding-left: 40px;
+    gap: 8px;
+    padding: 8px 16px 20px;
+    scroll-padding-left: 16px;
   }
 
+  /* Single source-of-truth variable for item/circle size on mobile */
   .ni-cc__item {
-    flex: 0 0 calc((100vw - 110px) / 4);
-    max-width: calc((100vw - 110px) / 4);
-    overflow: visible; /* let label stay visible below */
+    --_sz: calc((100vw - 56px) / 4);
+    flex: 0 0 var(--_sz);
+    width: var(--_sz);          /* explicit width prevents flex-basis quirks */
+    max-width: var(--_sz);
+    overflow: visible;
   }
 
-  /* Circle fills item width */
+  /*
+   * Explicitly set BOTH width and height to the same value.
+   * Never use height:auto + aspect-ratio inside a flex container on
+   * Safari — the CSS variable --ni-cc-circle-sz from the section
+   * inline style can "win" and produce unequal circle sizes.
+   */
   .ni-cc__circle-wrap {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1 / 1;
+    width: var(--_sz);
+    height: var(--_sz);
+    min-width: unset;
+    min-height: unset;
+    box-sizing: border-box;   /* border-ring padding included in dimensions */
   }
 
-  /* Label: fixed width, truncate long names cleanly */
+  /* Label: matches item width, truncates long names */
   .ni-cc__label {
     display: block;
-    width: 100%;
-    max-width: 100%;
-    font-size: 11px;
+    width: var(--_sz);
+    max-width: var(--_sz);
+    font-size: 10px;
     line-height: 1.3;
     text-align: center;
     white-space: nowrap;
@@ -542,19 +556,19 @@
   }
   .ni-cc__label-chevron { display: none; }
 
-  /* Arrows: sit in the 40px padding zone, vertically centred on the circle */
+  /* Arrows: vertically centred on the circles, no longer in the padding zone */
   .ni-cc__nav {
     opacity: 1;
     visibility: visible;
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     box-shadow: 0 1px 6px rgba(0,0,0,0.18);
-    /* top = track-padding-top + half circle diameter */
-    top: calc(8px + (100vw - 110px) / 8);
+    /* top = track-padding-top + half of one circle diameter */
+    top: calc(8px + var(--_sz, calc((100vw - 56px) / 4)) / 2);
     transform: translateY(-50%);
   }
-  .ni-cc__nav--prev { left: 4px; }
-  .ni-cc__nav--next { right: 4px; }
+  .ni-cc__nav--prev { left: -4px; }
+  .ni-cc__nav--next { right: -4px; }
   .ni-cc__nav:hover {
     transform: translateY(-50%) scale(1.08);
   }
