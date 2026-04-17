@@ -12,6 +12,15 @@
     "soulstruck_collection_circles_iyrMVN": {
       "type": "soulstruck-collection-circles",
       "blocks": {
+        "circle_McQhAd": {
+          "type": "circle",
+          "settings": {
+            "collection": "fresh-drops",
+            "custom_label": "",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        },
         "circle_Wbmikq": {
           "type": "circle",
           "settings": {
@@ -140,6 +149,7 @@
         }
       },
       "block_order": [
+        "circle_McQhAd",
         "circle_Wbmikq",
         "circle_VbRG6N",
         "circle_dzMnxr",
