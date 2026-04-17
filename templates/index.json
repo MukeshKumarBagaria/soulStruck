@@ -668,11 +668,68 @@
         "padding-block-start": 0,
         "padding-block-end": 0
       }
+    },
+    "soulstruck_marquee_fQDt47": {
+      "type": "soulstruck-marquee",
+      "blocks": {
+        "item_FGag8C": {
+          "type": "item",
+          "settings": {
+            "text": "long lasting",
+            "icon": "hand"
+          }
+        },
+        "item_E9G64A": {
+          "type": "item",
+          "settings": {
+            "text": "crease-free",
+            "icon": "recycle"
+          }
+        },
+        "item_6am9X4": {
+          "type": "item",
+          "settings": {
+            "text": "reusable",
+            "icon": "clock"
+          }
+        },
+        "item_8hUaJ6": {
+          "type": "item",
+          "settings": {
+            "text": "quick & easy",
+            "icon": "hourglass"
+          }
+        }
+      },
+      "block_order": [
+        "item_FGag8C",
+        "item_E9G64A",
+        "item_6am9X4",
+        "item_8hUaJ6"
+      ],
+      "name": "SoulStruck Marquee",
+      "settings": {
+        "speed": 30,
+        "direction": "normal",
+        "text_size": 22,
+        "font_weight": "800",
+        "icon_size": 32,
+        "bg_color": "#ffffff",
+        "text_color": "#1a1a1a",
+        "icon_color": "#FF2D7C",
+        "border_top": false,
+        "border_bottom": false,
+        "border_color": "#e8e8e8",
+        "item_gap": 60,
+        "padding_top": 20,
+        "padding_bottom": 20
+      }
     }
   },
   "order": [
     "soulstruck_collection_circles_iyrMVN",
     "soulstruck_hero_slider_hTNKR3",
+    "soulstruck_marquee_fQDt47",
     "product_list_fa6P9H",
     "17761935054ba1c02e",
     "177619440557b8ea32"
