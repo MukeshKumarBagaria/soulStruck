@@ -617,10 +617,33 @@
             "slide_5_button_link": ""
           },
           "blocks": {}
+        },
+        "ai_gen_block_b308ea1_ciMzBz": {
+          "type": "ai_gen_block_b308ea1",
+          "settings": {
+            "title": "Your Soul Struck Slay Kit",
+            "title_size": 32,
+            "title_weight": "700",
+            "title_color": "#c44851",
+            "subtitle": "Every thing you need for the perfect press-on manicure at home",
+            "subtitle_size": 16,
+            "subtitle_weight": "400",
+            "subtitle_color": "#666666",
+            "subtitle_gap": 8,
+            "text_alignment": "center",
+            "text_spacing": 20,
+            "image": "shopify://shop_images/soulstruck-kit.png",
+            "image_height": 500,
+            "mobile_image_height": 300,
+            "image_fit": "cover",
+            "background_color": "#ffffff"
+          },
+          "blocks": {}
         }
       },
       "block_order": [
-        "ai_gen_block_c68c9b2_MkJFKG"
+        "ai_gen_block_c68c9b2_MkJFKG",
+        "ai_gen_block_b308ea1_ciMzBz"
       ],
       "name": "split layout slider",
       "settings": {
@@ -966,33 +989,6 @@
     },
     "177661358394e47595": {
       "type": "_blocks",
-      "blocks": {
-        "ai_gen_block_b308ea1_KQbdtm": {
-          "type": "ai_gen_block_b308ea1",
-          "settings": {
-            "title": "Your Soul Struck Slay Kit",
-            "title_size": 32,
-            "title_weight": "700",
-            "title_color": "#c44851",
-            "subtitle": "Every thing you need for the perfect press-on manicure at home",
-            "subtitle_size": 16,
-            "subtitle_weight": "400",
-            "subtitle_color": "#666666",
-            "subtitle_gap": 8,
-            "text_alignment": "center",
-            "text_spacing": 20,
-            "image": "shopify://shop_images/soulstruck-kit.png",
-            "image_height": 500,
-            "mobile_image_height": 300,
-            "image_fit": "cover",
-            "background_color": "#ffffff"
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "ai_gen_block_b308ea1_KQbdtm"
-      ],
       "settings": {
         "content_direction": "column",
         "vertical_on_mobile": true,
