@@ -323,6 +323,38 @@
         "padding_bottom": 20
       }
     },
+    "soulstruck_bestsellers_AgVgXr": {
+      "type": "soulstruck-bestsellers",
+      "name": "SoulStruck Bestsellers",
+      "settings": {
+        "eyebrow": "BESTSELLERS",
+        "heading": "Everyone's Got Their Eye On These.",
+        "subheading": "Products we can't stop gushing about!",
+        "collection": "bride-vibe-only",
+        "max_products": 8,
+        "columns_desktop": 4,
+        "columns_mobile": "2",
+        "card_gap": 20,
+        "show_badges": true,
+        "show_save_badge": true,
+        "hot_seller_threshold": 20,
+        "show_ratings": true,
+        "show_offers": true,
+        "shipping_text": "FREE SHIPPING ON ORDERS ABOVE ₹799",
+        "show_view_all": true,
+        "view_all_text": "View all products",
+        "view_all_url": "",
+        "bg_color": "#ffffff",
+        "text_color": "#1a1a1a",
+        "card_bg": "#ffffff",
+        "accent_color": "#E91E63",
+        "btn_bg": "#1a1a1a",
+        "btn_color": "#ffffff",
+        "card_radius": 14,
+        "padding_top": 60,
+        "padding_bottom": 60
+      }
+    },
     "17765955435681d3e1": {
       "type": "_blocks",
       "blocks": {
@@ -931,50 +963,18 @@
         "padding-block-start": 0,
         "padding-block-end": 0
       }
-    },
-    "soulstruck_bestsellers_AgVgXr": {
-      "type": "soulstruck-bestsellers",
-      "name": "SoulStruck Bestsellers",
-      "settings": {
-        "eyebrow": "BESTSELLERS",
-        "heading": "Everyone's Got Their Eye On These.",
-        "subheading": "Products we can't stop gushing about!",
-        "collection": "bride-vibe-only",
-        "max_products": 8,
-        "columns_desktop": 4,
-        "columns_mobile": "2",
-        "card_gap": 20,
-        "show_badges": true,
-        "show_save_badge": true,
-        "hot_seller_threshold": 20,
-        "show_ratings": true,
-        "show_offers": true,
-        "shipping_text": "FREE SHIPPING ON ORDERS ABOVE ₹799",
-        "show_view_all": true,
-        "view_all_text": "View all products",
-        "view_all_url": "",
-        "bg_color": "#ffffff",
-        "text_color": "#1a1a1a",
-        "card_bg": "#ffffff",
-        "accent_color": "#E91E63",
-        "btn_bg": "#1a1a1a",
-        "btn_color": "#ffffff",
-        "card_radius": 14,
-        "padding_top": 60,
-        "padding_bottom": 60
-      }
     }
   },
   "order": [
     "soulstruck_collection_circles_iyrMVN",
     "soulstruck_hero_slider_hTNKR3",
     "soulstruck_marquee_fQDt47",
-    "17765955435681d3e1",
+    "soulstruck_bestsellers_AgVgXr",
     "17761935054ba1c02e",
     "177619440557b8ea32",
+    "17765955435681d3e1",
     "17765982920983bbc2",
     "177660249963948a16",
-    "17766087610ab8ede2",
-    "soulstruck_bestsellers_AgVgXr"
+    "17766087610ab8ede2"
   ]
 }
