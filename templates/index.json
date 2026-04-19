@@ -318,7 +318,7 @@
         "border_top": false,
         "border_bottom": false,
         "border_color": "#e8e8e8",
-        "item_gap": 60,
+        "item_gap": 16,
         "padding_top": 20,
         "padding_bottom": 20
       }
