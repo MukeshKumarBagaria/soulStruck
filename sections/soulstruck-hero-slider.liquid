@@ -430,14 +430,17 @@
   #ni-hero-{{ section.id }} .ni-hero__slide {
     grid-template-columns: 1fr;
     padding: 0 20px;
-    gap: 24px;
+    gap: 20px;
   }
+  /* Media on top, text below */
+  #ni-hero-{{ section.id }} .ni-hero__right { order: 1; }
+  #ni-hero-{{ section.id }} .ni-hero__left  { order: 2; align-items: flex-start; }
   #ni-hero-{{ section.id }} .ni-hero__inner  { min-height: auto; }
   #ni-hero-{{ section.id }} .ni-hero__heading { font-size: 2rem; }
-  #ni-hero-{{ section.id }} .ni-hero__card   { aspect-ratio: 1 / 0.85; }
+  #ni-hero-{{ section.id }} .ni-hero__card   { aspect-ratio: 1 / 0.9; }
   #ni-hero-{{ section.id }} .ni-hero__price-box { right: 16px; }
   #ni-hero-{{ section.id }} .ni-hero__nav    { padding: 16px 20px 0; }
-  #ni-hero-{{ section.id }} .ni-hero__left   { gap: 14px; }
+  #ni-hero-{{ section.id }} .ni-hero__left   { gap: 12px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
