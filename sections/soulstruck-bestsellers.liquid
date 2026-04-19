@@ -1,0 +1,862 @@
+{% comment %}
+  SoulStruck Bestsellers
+  ─ Modern product grid with Hot Seller / Save badges, ratings & AJAX add-to-cart
+  ─ Desktop 4 / Tablet 3 / Mobile 2 columns (all configurable)
+  ─ Fully dynamic & mobile responsive
+{% endcomment %}
+
+{%- liquid
+  assign coll           = section.settings.collection
+  assign max_products   = section.settings.max_products | default: 8
+  assign cols_desktop   = section.settings.columns_desktop
+  assign cols_mobile    = section.settings.columns_mobile
+  assign show_badges    = section.settings.show_badges
+  assign show_ratings   = section.settings.show_ratings
+  assign show_offers    = section.settings.show_offers
+  assign show_save_badge = section.settings.show_save_badge
+  assign shipping_text  = section.settings.shipping_text
+  assign hot_threshold  = section.settings.hot_seller_threshold
+  assign pt             = section.settings.padding_top
+  assign pb             = section.settings.padding_bottom
+-%}
+
+<style>
+  #ni-bs-{{ section.id }} {
+    --ni-bs-accent     : {{ section.settings.accent_color }};
+    --ni-bs-btn-bg     : {{ section.settings.btn_bg }};
+    --ni-bs-btn-color  : {{ section.settings.btn_color }};
+    --ni-bs-card-bg    : {{ section.settings.card_bg }};
+    --ni-bs-card-radius: {{ section.settings.card_radius }}px;
+    --ni-bs-cols-d     : {{ cols_desktop }};
+    --ni-bs-cols-m     : {{ cols_mobile }};
+    --ni-bs-gap        : {{ section.settings.card_gap }}px;
+    background         : {{ section.settings.bg_color }};
+    padding-top        : {{ pt }}px;
+    padding-bottom     : {{ pb }}px;
+    color              : {{ section.settings.text_color }};
+  }
+</style>
+
+<section id="ni-bs-{{ section.id }}" class="ni-bs" aria-labelledby="ni-bs-title-{{ section.id }}">
+
+  {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subheading != blank -%}
+    <header class="ni-bs__header">
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="ni-bs__eyebrow">{{ section.settings.eyebrow | escape }}</span>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="ni-bs__title" id="ni-bs-title-{{ section.id }}">{{ section.settings.heading | escape }}</h2>
+      {%- endif -%}
+      {%- if section.settings.subheading != blank -%}
+        <p class="ni-bs__subtitle">{{ section.settings.subheading | escape }}</p>
+      {%- endif -%}
+    </header>
+  {%- endif -%}
+
+  <div class="ni-bs__grid" role="list">
+    {%- if coll != blank and coll.products_count > 0 -%}
+      {%- for product in coll.products limit: max_products -%}
+        {%- liquid
+          assign p_variant = product.selected_or_first_available_variant
+          assign save_amount = 0
+          if product.compare_at_price > product.price
+            assign save_amount = product.compare_at_price | minus: product.price
+          endif
+
+          assign p_rating = product.metafields.reviews.rating.value.rating | default: product.metafields.loox.avg_rating
+          assign p_rcount = product.metafields.reviews.rating_count.value  | default: product.metafields.loox.num_reviews
+          assign p_offer  = product.metafields.custom.offer_text
+
+          assign hot_auto = false
+          if hot_threshold > 0 and p_rcount != nil and p_rcount >= hot_threshold
+            assign hot_auto = true
+          endif
+        -%}
+
+        <article class="ni-bs__card" role="listitem">
+
+          <a href="{{ product.url }}" class="ni-bs__media-link" aria-label="{{ product.title | escape }}">
+            <div class="ni-bs__media">
+              {%- if show_badges and hot_auto -%}
+                <span class="ni-bs__badge ni-bs__badge--hot">Hot Seller</span>
+              {%- endif -%}
+
+              {%- if show_badges and show_save_badge and save_amount > 0 -%}
+                <span class="ni-bs__badge ni-bs__badge--save">SAVE {{ save_amount | money_without_trailing_zeros }}</span>
+              {%- endif -%}
+
+              {%- if product.featured_image != blank -%}
+                <img
+                  src="{{ product.featured_image | image_url: width: 600 }}"
+                  srcset="{{ product.featured_image | image_url: width: 300 }} 300w,
+                          {{ product.featured_image | image_url: width: 600 }} 600w,
+                          {{ product.featured_image | image_url: width: 900 }} 900w"
+                  sizes="(max-width: 749px) 50vw, (max-width: 1199px) 33vw, 25vw"
+                  alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                  loading="lazy"
+                  width="{{ product.featured_image.width }}"
+                  height="{{ product.featured_image.height }}"
+                  class="ni-bs__img"
+                >
+
+                {%- if product.images.size > 1 -%}
+                  <img
+                    src="{{ product.images[1] | image_url: width: 600 }}"
+                    alt=""
+                    loading="lazy"
+                    aria-hidden="true"
+                    class="ni-bs__img ni-bs__img--hover"
+                  >
+                {%- endif -%}
+              {%- else -%}
+                <div class="ni-bs__img ni-bs__img--placeholder">
+                  {{ 'product-1' | placeholder_svg_tag: 'ni-bs__placeholder-svg' }}
+                </div>
+              {%- endif -%}
+            </div>
+          </a>
+
+          <div class="ni-bs__body">
+            <a href="{{ product.url }}" class="ni-bs__title-link">
+              <h3 class="ni-bs__product-title">{{ product.title | escape }}</h3>
+            </a>
+
+            {%- if show_offers and p_offer != blank -%}
+              <p class="ni-bs__offer">{{ p_offer }}</p>
+            {%- endif -%}
+
+            {%- if show_ratings and p_rating != nil -%}
+              <div class="ni-bs__rating" aria-label="Rating {{ p_rating }} out of 5{% if p_rcount %} from {{ p_rcount }} reviews{% endif %}">
+                <span class="ni-bs__rating-pill">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  <span>({{ p_rating | times: 1.0 | round: 1 }})</span>
+                </span>
+                {%- if p_rcount %}
+                  <span class="ni-bs__rating-pill ni-bs__rating-pill--count">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                    <span>{{ p_rcount }} Reviews</span>
+                  </span>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+
+            {%- if shipping_text != blank -%}
+              <div class="ni-bs__shipping">{{ shipping_text | escape }}</div>
+            {%- endif -%}
+
+            <form
+              class="ni-bs__cta-form"
+              action="{{ routes.cart_add_url }}"
+              method="post"
+              enctype="multipart/form-data"
+              data-bs-add-form
+            >
+              <input type="hidden" name="id" value="{{ p_variant.id }}">
+              <input type="hidden" name="quantity" value="1">
+              <button
+                type="submit"
+                class="ni-bs__cta"
+                {% unless product.available %}disabled aria-disabled="true"{% endunless %}
+                data-bs-cta
+              >
+                <span class="ni-bs__price">
+                  {%- if save_amount > 0 -%}
+                    <span class="ni-bs__price-current">{{ product.price | money_without_trailing_zeros }}</span>
+                    <s class="ni-bs__price-compare">{{ product.compare_at_price | money_without_trailing_zeros }}</s>
+                  {%- else -%}
+                    <span class="ni-bs__price-current">{{ product.price | money_without_trailing_zeros }}</span>
+                  {%- endif -%}
+                </span>
+                <span class="ni-bs__cta-label" data-bs-label>
+                  {%- if product.available -%}
+                    Add To Cart
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                  {%- else -%}
+                    Sold Out
+                  {%- endif -%}
+                </span>
+              </button>
+            </form>
+          </div>
+        </article>
+      {%- endfor -%}
+    {%- else -%}
+      {%- for i in (1..max_products) -%}
+        <article class="ni-bs__card ni-bs__card--placeholder" role="listitem">
+          <div class="ni-bs__media">
+            <div class="ni-bs__img ni-bs__img--placeholder">{{ 'product-1' | placeholder_svg_tag: 'ni-bs__placeholder-svg' }}</div>
+          </div>
+          <div class="ni-bs__body">
+            <h3 class="ni-bs__product-title">Product title</h3>
+            <div class="ni-bs__shipping">{{ shipping_text | escape }}</div>
+            <button class="ni-bs__cta" type="button" disabled>
+              <span class="ni-bs__price"><span class="ni-bs__price-current">₹0</span></span>
+              <span class="ni-bs__cta-label">Add To Cart</span>
+            </button>
+          </div>
+        </article>
+      {%- endfor -%}
+    {%- endif -%}
+  </div>
+
+  {%- if section.settings.show_view_all and coll != blank -%}
+    <div class="ni-bs__viewall-wrap">
+      <a
+        href="{% if section.settings.view_all_url != blank %}{{ section.settings.view_all_url }}{% else %}{{ coll.url }}{% endif %}"
+        class="ni-bs__viewall"
+      >
+        {{ section.settings.view_all_text | default: 'View all' | escape }}
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+  {%- endif -%}
+
+</section>
+
+{% stylesheet %}
+/* ── SoulStruck Bestsellers ──────────────────────────────────── */
+.ni-bs {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+  box-sizing: border-box;
+}
+.ni-bs * { box-sizing: border-box; }
+
+/* Header */
+.ni-bs__header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 32px;
+}
+.ni-bs__eyebrow {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: currentColor;
+  opacity: 0.72;
+  margin-bottom: 10px;
+}
+.ni-bs__title {
+  font-size: clamp(1.55rem, 2.4vw, 2.25rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  margin: 0 0 10px;
+  color: inherit;
+}
+.ni-bs__subtitle {
+  font-size: 0.98rem;
+  line-height: 1.5;
+  color: inherit;
+  opacity: 0.72;
+  margin: 0;
+}
+
+/* Grid */
+.ni-bs__grid {
+  display: grid;
+  grid-template-columns: repeat(var(--ni-bs-cols-d, 4), minmax(0, 1fr));
+  gap: var(--ni-bs-gap, 20px);
+  align-items: stretch;
+}
+@media (max-width: 1199px) {
+  .ni-bs__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 749px) {
+  .ni-bs__grid { grid-template-columns: repeat(var(--ni-bs-cols-m, 2), minmax(0, 1fr)); gap: 14px; }
+}
+
+/* Card */
+.ni-bs__card {
+  display: flex;
+  flex-direction: column;
+  background: var(--ni-bs-card-bg, #fff);
+  border-radius: var(--ni-bs-card-radius, 14px);
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  transition: transform 0.32s cubic-bezier(0.16,1,0.3,1),
+              box-shadow 0.32s cubic-bezier(0.16,1,0.3,1),
+              border-color 0.2s ease;
+}
+@media (hover: hover) {
+  .ni-bs__card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 32px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+    border-color: rgba(0,0,0,0.08);
+  }
+}
+
+/* Media */
+.ni-bs__media-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+.ni-bs__media {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  background: #f6f6f6;
+  overflow: hidden;
+}
+.ni-bs__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.35s ease, transform 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.ni-bs__img--hover {
+  opacity: 0;
+}
+@media (hover: hover) {
+  .ni-bs__card:hover .ni-bs__img { transform: scale(1.04); }
+  .ni-bs__card:hover .ni-bs__img--hover { opacity: 1; }
+}
+.ni-bs__img--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  color: #bbb;
+}
+.ni-bs__placeholder-svg { width: 60%; height: 60%; }
+
+/* Badges */
+.ni-bs__badge {
+  position: absolute;
+  z-index: 2;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 6px 10px;
+  border-radius: 6px;
+  line-height: 1;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.ni-bs__badge--hot {
+  top: 10px;
+  left: 10px;
+  background: #fff;
+  color: var(--ni-bs-accent, #E91E63);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.ni-bs__badge--save {
+  bottom: 10px;
+  right: 10px;
+  background: #fff;
+  color: var(--ni-bs-accent, #E91E63);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+@media (max-width: 749px) {
+  .ni-bs__badge { font-size: 0.62rem; padding: 5px 8px; border-radius: 5px; }
+  .ni-bs__badge--hot { top: 8px; left: 8px; }
+  .ni-bs__badge--save { bottom: 8px; right: 8px; }
+}
+
+/* Body */
+.ni-bs__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 14px 0;
+  flex: 1;
+}
+.ni-bs__title-link { text-decoration: none; color: inherit; }
+.ni-bs__product-title {
+  font-size: 0.98rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 0;
+  color: inherit;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.6em;
+}
+@media (max-width: 749px) {
+  .ni-bs__product-title { font-size: 0.88rem; min-height: 2.4em; }
+  .ni-bs__body { padding: 12px 12px 0; gap: 6px; }
+}
+.ni-bs__offer {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--ni-bs-accent, #E91E63);
+  margin: 0;
+  line-height: 1.35;
+}
+@media (max-width: 749px) {
+  .ni-bs__offer { font-size: 0.72rem; }
+}
+
+/* Rating */
+.ni-bs__rating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+.ni-bs__rating-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 5px;
+  color: #1a1a1a;
+  background: #fff;
+  line-height: 1;
+}
+.ni-bs__rating-pill svg { flex-shrink: 0; }
+.ni-bs__rating-pill--count svg { color: #0a7d41; }
+
+/* Shipping banner */
+.ni-bs__shipping {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: color-mix(in srgb, var(--ni-bs-accent, #E91E63) 12%, #fff);
+  color: var(--ni-bs-accent, #E91E63);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 8px 10px;
+  border-radius: 999px;
+  line-height: 1.25;
+  margin-top: 2px;
+  white-space: normal;
+}
+@media (max-width: 749px) {
+  .ni-bs__shipping {
+    font-size: 0.56rem;
+    padding: 6px 8px;
+    letter-spacing: 0.04em;
+    border-radius: 10px;
+  }
+}
+
+/* CTA */
+.ni-bs__cta-form {
+  margin-top: auto;
+  padding: 12px 0 14px;
+}
+.ni-bs__cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--ni-bs-btn-bg, #1a1a1a);
+  color: var(--ni-bs-btn-color, #fff);
+  border: none;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.25s ease, opacity 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  line-height: 1;
+  position: relative;
+  overflow: hidden;
+}
+.ni-bs__cta:disabled { opacity: 0.5; cursor: not-allowed; }
+@media (hover: hover) {
+  .ni-bs__cta:not(:disabled):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+  }
+}
+.ni-bs__cta:not(:disabled):active { transform: translateY(0); }
+.ni-bs__price {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  white-space: nowrap;
+}
+.ni-bs__price-current { font-weight: 700; white-space: nowrap; }
+.ni-bs__price-compare { font-weight: 400; opacity: 0.55; font-size: 0.82em; white-space: nowrap; }
+.ni-bs__cta-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+@media (max-width: 749px) {
+  .ni-bs__cta {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    min-height: 36px;
+    font-size: 0.72rem;
+    line-height: 1.2;
+  }
+  .ni-bs__price {
+    gap: 2px;
+    font-size: 0.74rem;
+    flex-shrink: 1;
+    min-width: 0;
+  }
+  .ni-bs__price-compare { font-size: 0.72em; }
+  .ni-bs__cta-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.01em;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+  .ni-bs__cta-label svg { display: none; }
+}
+@media (max-width: 380px) {
+  .ni-bs__price-compare { display: none; }
+  .ni-bs__cta { padding: 8px 10px; }
+}
+
+/* Loading / success state */
+.ni-bs__cta.is-loading { pointer-events: none; }
+.ni-bs__cta.is-loading .ni-bs__cta-label {
+  opacity: 0.6;
+}
+.ni-bs__cta.is-added {
+  background: #0a7d41;
+  color: #fff;
+}
+
+/* View all */
+.ni-bs__viewall-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 36px;
+}
+.ni-bs__viewall {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  border: 1.5px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: inherit;
+  text-decoration: none;
+  background: transparent;
+  transition: background 0.22s ease, color 0.22s ease, transform 0.22s ease;
+}
+.ni-bs__viewall svg { transition: transform 0.22s cubic-bezier(0.16,1,0.3,1); }
+@media (hover: hover) {
+  .ni-bs__viewall:hover {
+    background: var(--ni-bs-btn-bg, #1a1a1a);
+    color: var(--ni-bs-btn-color, #fff);
+    border-color: var(--ni-bs-btn-bg, #1a1a1a);
+  }
+  .ni-bs__viewall:hover svg { transform: translateX(3px); }
+}
+@media (max-width: 749px) {
+  .ni-bs__viewall { padding: 12px 24px; font-size: 0.85rem; }
+  .ni-bs__viewall-wrap { margin-top: 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ni-bs__card,
+  .ni-bs__img,
+  .ni-bs__cta,
+  .ni-bs__viewall,
+  .ni-bs__viewall svg { transition: none; }
+}
+{% endstylesheet %}
+
+<script>
+(function () {
+  const section = document.getElementById('ni-bs-{{ section.id }}');
+  if (!section) return;
+
+  section.querySelectorAll('[data-bs-add-form]').forEach((form) => {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('[data-bs-cta]');
+      const label = form.querySelector('[data-bs-label]');
+      if (!btn || btn.disabled) return;
+
+      const originalHtml = label.innerHTML;
+      btn.classList.add('is-loading');
+      label.textContent = 'Adding…';
+
+      try {
+        const res = await fetch('{{ routes.cart_add_url }}.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            items: [{
+              id: Number(form.querySelector('input[name="id"]').value),
+              quantity: 1
+            }]
+          })
+        });
+
+        if (!res.ok) throw new Error('Add to cart failed');
+
+        btn.classList.remove('is-loading');
+        btn.classList.add('is-added');
+        label.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Added';
+
+        document.dispatchEvent(new CustomEvent('cart:update', { bubbles: true }));
+        document.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
+
+        setTimeout(() => {
+          btn.classList.remove('is-added');
+          label.innerHTML = originalHtml;
+        }, 1800);
+      } catch (err) {
+        btn.classList.remove('is-loading');
+        label.innerHTML = originalHtml;
+        console.error('[bestsellers] add to cart:', err);
+      }
+    });
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SoulStruck Bestsellers",
+  "tag": "section",
+  "class": "soulstruck-bestsellers-section",
+  "disabled_on": { "groups": ["header", "footer"] },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow label",
+      "default": "BESTSELLERS"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Everyone's Got Their Eye On These."
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Products we can't stop gushing about!"
+    },
+    {
+      "type": "header",
+      "content": "Products"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "label": "Number of products",
+      "min": 2,
+      "max": 24,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns on mobile",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Card gap",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Card content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badges",
+      "label": "Show badges",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_save_badge",
+      "label": "Show 'Save ₹X' badge when on sale",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "hot_seller_threshold",
+      "label": "Auto 'Hot Seller' badge after N reviews",
+      "info": "Set to 0 to disable automatic badge.",
+      "min": 0,
+      "max": 500,
+      "step": 5,
+      "default": 20
+    },
+    {
+      "type": "checkbox",
+      "id": "show_ratings",
+      "label": "Show ratings",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_offers",
+      "label": "Show offer text (from product metafield custom.offer_text)",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "shipping_text",
+      "label": "Shipping banner text (leave blank to hide)",
+      "default": "FREE SHIPPING ON ORDERS ABOVE ₹799"
+    },
+    {
+      "type": "header",
+      "content": "View all button"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show 'View all' button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "view_all_text",
+      "label": "Button text",
+      "default": "View all products"
+    },
+    {
+      "type": "url",
+      "id": "view_all_url",
+      "label": "Custom URL (optional)",
+      "info": "Leave blank to link to the selected collection."
+    },
+    {
+      "type": "header",
+      "content": "Colours"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text colour",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent colour (badges / offers)",
+      "default": "#E91E63"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg",
+      "label": "Add to cart button bg",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "btn_color",
+      "label": "Add to cart text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card corner radius",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    }
+  ],
+  "presets": [
+    {
+      "name": "SoulStruck Bestsellers"
+    }
+  ]
+}
+{% endschema %}
