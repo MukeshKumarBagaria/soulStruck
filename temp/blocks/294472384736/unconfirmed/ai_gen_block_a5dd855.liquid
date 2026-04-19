@@ -1,6 +1,979 @@
+{% doc %}
+  @prompt
+    Create a modern “Instagram Feed” section for my Shopify store.
+    
+    Layout:
+    - Display Instagram profile info at the top:
+      - Profile image (circular)
+      - Username (e.g. @brandname)
+      - Short bio/description text
+    - Below that, show a grid of Instagram posts (images/videos)
+    
+    Feed Display:
+    - Show posts in a grid layout (desktop: 4 columns, mobile: 2 columns)
+    - Maintain equal spacing and clean alignment
+    - Images should have rounded corners
+    - Hover effect (slight zoom or overlay with Instagram icon)
+    
+    Functionality:
+    - Connect with Instagram using API or allow manual image upload as fallback
+    - Option to show latest posts dynamically
+    - “Load More” button to load additional posts
+    - “Follow on Instagram” button linking to profile
+    
+    Customization Options:
+    - Change number of posts shown initially
+    - Toggle:
+      - Profile section (show/hide)
+      - Load more button
+      - Follow button
+    - Customize:
+      - Button text
+      - Colors (button + text)
+      - Grid spacing
+      - Border radius
+      - Hover effect style
+    
+    Design Style:
+    - Clean, minimal, premium
+    - Focus on visual content
+    - Soft shadows and rounded UI
+    
+    Mobile Optimization:
+    - Fully responsive
+    - Grid adjusts to 2 columns on mobile
+    - Touch-friendly buttons
+    
+    Extra Features:
+    - Clicking an image opens Instagram post in new tab
+    - Optional overlay icon on hover (Instagram logo)
+    
+    Goal:
+    Create a social-proof-driven Instagram section to increase trust and engagement.
+    
+    
+    here is my instagram account- https://www.instagram.com/p/DXO5u_pDYv8/, make it look more beautiful and it will be full width looking very beautiful 
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-instagram-feed-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    padding: {{ block.settings.section_padding }}px 0;
+    background: {{ block.settings.section_bg_color }};
+  }
+
+  .ai-instagram-feed__container-{{ ai_gen_id }} {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .ai-instagram-feed__header-{{ ai_gen_id }} {
+    text-align: center;
+    margin-bottom: {{ block.settings.header_spacing }}px;
+    padding: 0 20px;
+  }
+
+  .ai-instagram-feed__title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.title_size }}px;
+    font-weight: 700;
+    color: {{ block.settings.title_color }};
+    margin: 0 0 12px 0;
+    letter-spacing: -0.5px;
+  }
+
+  .ai-instagram-feed__subtitle-{{ ai_gen_id }} {
+    font-size: {{ block.settings.subtitle_size }}px;
+    color: {{ block.settings.subtitle_color }};
+    margin: 0;
+    opacity: 0.85;
+  }
+
+  .ai-instagram-feed__profile-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: {{ block.settings.profile_spacing }}px;
+    padding: 40px;
+    background: {{ block.settings.profile_bg_color }};
+    border-radius: {{ block.settings.profile_border_radius }}px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .ai-instagram-feed__profile-image-wrapper-{{ ai_gen_id }} {
+    position: relative;
+  }
+
+  .ai-instagram-feed__profile-image-{{ ai_gen_id }} {
+    width: {{ block.settings.profile_image_size }}px;
+    height: {{ block.settings.profile_image_size }}px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-color: #f5f5f5;
+    border: 4px solid {{ block.settings.profile_border_color }};
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .ai-instagram-feed__profile-image-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-instagram-feed__profile-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-instagram-feed__profile-placeholder-{{ ai_gen_id }} svg {
+    width: 50%;
+    height: 50%;
+    fill: white;
+  }
+
+  .ai-instagram-feed__profile-info-{{ ai_gen_id }} {
+    flex-grow: 1;
+    text-align: left;
+  }
+
+  .ai-instagram-feed__username-{{ ai_gen_id }} {
+    font-size: {{ block.settings.username_size }}px;
+    font-weight: 700;
+    color: {{ block.settings.text_color }};
+    margin: 0 0 8px 0;
+    letter-spacing: -0.3px;
+  }
+
+  .ai-instagram-feed__bio-{{ ai_gen_id }} {
+    font-size: {{ block.settings.bio_size }}px;
+    color: {{ block.settings.text_color }};
+    opacity: 0.75;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .ai-instagram-feed__follow-btn-{{ ai_gen_id }} {
+    padding: 14px 28px;
+    background: {{ block.settings.follow_button_bg }};
+    color: {{ block.settings.follow_button_color }};
+    border: none;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  }
+
+  .ai-instagram-feed__follow-btn-{{ ai_gen_id }}:hover {
+    background: {{ block.settings.follow_button_hover_bg }};
+    color: {{ block.settings.follow_button_hover_color }};
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  .ai-instagram-feed__grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat({{ block.settings.columns_desktop }}, 1fr);
+    gap: {{ block.settings.grid_spacing }}px;
+    margin-bottom: 40px;
+    padding: 0;
+  }
+
+  .ai-instagram-feed__post-{{ ai_gen_id }} {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: {{ block.settings.image_border_radius }}px;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .ai-instagram-feed__post-{{ ai_gen_id }}:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  }
+
+  .ai-instagram-feed__post-image-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .ai-instagram-feed__post-{{ ai_gen_id }}:hover .ai-instagram-feed__post-image-{{ ai_gen_id }} {
+    transform: scale({{ block.settings.hover_zoom }});
+  }
+
+  .ai-instagram-feed__post-overlay-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(240, 148, 51, 0.85) 0%, rgba(188, 24, 136, 0.85) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .ai-instagram-feed__post-{{ ai_gen_id }}:hover .ai-instagram-feed__post-overlay-{{ ai_gen_id }} {
+    opacity: 1;
+  }
+
+  .ai-instagram-feed__instagram-icon-{{ ai_gen_id }} {
+    width: 50px;
+    height: 50px;
+    fill: white;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+  }
+
+  .ai-instagram-feed__load-more-{{ ai_gen_id }} {
+    text-align: center;
+    margin-top: 20px;
+    padding: 0 20px;
+  }
+
+  .ai-instagram-feed__load-more-btn-{{ ai_gen_id }} {
+    padding: 16px 40px;
+    background: {{ block.settings.load_more_bg }};
+    color: {{ block.settings.load_more_color }};
+    border: 2px solid {{ block.settings.load_more_border }};
+    border-radius: {{ block.settings.button_border_radius }}px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  }
+
+  .ai-instagram-feed__load-more-btn-{{ ai_gen_id }}:hover {
+    background: {{ block.settings.load_more_hover_bg }};
+    color: {{ block.settings.load_more_hover_color }};
+    border-color: {{ block.settings.load_more_hover_border }};
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .ai-instagram-feed__empty-state-{{ ai_gen_id }} {
+    text-align: center;
+    padding: 80px 20px;
+    color: #999;
+  }
+
+  .ai-instagram-feed__empty-state-{{ ai_gen_id }} svg {
+    opacity: 0.3;
+    margin-bottom: 20px;
+  }
+
+  .ai-instagram-feed__empty-state-{{ ai_gen_id }} p {
+    font-size: 18px;
+    margin: 10px 0;
+    font-weight: 500;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-instagram-feed__grid-{{ ai_gen_id }} {
+      grid-template-columns: repeat({{ block.settings.columns_mobile }}, 1fr);
+      gap: {{ block.settings.grid_spacing | times: 0.7 }}px;
+    }
+
+    .ai-instagram-feed__profile-{{ ai_gen_id }} {
+      flex-direction: column;
+      text-align: center;
+      padding: 30px 20px;
+    }
+
+    .ai-instagram-feed__profile-info-{{ ai_gen_id }} {
+      text-align: center;
+    }
+
+    .ai-instagram-feed__profile-image-{{ ai_gen_id }} {
+      width: {{ block.settings.profile_image_size | times: 0.8 }}px;
+      height: {{ block.settings.profile_image_size | times: 0.8 }}px;
+    }
+
+    .ai-instagram-feed__title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.title_size | times: 0.7 }}px;
+    }
+
+    .ai-instagram-feed__subtitle-{{ ai_gen_id }} {
+      font-size: {{ block.settings.subtitle_size | times: 0.9 }}px;
+    }
+  }
+{% endstyle %}
+
+<instagram-feed-{{ ai_gen_id }}
+  class="ai-instagram-feed-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-instagram-feed__container-{{ ai_gen_id }}">
+    {% if block.settings.show_header %}
+      <div class="ai-instagram-feed__header-{{ ai_gen_id }}">
+        {% if block.settings.section_title != blank %}
+          <h2 class="ai-instagram-feed__title-{{ ai_gen_id }}">{{ block.settings.section_title }}</h2>
+        {% endif %}
+        {% if block.settings.section_subtitle != blank %}
+          <p class="ai-instagram-feed__subtitle-{{ ai_gen_id }}">{{ block.settings.section_subtitle }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% if block.settings.show_profile %}
+      <div class="ai-instagram-feed__profile-{{ ai_gen_id }}">
+        <div class="ai-instagram-feed__profile-image-wrapper-{{ ai_gen_id }}">
+          <div class="ai-instagram-feed__profile-image-{{ ai_gen_id }}">
+            {% if block.settings.profile_image %}
+              <img
+                src="{{ block.settings.profile_image | image_url: width: 200 }}"
+                alt="{{ block.settings.username }}"
+                loading="lazy"
+                width="200"
+                height="200"
+              >
+            {% else %}
+              <div class="ai-instagram-feed__profile-placeholder-{{ ai_gen_id }}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                </svg>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="ai-instagram-feed__profile-info-{{ ai_gen_id }}">
+          {% if block.settings.username != blank %}
+            <h3 class="ai-instagram-feed__username-{{ ai_gen_id }}">{{ block.settings.username }}</h3>
+          {% endif %}
+          {% if block.settings.bio != blank %}
+            <p class="ai-instagram-feed__bio-{{ ai_gen_id }}">{{ block.settings.bio }}</p>
+          {% endif %}
+        </div>
+
+        {% if block.settings.show_follow_button and block.settings.instagram_url != blank %}
+          <a
+            href="{{ block.settings.instagram_url }}"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="ai-instagram-feed__follow-btn-{{ ai_gen_id }}"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+            {{ block.settings.follow_button_label }}
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="ai-instagram-feed__grid-{{ ai_gen_id }}">
+      {% liquid
+        assign total_posts = block.settings.posts_to_show
+        assign has_posts = false
+
+        for i in (1..12)
+          assign post_key = 'post_' | append: i | append: '_image'
+          assign url_key = 'post_' | append: i | append: '_url'
+          assign post_image = block.settings[post_key]
+          assign post_url = block.settings[url_key]
+
+          if post_image != blank and i <= total_posts
+            assign has_posts = true
+          endif
+        endfor
+      %}
+
+      {% if has_posts %}
+        {% for i in (1..total_posts) %}
+          {% liquid
+            assign post_key = 'post_' | append: i | append: '_image'
+            assign url_key = 'post_' | append: i | append: '_url'
+            assign post_image = block.settings[post_key]
+            assign post_url = block.settings[url_key]
+          %}
+
+          {% if post_image != blank %}
+            <a
+              href="{% if post_url != blank %}{{ post_url }}{% else %}{{ block.settings.instagram_url }}{% endif %}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="ai-instagram-feed__post-{{ ai_gen_id }}"
+            >
+              <img
+                src="{{ post_image | image_url: width: 800 }}"
+                alt="Instagram post {{ i }}"
+                loading="lazy"
+                width="800"
+                height="800"
+                class="ai-instagram-feed__post-image-{{ ai_gen_id }}"
+              >
+              {% if block.settings.show_hover_overlay %}
+                <div class="ai-instagram-feed__post-overlay-{{ ai_gen_id }}">
+                  <svg class="ai-instagram-feed__instagram-icon-{{ ai_gen_id }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                  </svg>
+                </div>
+              {% endif %}
+            </a>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <div class="ai-instagram-feed__empty-state-{{ ai_gen_id }}" style="grid-column: 1 / -1;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <polyline points="21 15 16 10 5 21"></polyline>
+          </svg>
+          <p>Add Instagram post images to display your feed</p>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if block.settings.show_load_more %}
+      <div class="ai-instagram-feed__load-more-{{ ai_gen_id }}">
+        <button
+          class="ai-instagram-feed__load-more-btn-{{ ai_gen_id }}"
+          onclick="window.open('{{ block.settings.instagram_url }}', '_blank')"
+        >
+          {{ block.settings.load_more_label }}
+        </button>
+      </div>
+    {% endif %}
+  </div>
+</instagram-feed-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class InstagramFeed{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.setupAccessibility();
+      }
+
+      setupAccessibility() {
+        const posts = this.querySelectorAll('.ai-instagram-feed__post-{{ ai_gen_id }}');
+        posts.forEach((post, index) => {
+          post.setAttribute('aria-label', `View Instagram post ${index + 1}`);
+        });
+      }
+    }
+
+    customElements.define('instagram-feed-{{ ai_gen_id }}', InstagramFeed{{ ai_gen_id }});
+  })();
+</script>
+
 {% schema %}
- {
-   "name": "AI_Block",
-   "tag": "shopify-ai-generated-block"
- }
+{
+  "name": "Instagram feed",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_header",
+      "label": "Show section header",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Title",
+      "default": "Follow Us on Instagram"
+    },
+    {
+      "type": "text",
+      "id": "section_subtitle",
+      "label": "Subtitle",
+      "default": "Join our community and stay inspired"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Title size",
+      "min": 24,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 42
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size",
+      "label": "Subtitle size",
+      "min": 14,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "header_spacing",
+      "label": "Spacing below header",
+      "min": 30,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Subtitle color",
+      "default": "#666666"
+    },
+    {
+      "type": "header",
+      "content": "Profile"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_profile",
+      "label": "Show profile section",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "profile_image",
+      "label": "Profile image"
+    },
+    {
+      "type": "text",
+      "id": "username",
+      "label": "Username",
+      "default": "@yourbrand"
+    },
+    {
+      "type": "textarea",
+      "id": "bio",
+      "label": "Bio",
+      "default": "Follow us for daily inspiration and exclusive updates"
+    },
+    {
+      "type": "url",
+      "id": "instagram_url",
+      "label": "Instagram profile URL"
+    },
+    {
+      "type": "range",
+      "id": "profile_image_size",
+      "label": "Profile image size",
+      "min": 70,
+      "max": 140,
+      "step": 10,
+      "unit": "px",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "username_size",
+      "label": "Username size",
+      "min": 16,
+      "max": 36,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "bio_size",
+      "label": "Bio size",
+      "min": 13,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "profile_spacing",
+      "label": "Spacing below profile",
+      "min": 30,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "color",
+      "id": "profile_border_color",
+      "label": "Profile image border",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "header",
+      "content": "Follow button"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_follow_button",
+      "label": "Show follow button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "follow_button_label",
+      "label": "Button text",
+      "default": "Follow"
+    },
+    {
+      "type": "color",
+      "id": "follow_button_bg",
+      "label": "Background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "follow_button_color",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "follow_button_hover_bg",
+      "label": "Hover background",
+      "default": "#E1306C"
+    },
+    {
+      "type": "color",
+      "id": "follow_button_hover_color",
+      "label": "Hover text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Feed grid"
+    },
+    {
+      "type": "range",
+      "id": "posts_to_show",
+      "label": "Posts to show",
+      "min": 4,
+      "max": 12,
+      "step": 2,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "min": 3,
+      "max": 6,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns on mobile",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "range",
+      "id": "grid_spacing",
+      "label": "Grid spacing",
+      "min": 8,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "label": "Image border radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "checkbox",
+      "id": "show_hover_overlay",
+      "label": "Show hover overlay",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "hover_zoom",
+      "label": "Hover zoom",
+      "min": 1,
+      "max": 1.5,
+      "step": 0.1,
+      "default": 1.1
+    },
+    {
+      "type": "header",
+      "content": "Load more button"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_load_more",
+      "label": "Show load more button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "load_more_label",
+      "label": "Button text",
+      "default": "View More on Instagram"
+    },
+    {
+      "type": "color",
+      "id": "load_more_bg",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "load_more_color",
+      "label": "Text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "load_more_border",
+      "label": "Border",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "load_more_hover_bg",
+      "label": "Hover background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "load_more_hover_color",
+      "label": "Hover text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "load_more_hover_border",
+      "label": "Hover border",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Instagram posts"
+    },
+    {
+      "type": "paragraph",
+      "content": "Upload images from your Instagram feed and add post URLs"
+    },
+    {
+      "type": "image_picker",
+      "id": "post_1_image",
+      "label": "Post 1 image"
+    },
+    {
+      "type": "url",
+      "id": "post_1_url",
+      "label": "Post 1 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "post_2_image",
+      "label": "Post 2 image"
+    },
+    {
+      "type": "url",
+      "id": "post_2_url",
+      "label": "Post 2 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "post_3_image",
+      "label": "Post 3 image"
+    },
+    {
+      "type": "url",
+      "id": "post_3_url",
+      "label": "Post 3 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "post_4_image",
+      "label": "Post 4 image"
+    },
+    {
+      "type": "url",
+      "id": "post_4_url",
+      "label": "Post 4 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "post_5_image",
+      "label": "Post 5 image"
+    },
+    {
+      "type": "url",
+      "id": "post_5_url",
+      "label": "Post 5 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "post_6_image",
+      "label": "Post 6 image"
+    },
+    {
+      "type": "url",
+      "id": "post_6_url",
+      "label": "Post 6 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "post_7_image",
+      "label": "Post 7 image"
+    },
+    {
+      "type": "url",
+      "id": "post_7_url",
+      "label": "Post 7 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "post_8_image",
+      "label": "Post 8 image"
+    },
+    {
+      "type": "url",
+      "id": "post_8_url",
+      "label": "Post 8 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "post_9_image",
+      "label": "Post 9 image"
+    },
+    {
+      "type": "url",
+      "id": "post_9_url",
+      "label": "Post 9 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "post_10_image",
+      "label": "Post 10 image"
+    },
+    {
+      "type": "url",
+      "id": "post_10_url",
+      "label": "Post 10 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "post_11_image",
+      "label": "Post 11 image"
+    },
+    {
+      "type": "url",
+      "id": "post_11_url",
+      "label": "Post 11 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "post_12_image",
+      "label": "Post 12 image"
+    },
+    {
+      "type": "url",
+      "id": "post_12_url",
+      "label": "Post 12 URL"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Section padding",
+      "min": 40,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "profile_border_radius",
+      "label": "Profile card border radius",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "label": "Button border radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Section background",
+      "default": "#fafafa"
+    },
+    {
+      "type": "color",
+      "id": "profile_bg_color",
+      "label": "Profile background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#000000"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Instagram feed"
+    }
+  ]
+}
 {% endschema %}
