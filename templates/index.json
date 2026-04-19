@@ -890,6 +890,7 @@
       "block_order": [
         "ai_gen_block_c68c9b2_MkJFKG"
       ],
+      "name": "split layout slider",
       "settings": {
         "content_direction": "column",
         "vertical_on_mobile": true,
@@ -988,6 +989,7 @@
       "block_order": [
         "ai_gen_block_0e7cdac_ptLDYC"
       ],
+      "name": "product tabs",
       "settings": {
         "content_direction": "column",
         "vertical_on_mobile": true,
