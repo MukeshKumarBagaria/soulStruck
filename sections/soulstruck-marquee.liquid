@@ -35,16 +35,16 @@
 </style>
 
 <div id="ni-ticker-{{ section.id }}" class="ni-ticker" aria-label="Feature highlights">
-  <div class="ni-ticker__track">
+  <div class="ni-ticker__viewport">
     <!--
-      Two identical sets of items side-by-side.
-      Animation moves them left by exactly 50% (= one full set),
-      at which point the second set is in the exact same position
-      the first started → perfect seamless loop.
+      Two identical sets of items.
+      Animation moves the track left by -50% of its width (= one full set),
+      then resets — since the second set now occupies the first set's
+      starting position with identical content, the reset is seamless.
     -->
-    <div class="ni-ticker__reel{% if dir == 'reverse' %} ni-ticker__reel--rtl{% endif %}">
+    <div class="ni-ticker__track{% if dir == 'reverse' %} ni-ticker__track--rtl{% endif %}">
       {%- for pass in (1..2) -%}
-        <ul class="ni-ticker__list" {% if pass == 2 %}aria-hidden="true"{% endif %}>
+        <ul class="ni-ticker__group" {% if pass == 2 %}aria-hidden="true"{% endif %}>
           {%- for block in section.blocks -%}
             {%- assign has_text  = block.settings.text        | strip | size -%}
             {%- assign has_img   = block.settings.icon_image -%}
@@ -146,47 +146,55 @@
 .ni-ticker {
   width: 100%;
   overflow: hidden;
+  position: relative;
+}
+
+.ni-ticker__viewport {
+  width: 100%;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
 }
 
 .ni-ticker__track {
-  width: 100%;
-  overflow: hidden;
-}
-
-.ni-ticker__reel {
   display: flex;
   width: max-content;
   will-change: transform;
+  animation: ni-ticker-scroll var(--ni-t-speed, 30s) linear infinite;
+  animation-play-state: running;
+  /* Force GPU compositing for smooth, uninterrupted loop */
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
 }
+.ni-ticker__track--rtl { animation-direction: reverse; }
 
-/* Pause on hover for accessibility */
-.ni-ticker:hover .ni-ticker__reel {
-  animation-play-state: paused;
+/* Pause on hover/focus for accessibility */
+@media (hover: hover) {
+  .ni-ticker:hover .ni-ticker__track { animation-play-state: paused; }
 }
+.ni-ticker:focus-within .ni-ticker__track { animation-play-state: paused; }
 
-@media (prefers-reduced-motion: no-preference) {
-  .ni-ticker__reel {
-    animation: ni-ticker-scroll var(--ni-t-speed, 30s) linear infinite;
-  }
-  .ni-ticker__reel--rtl {
-    animation-direction: reverse;
-  }
+@media (prefers-reduced-motion: reduce) {
+  .ni-ticker__track { animation: none; }
 }
 
 @keyframes ni-ticker-scroll {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  0%   { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
 }
 
-.ni-ticker__list {
+.ni-ticker__group {
   display: flex;
   align-items: center;
   gap: var(--ni-t-gap, 60px);
   list-style: none;
   margin: 0;
-  padding: 0 calc(var(--ni-t-gap, 60px) / 2);
+  padding: 0;
+  padding-right: var(--ni-t-gap, 60px);
   white-space: nowrap;
+  flex-shrink: 0;
 }
+.ni-ticker__group li { list-style: none; }
 
 .ni-ticker__item {
   display: flex;
@@ -206,8 +214,8 @@
   color: var(--ni-t-icon-clr, #FF2D7C);
 }
 
-.ni-ticker__svg-wrap svg,
-.ni-ticker__svg-wrap {
+.ni-ticker__svg-wrap,
+.ni-ticker__svg-wrap svg {
   display: block;
   width: var(--ni-t-icon-sz, 32px);
   height: var(--ni-t-icon-sz, 32px);
@@ -218,6 +226,7 @@
   width: var(--ni-t-icon-sz, 32px);
   height: var(--ni-t-icon-sz, 32px);
   object-fit: contain;
+  flex-shrink: 0;
 }
 {% endstylesheet %}
 
