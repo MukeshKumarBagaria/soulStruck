@@ -297,7 +297,13 @@
       <nav class="ni-ch__nav" aria-label="{{ section.settings.nav_aria_label | escape }}">
         <ul class="ni-ch__nav-list" role="list">
           {%- for link in nav_menu.links -%}
-            <li class="ni-ch__nav-item{% if link.links.size > 0 %} ni-ch__nav-item--has-children{% endif %}">
+            {%- assign has_third_level = false -%}
+            {%- if link.links.size > 0 -%}
+              {%- for sublink in link.links -%}
+                {%- if sublink.links.size > 0 -%}{%- assign has_third_level = true -%}{%- break -%}{%- endif -%}
+              {%- endfor -%}
+            {%- endif -%}
+            <li class="ni-ch__nav-item{% if link.links.size > 0 %} ni-ch__nav-item--has-children{% endif %}{% if has_third_level %} ni-ch__nav-item--has-mega{% endif %}">
               <a
                 href="{{ link.url }}"
                 class="ni-ch__nav-link{% if link.active %} ni-ch__nav-link--active{% endif %}"
@@ -305,37 +311,41 @@
                 {% if link.links.size > 0 %}aria-haspopup="true" aria-expanded="false"{% endif %}
               >
                 {{ link.title | escape }}
+                {%- if link.links.size > 0 -%}
+                  <svg class="ni-ch__nav-caret" xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                {%- endif -%}
               </a>
               {%- if link.links.size > 0 -%}
-                {%- assign has_third_level = false -%}
-                {%- for sublink in link.links -%}
-                  {%- if sublink.links.size > 0 -%}{%- assign has_third_level = true -%}{%- break -%}{%- endif -%}
-                {%- endfor -%}
                 {%- if has_third_level -%}
                   <div class="ni-ch__megamenu" role="menu">
-                    <div class="ni-ch__megamenu-grid">
-                      {%- for sublink in link.links -%}
-                        <div class="ni-ch__megamenu-col">
-                          <a
-                            href="{{ sublink.url }}"
-                            class="ni-ch__megamenu-heading{% if sublink.active %} ni-ch__megamenu-heading--active{% endif %}"
-                            {% if sublink.active %}aria-current="page"{% endif %}
-                          >{{ sublink.title | escape }}</a>
-                          {%- if sublink.links.size > 0 -%}
-                            <ul class="ni-ch__megamenu-list" role="list">
-                              {%- for subsublink in sublink.links -%}
-                                <li>
-                                  <a
-                                    href="{{ subsublink.url }}"
-                                    class="ni-ch__megamenu-link{% if subsublink.active %} ni-ch__megamenu-link--active{% endif %}"
-                                    {% if subsublink.active %}aria-current="page"{% endif %}
-                                  >{{ subsublink.title | escape }}</a>
-                                </li>
-                              {%- endfor -%}
-                            </ul>
-                          {%- endif -%}
-                        </div>
-                      {%- endfor -%}
+                    <div class="ni-ch__megamenu-inner">
+                      <div class="ni-ch__megamenu-grid">
+                        {%- for sublink in link.links -%}
+                          <div class="ni-ch__megamenu-col">
+                            <a
+                              href="{{ sublink.url }}"
+                              class="ni-ch__megamenu-heading{% if sublink.active %} ni-ch__megamenu-heading--active{% endif %}"
+                              {% if sublink.active %}aria-current="page"{% endif %}
+                            >
+                              <span>{{ sublink.title | escape }}</span>
+                              <svg class="ni-ch__megamenu-heading-arrow" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            </a>
+                            {%- if sublink.links.size > 0 -%}
+                              <ul class="ni-ch__megamenu-list" role="list">
+                                {%- for subsublink in sublink.links -%}
+                                  <li>
+                                    <a
+                                      href="{{ subsublink.url }}"
+                                      class="ni-ch__megamenu-link{% if subsublink.active %} ni-ch__megamenu-link--active{% endif %}"
+                                      {% if subsublink.active %}aria-current="page"{% endif %}
+                                    >{{ subsublink.title | escape }}</a>
+                                  </li>
+                                {%- endfor -%}
+                              </ul>
+                            {%- endif -%}
+                          </div>
+                        {%- endfor -%}
+                      </div>
                     </div>
                   </div>
                 {%- else -%}
@@ -755,94 +765,192 @@ cart-icon:has(.cart-bubble__text-count:empty) {
 }
 .ni-ch__dropdown-link--active { font-weight: 700; }
 
-/* ── Desktop mega menu (3-level) ──────────────────────────────── */
+/* Nav caret next to links that have children */
+.ni-ch__nav-caret {
+  margin-left: 6px;
+  opacity: 0.55;
+  transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), opacity 0.2s ease;
+  transform-origin: center;
+  flex-shrink: 0;
+}
+@media (hover: hover) {
+  .ni-ch__nav-item--has-children:hover .ni-ch__nav-caret,
+  .ni-ch__nav-item--has-children:focus-within .ni-ch__nav-caret {
+    transform: rotate(180deg);
+    opacity: 1;
+  }
+}
+
+/* ── Desktop mega menu (3-level) ───────────────────────────────
+   Full-width panel anchored to the nav bar so content never
+   overflows a narrow container. */
+.ni-ch__nav { position: relative; }
+.ni-ch__nav-item--has-mega { position: static; }
+
 .ni-ch__megamenu {
   position: absolute;
-  top: calc(100% + 4px);
-  left: 50%;
-  transform: translateX(-50%) translateY(8px);
+  top: 100%;
+  left: 0;
+  right: 0;
+  width: 100%;
   background: var(--ni-ch-bg, #fff);
-  border: 1px solid var(--ni-ch-border, rgba(0,0,0,0.08));
-  border-radius: 14px;
-  box-shadow: 0 18px 42px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.04);
-  padding: 24px 28px;
+  border-top: 1px solid var(--ni-ch-border, rgba(0,0,0,0.08));
+  box-shadow: 0 22px 42px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
   opacity: 0;
   visibility: hidden;
+  transform: translateY(-6px);
   transition: opacity 0.22s ease,
               visibility 0.22s ease,
-              transform 0.28s cubic-bezier(0.16,1,0.3,1);
+              transform 0.3s cubic-bezier(0.16,1,0.3,1);
   z-index: 100;
   pointer-events: none;
-  max-width: min(92vw, 960px);
+  max-height: calc(100vh - var(--ni-ch-bar-h, 64px) - var(--ni-ch-nav-h, 44px) - 24px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.18) transparent;
 }
-.ni-ch__nav-item--has-children:hover .ni-ch__megamenu,
-.ni-ch__nav-item--has-children:focus-within .ni-ch__megamenu {
+.ni-ch__megamenu::-webkit-scrollbar { width: 6px; }
+.ni-ch__megamenu::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.18); border-radius: 3px; }
+.ni-ch__megamenu::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--ni-ch-accent, #1a1a1a), transparent);
+  opacity: 0.3;
+  pointer-events: none;
+}
+.ni-ch__nav-item--has-mega:hover .ni-ch__megamenu,
+.ni-ch__nav-item--has-mega:focus-within .ni-ch__megamenu {
   opacity: 1;
   visibility: visible;
-  transform: translateX(-50%) translateY(0);
+  transform: translateY(0);
   pointer-events: auto;
+}
+.ni-ch__megamenu-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 40px 36px;
 }
 .ni-ch__megamenu-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 24px 32px;
-  min-width: 520px;
-}
-@media screen and (max-width: 1024px) {
-  .ni-ch__megamenu-grid { min-width: 420px; }
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 28px 40px;
+  align-items: start;
 }
 .ni-ch__megamenu-col {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 14px;
   min-width: 0;
+  animation: ni-ch-fadeup 0.45s cubic-bezier(0.16,1,0.3,1) both;
+}
+.ni-ch__megamenu-col:nth-child(2) { animation-delay: 0.04s; }
+.ni-ch__megamenu-col:nth-child(3) { animation-delay: 0.08s; }
+.ni-ch__megamenu-col:nth-child(4) { animation-delay: 0.12s; }
+.ni-ch__megamenu-col:nth-child(5) { animation-delay: 0.16s; }
+.ni-ch__megamenu-col:nth-child(6) { animation-delay: 0.2s; }
+.ni-ch__megamenu-col:nth-child(n+7) { animation-delay: 0.24s; }
+@keyframes ni-ch-fadeup {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0);   }
 }
 .ni-ch__megamenu-heading {
-  display: inline-block;
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  max-width: 100%;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ni-ch-nav-active, #1a1a1a);
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--ni-ch-border, rgba(0,0,0,0.1));
-  transition: color 0.18s ease, border-color 0.18s ease;
+  position: relative;
+  padding: 0 0 12px 0;
+  transition: color 0.2s ease;
+}
+.ni-ch__megamenu-heading span { display: inline-block; }
+.ni-ch__megamenu-heading-arrow {
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.ni-ch__megamenu-heading::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 24px;
+  height: 2px;
+  background: var(--ni-ch-accent, #1a1a1a);
+  border-radius: 2px;
+  transition: width 0.32s cubic-bezier(0.16,1,0.3,1);
 }
 @media (hover: hover) {
   .ni-ch__megamenu-heading:hover {
     color: var(--ni-ch-accent, #1a1a1a);
-    border-color: var(--ni-ch-accent, #1a1a1a);
+  }
+  .ni-ch__megamenu-heading:hover::after {
+    width: 100%;
+  }
+  .ni-ch__megamenu-heading:hover .ni-ch__megamenu-heading-arrow {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 .ni-ch__megamenu-heading--active { color: var(--ni-ch-accent, #1a1a1a); }
+.ni-ch__megamenu-heading--active::after { width: 100%; }
+
 .ni-ch__megamenu-list {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0;
   padding: 0;
   margin: 0;
 }
+.ni-ch__megamenu-list li { position: relative; }
 .ni-ch__megamenu-link {
   display: block;
-  padding: 7px 10px;
-  margin-left: -10px;
-  font-size: 0.875rem;
+  padding: 7px 0 7px 0;
+  font-size: 0.88rem;
   font-weight: 500;
   color: var(--ni-ch-nav-color, #1a1a1a);
-  border-radius: 6px;
-  transition: background 0.15s ease, color 0.15s ease, padding-left 0.2s ease;
-  line-height: 1.35;
+  transition: color 0.15s ease, padding-left 0.22s cubic-bezier(0.16,1,0.3,1), letter-spacing 0.2s ease;
+  line-height: 1.4;
+  position: relative;
+}
+.ni-ch__megamenu-link::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0;
+  height: 1.5px;
+  background: var(--ni-ch-accent, #1a1a1a);
+  transform: translateY(-50%);
+  transition: width 0.25s cubic-bezier(0.16,1,0.3,1);
+  border-radius: 2px;
 }
 @media (hover: hover) {
   .ni-ch__megamenu-link:hover {
-    background: rgba(0,0,0,0.04);
     color: var(--ni-ch-accent, #1a1a1a);
-    padding-left: 14px;
+    padding-left: 16px;
   }
+  .ni-ch__megamenu-link:hover::before { width: 10px; }
 }
 .ni-ch__megamenu-link--active {
-  font-weight: 700;
   color: var(--ni-ch-accent, #1a1a1a);
+  font-weight: 700;
+  padding-left: 16px;
+}
+.ni-ch__megamenu-link--active::before { width: 10px; }
+
+/* Below 1024 (tablet landscape) — allow 3-col layout to breathe */
+@media screen and (max-width: 1024px) {
+  .ni-ch__megamenu-inner { padding: 26px 28px 30px; }
+  .ni-ch__megamenu-grid { gap: 22px 28px; }
 }
 
 /* Hide nav on mobile */
