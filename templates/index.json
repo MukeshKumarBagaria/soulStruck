@@ -828,7 +828,7 @@
           "type": "ai_gen_block_c68c9b2",
           "settings": {
             "image_position": "left",
-            "section_height": 600,
+            "section_height": 450,
             "desktop_width_percent": 100,
             "image_overlay": "none",
             "overlay_opacity": 0.3,
@@ -850,7 +850,7 @@
             "button_background": "#000000",
             "button_hover_background": "#333333",
             "button_text_color": "#ffffff",
-            "show_arrows": true,
+            "show_arrows": false,
             "arrow_background": "#ffffff",
             "arrow_color": "#000000",
             "show_dots": true,
