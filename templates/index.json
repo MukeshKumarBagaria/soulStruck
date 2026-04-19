@@ -951,7 +951,7 @@
             "tab_1_products_limit": 8,
             "tab_2_enabled": true,
             "tab_2_label": "Best sellers",
-            "tab_2_collection": "",
+            "tab_2_collection": "blues",
             "tab_2_products_limit": 8,
             "tab_3_enabled": true,
             "tab_3_label": "Trending",
