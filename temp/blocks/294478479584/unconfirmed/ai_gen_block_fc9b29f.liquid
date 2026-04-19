@@ -1,6 +1,857 @@
+{% doc %}
+  @prompt
+    Create a modern “Available On” section for my Shopify store to showcase the ecommerce platforms where my brand is available.
+    
+    Layout:
+    - Centered section with a heading and optional subheading
+    - Below the heading, display platform logos in a horizontal grid
+    - Desktop: 3–5 logos per row
+    - Mobile: 2 logos per row
+    
+    Content:
+    - Each block should include:
+      - Platform logo (e.g. Amazon, Flipkart, Zepto, Blinkit, etc.)
+      - Optional platform name
+      - Clickable link to the store page on that platform
+    
+    Design:
+    - Each logo inside a rounded card container
+    - Soft border or subtle shadow
+    - Equal spacing between cards
+    - Hover effect:
+      - Slight zoom or elevation
+      - Optional “Shop Now” overlay
+    
+    Customization Options:
+    - Add/remove platform blocks dynamically
+    - Upload custom logos
+    - Add custom link for each platform
+    - Toggle:
+      - Show/hide platform name
+      - Enable/disable hover effect
+    - Customize:
+      - Card border radius
+      - Background color
+      - Spacing between cards
+      - Logo size
+      - Section padding
+    
+    Mobile Optimization:
+    - Fully responsive
+    - Proper spacing and alignment
+    - Touch-friendly clickable cards
+    
+    Extra Features:
+    - Open links in new tab
+    - Optional “Trusted Platforms” badge or text
+    - Animation on scroll (fade-in or slide-up)
+    
+    Design Style:
+    - Clean, minimal, premium
+    - Focus on brand trust and availability
+    
+    Goal:
+    Build trust and increase conversions by showing users that the brand is available on well-known ecommerce platforms.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-available-on-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    padding: {{ block.settings.section_padding_top }}px 20px {{ block.settings.section_padding_bottom }}px;
+    background-color: {{ block.settings.background_color }};
+  }
+
+  .ai-available-on-container-{{ ai_gen_id }} {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .ai-available-on-header-{{ ai_gen_id }} {
+    margin-bottom: {{ block.settings.header_spacing }}px;
+  }
+
+  .ai-available-on-heading-{{ ai_gen_id }} {
+    font-size: {{ block.settings.heading_size }}px;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 12px;
+    font-weight: 700;
+  }
+
+  .ai-available-on-subheading-{{ ai_gen_id }} {
+    font-size: {{ block.settings.subheading_size }}px;
+    color: {{ block.settings.subheading_color }};
+    margin: 0;
+    opacity: 0.8;
+  }
+
+  {% if block.settings.show_badge %}
+    .ai-available-on-badge-{{ ai_gen_id }} {
+      display: inline-block;
+      padding: 6px 16px;
+      background-color: {{ block.settings.badge_background }};
+      color: {{ block.settings.badge_text_color }};
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  {% endif %}
+
+  .ai-available-on-grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat({{ block.settings.desktop_columns }}, 1fr);
+    gap: {{ block.settings.card_spacing }}px;
+    margin-top: {{ block.settings.grid_top_spacing }}px;
+  }
+
+  .ai-available-on-card-{{ ai_gen_id }} {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: {{ block.settings.card_padding }}px;
+    background-color: {{ block.settings.card_background }};
+    border: {{ block.settings.card_border_width }}px solid {{ block.settings.card_border_color }};
+    border-radius: {{ block.settings.card_border_radius }}px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    min-height: {{ block.settings.card_min_height }}px;
+    {% if block.settings.card_shadow %}
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    {% endif %}
+  }
+
+  {% if block.settings.enable_hover_effect %}
+    .ai-available-on-card-{{ ai_gen_id }}:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+      border-color: {{ block.settings.card_hover_border_color }};
+    }
+
+    {% if block.settings.show_overlay %}
+      .ai-available-on-overlay-{{ ai_gen_id }} {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: {{ block.settings.overlay_background }};
+        border-radius: {{ block.settings.card_border_radius }}px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .ai-available-on-card-{{ ai_gen_id }}:hover .ai-available-on-overlay-{{ ai_gen_id }} {
+        opacity: 1;
+      }
+
+      .ai-available-on-overlay-text-{{ ai_gen_id }} {
+        color: {{ block.settings.overlay_text_color }};
+        font-size: 14px;
+        font-weight: 600;
+      }
+    {% endif %}
+  {% endif %}
+
+  .ai-available-on-logo-wrapper-{{ ai_gen_id }} {
+    width: 100%;
+    height: {{ block.settings.logo_height }}px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: {% if block.settings.show_platform_name %}12px{% else %}0{% endif %};
+  }
+
+  .ai-available-on-logo-{{ ai_gen_id }} {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .ai-available-on-logo-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-available-on-logo-placeholder-{{ ai_gen_id }} svg {
+    width: 60%;
+    height: 60%;
+    opacity: 0.3;
+  }
+
+  {% if block.settings.show_platform_name %}
+    .ai-available-on-platform-name-{{ ai_gen_id }} {
+      font-size: {{ block.settings.platform_name_size }}px;
+      color: {{ block.settings.platform_name_color }};
+      font-weight: 600;
+      margin: 0;
+    }
+  {% endif %}
+
+  @media screen and (max-width: 749px) {
+    .ai-available-on-{{ ai_gen_id }} {
+      padding: {{ block.settings.section_padding_top | times: 0.7 }}px 16px {{ block.settings.section_padding_bottom | times: 0.7 }}px;
+    }
+
+    .ai-available-on-grid-{{ ai_gen_id }} {
+      grid-template-columns: repeat(2, 1fr);
+      gap: {{ block.settings.card_spacing | times: 0.8 }}px;
+    }
+
+    .ai-available-on-heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.heading_size | times: 0.7 }}px;
+    }
+
+    .ai-available-on-subheading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.subheading_size | times: 0.9 }}px;
+    }
+
+    .ai-available-on-card-{{ ai_gen_id }} {
+      padding: {{ block.settings.card_padding | times: 0.8 }}px;
+      min-height: {{ block.settings.card_min_height | times: 0.8 }}px;
+    }
+
+    .ai-available-on-logo-wrapper-{{ ai_gen_id }} {
+      height: {{ block.settings.logo_height | times: 0.8 }}px;
+    }
+  }
+
+  {% if block.settings.enable_scroll_animation %}
+    @keyframes ai-fade-in-up-{{ ai_gen_id }} {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .ai-available-on-card-{{ ai_gen_id }} {
+      opacity: 0;
+      animation: ai-fade-in-up-{{ ai_gen_id }} 0.6s ease forwards;
+    }
+
+    .ai-available-on-card-{{ ai_gen_id }}:nth-child(1) { animation-delay: 0.1s; }
+    .ai-available-on-card-{{ ai_gen_id }}:nth-child(2) { animation-delay: 0.2s; }
+    .ai-available-on-card-{{ ai_gen_id }}:nth-child(3) { animation-delay: 0.3s; }
+    .ai-available-on-card-{{ ai_gen_id }}:nth-child(4) { animation-delay: 0.4s; }
+    .ai-available-on-card-{{ ai_gen_id }}:nth-child(5) { animation-delay: 0.5s; }
+    .ai-available-on-card-{{ ai_gen_id }}:nth-child(6) { animation-delay: 0.6s; }
+  {% endif %}
+{% endstyle %}
+
+<available-on-platforms-{{ ai_gen_id }} class="ai-available-on-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-available-on-container-{{ ai_gen_id }}">
+    <div class="ai-available-on-header-{{ ai_gen_id }}">
+      {% if block.settings.show_badge %}
+        <div class="ai-available-on-badge-{{ ai_gen_id }}">
+          {{ block.settings.badge_text }}
+        </div>
+      {% endif %}
+
+      {% if block.settings.heading != blank %}
+        <h2 class="ai-available-on-heading-{{ ai_gen_id }}">
+          {{ block.settings.heading }}
+        </h2>
+      {% endif %}
+
+      {% if block.settings.subheading != blank %}
+        <p class="ai-available-on-subheading-{{ ai_gen_id }}">
+          {{ block.settings.subheading }}
+        </p>
+      {% endif %}
+    </div>
+
+    <div class="ai-available-on-grid-{{ ai_gen_id }}">
+      {% for i in (1..6) %}
+        {% liquid
+          assign platform_enabled_key = 'platform_' | append: i | append: '_enabled'
+          assign platform_logo_key = 'platform_' | append: i | append: '_logo'
+          assign platform_name_key = 'platform_' | append: i | append: '_name'
+          assign platform_link_key = 'platform_' | append: i | append: '_link'
+
+          assign platform_enabled = block.settings[platform_enabled_key]
+          assign platform_logo = block.settings[platform_logo_key]
+          assign platform_name = block.settings[platform_name_key]
+          assign platform_link = block.settings[platform_link_key]
+        %}
+
+        {% if platform_enabled %}
+          <a
+            href="{{ platform_link }}"
+            class="ai-available-on-card-{{ ai_gen_id }}"
+            {% if block.settings.open_in_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}
+            aria-label="{% if platform_name != blank %}{{ platform_name }}{% else %}Platform {{ i }}{% endif %}"
+          >
+            <div class="ai-available-on-logo-wrapper-{{ ai_gen_id }}">
+              {% if platform_logo %}
+                <img
+                  src="{{ platform_logo | image_url: width: 400 }}"
+                  alt="{{ platform_name | escape }}"
+                  class="ai-available-on-logo-{{ ai_gen_id }}"
+                  loading="lazy"
+                  width="200"
+                  height="{{ block.settings.logo_height }}"
+                >
+              {% else %}
+                <div class="ai-available-on-logo-placeholder-{{ ai_gen_id }}">
+                  {{ 'image' | placeholder_svg_tag }}
+                </div>
+              {% endif %}
+            </div>
+
+            {% if block.settings.show_platform_name and platform_name != blank %}
+              <p class="ai-available-on-platform-name-{{ ai_gen_id }}">
+                {{ platform_name }}
+              </p>
+            {% endif %}
+
+            {% if block.settings.enable_hover_effect and block.settings.show_overlay %}
+              <div class="ai-available-on-overlay-{{ ai_gen_id }}">
+                <span class="ai-available-on-overlay-text-{{ ai_gen_id }}">
+                  {{ block.settings.overlay_text }}
+                </span>
+              </div>
+            {% endif %}
+          </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</available-on-platforms-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class AvailableOnPlatforms{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        {% if block.settings.enable_scroll_animation %}
+          this.setupScrollAnimation();
+        {% endif %}
+      }
+
+      setupScrollAnimation() {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.style.animationPlayState = 'running';
+              observer.unobserve(entry.target);
+            }
+          });
+        }, {
+          threshold: 0.1
+        });
+
+        const cards = this.querySelectorAll('.ai-available-on-card-{{ ai_gen_id }}');
+        cards.forEach(card => {
+          card.style.animationPlayState = 'paused';
+          observer.observe(card);
+        });
+      }
+    }
+
+    customElements.define('available-on-platforms-{{ ai_gen_id }}', AvailableOnPlatforms{{ ai_gen_id }});
+  })();
+</script>
+
 {% schema %}
- {
-   "name": "AI_Block",
-   "tag": "shopify-ai-generated-block"
- }
+{
+  "name": "Available on platforms",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badge",
+      "label": "Show badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge text",
+      "default": "Trusted Platforms"
+    },
+    {
+      "type": "color",
+      "id": "badge_background",
+      "label": "Badge background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "badge_text_color",
+      "label": "Badge text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Available On"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 16,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#000000"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Shop our products on your favorite platforms"
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "label": "Subheading size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "header_spacing",
+      "label": "Header bottom spacing",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "select",
+      "id": "desktop_columns",
+      "label": "Desktop columns",
+      "options": [
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" },
+        { "value": "5", "label": "5" },
+        { "value": "6", "label": "6" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "range",
+      "id": "card_spacing",
+      "label": "Card spacing",
+      "min": 10,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "grid_top_spacing",
+      "label": "Grid top spacing",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Card style"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "label": "Padding",
+      "min": 10,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "card_min_height",
+      "label": "Minimum height",
+      "min": 80,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 120
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "card_border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "color",
+      "id": "card_border_color",
+      "label": "Border color",
+      "default": "#e6e6e6"
+    },
+    {
+      "type": "checkbox",
+      "id": "card_shadow",
+      "label": "Show shadow",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "range",
+      "id": "logo_height",
+      "label": "Logo height",
+      "min": 30,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "checkbox",
+      "id": "show_platform_name",
+      "label": "Show platform name",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "platform_name_size",
+      "label": "Platform name size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "platform_name_color",
+      "label": "Platform name color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Hover effect"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_hover_effect",
+      "label": "Enable hover effect",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "card_hover_border_color",
+      "label": "Hover border color",
+      "default": "#000000"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_overlay",
+      "label": "Show overlay on hover",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "overlay_text",
+      "label": "Overlay text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "color",
+      "id": "overlay_background",
+      "label": "Overlay background",
+      "default": "#000000cc"
+    },
+    {
+      "type": "color",
+      "id": "overlay_text_color",
+      "label": "Overlay text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Link settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_in_new_tab",
+      "label": "Open links in new tab",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_scroll_animation",
+      "label": "Enable scroll animation",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Section spacing"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Platform 1"
+    },
+    {
+      "type": "checkbox",
+      "id": "platform_1_enabled",
+      "label": "Enable platform 1",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "platform_1_logo",
+      "label": "Logo"
+    },
+    {
+      "type": "text",
+      "id": "platform_1_name",
+      "label": "Platform name",
+      "default": "Amazon"
+    },
+    {
+      "type": "url",
+      "id": "platform_1_link",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Platform 2"
+    },
+    {
+      "type": "checkbox",
+      "id": "platform_2_enabled",
+      "label": "Enable platform 2",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "platform_2_logo",
+      "label": "Logo"
+    },
+    {
+      "type": "text",
+      "id": "platform_2_name",
+      "label": "Platform name",
+      "default": "Flipkart"
+    },
+    {
+      "type": "url",
+      "id": "platform_2_link",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Platform 3"
+    },
+    {
+      "type": "checkbox",
+      "id": "platform_3_enabled",
+      "label": "Enable platform 3",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "platform_3_logo",
+      "label": "Logo"
+    },
+    {
+      "type": "text",
+      "id": "platform_3_name",
+      "label": "Platform name",
+      "default": "Zepto"
+    },
+    {
+      "type": "url",
+      "id": "platform_3_link",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Platform 4"
+    },
+    {
+      "type": "checkbox",
+      "id": "platform_4_enabled",
+      "label": "Enable platform 4",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "platform_4_logo",
+      "label": "Logo"
+    },
+    {
+      "type": "text",
+      "id": "platform_4_name",
+      "label": "Platform name",
+      "default": "Blinkit"
+    },
+    {
+      "type": "url",
+      "id": "platform_4_link",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Platform 5"
+    },
+    {
+      "type": "checkbox",
+      "id": "platform_5_enabled",
+      "label": "Enable platform 5",
+      "default": false
+    },
+    {
+      "type": "image_picker",
+      "id": "platform_5_logo",
+      "label": "Logo"
+    },
+    {
+      "type": "text",
+      "id": "platform_5_name",
+      "label": "Platform name"
+    },
+    {
+      "type": "url",
+      "id": "platform_5_link",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Platform 6"
+    },
+    {
+      "type": "checkbox",
+      "id": "platform_6_enabled",
+      "label": "Enable platform 6",
+      "default": false
+    },
+    {
+      "type": "image_picker",
+      "id": "platform_6_logo",
+      "label": "Logo"
+    },
+    {
+      "type": "text",
+      "id": "platform_6_name",
+      "label": "Platform name"
+    },
+    {
+      "type": "url",
+      "id": "platform_6_link",
+      "label": "Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Available on platforms"
+    }
+  ]
+}
 {% endschema %}
