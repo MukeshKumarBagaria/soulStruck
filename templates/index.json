@@ -1004,6 +1004,97 @@
         "padding-block-start": 0,
         "padding-block-end": 0
       }
+    },
+    "177667234430136b04": {
+      "type": "_blocks",
+      "blocks": {
+        "ai_gen_block_0a3a686_QzicUC": {
+          "type": "ai_gen_block_0a3a686",
+          "settings": {
+            "heading": "🫶 Loved by favourites & 20,000+ more just like you",
+            "heading_size": 32,
+            "heading_margin_bottom": 40,
+            "enable_image_1": true,
+            "enable_image_2": true,
+            "enable_image_3": true,
+            "enable_image_4": true,
+            "enable_image_5": true,
+            "enable_image_6": true,
+            "enable_image_7": true,
+            "enable_image_8": true,
+            "enable_image_9": true,
+            "enable_image_10": true,
+            "enable_image_11": true,
+            "enable_image_12": true,
+            "enable_image_13": true,
+            "enable_image_14": true,
+            "enable_image_15": true,
+            "enable_image_16": true,
+            "enable_image_17": true,
+            "enable_image_18": true,
+            "enable_image_19": true,
+            "enable_image_20": true,
+            "enable_image_21": true,
+            "enable_image_22": true,
+            "enable_image_23": true,
+            "enable_image_24": true,
+            "enable_image_25": true,
+            "enable_image_26": true,
+            "enable_image_27": true,
+            "enable_image_28": true,
+            "enable_image_29": true,
+            "enable_image_30": true,
+            "card_aspect_ratio": "4:5",
+            "card_height": 320,
+            "card_gap": 16,
+            "card_border_radius": 12,
+            "enable_autoplay": true,
+            "animation_speed": "medium",
+            "animation_duration": 40,
+            "pause_on_hover": true,
+            "enable_hover_effect": true,
+            "show_fade_edges": true,
+            "fade_width": 100,
+            "show_entrance_animation": true,
+            "background_color": "#ffffff",
+            "heading_color": "#000000",
+            "section_padding_top": 60,
+            "section_padding_bottom": 60,
+            "desktop_width_percent": 100
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ai_gen_block_0a3a686_QzicUC"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
     }
   },
   "order": [
@@ -1016,6 +1107,7 @@
     "177619440557b8ea32",
     "17765982920983bbc2",
     "1776615002243e8093",
-    "17766087610ab8ede2"
+    "17766087610ab8ede2",
+    "177667234430136b04"
   ]
 }
