@@ -931,7 +931,7 @@
             "subheading_color": "#000000",
             "header_spacing": 40,
             "desktop_width_percent": 100,
-            "desktop_columns": "4",
+            "desktop_columns": "3",
             "card_spacing": 20,
             "grid_top_spacing": 20,
             "card_background": "#ffffff",
