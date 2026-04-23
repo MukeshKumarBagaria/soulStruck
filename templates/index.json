@@ -866,7 +866,7 @@
             "card_border_radius": 12,
             "enable_autoplay": true,
             "animation_speed": "medium",
-            "animation_duration": 40,
+            "animation_duration": 20,
             "pause_on_hover": true,
             "enable_hover_effect": true,
             "show_fade_edges": true,
