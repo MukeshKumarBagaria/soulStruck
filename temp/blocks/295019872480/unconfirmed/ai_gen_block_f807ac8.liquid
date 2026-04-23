@@ -1,6 +1,242 @@
+{% doc %}
+  @prompt
+    create an block like this where there will be title , descripiton and and youtube video embeded option , provide features to create beautiful multi color title also option to set the video height width etc , this block must be full width , there is no customization option , still this video block is not taking the entire space of the section, just keep the video option remove this title subtitle from this block and by default set the video url to https://www.youtube.com/watch?v=yekfJ2MsxVM
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-video-block-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    padding: {{ block.settings.padding_top }}px 0 {{ block.settings.padding_bottom }}px;
+    background-color: {{ block.settings.background_color }};
+  }
+
+  .ai-video-block__container-{{ ai_gen_id }} {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .ai-video-block__video-wrapper-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: {{ block.settings.video_border_radius }}px;
+    background-color: #f4f4f4;
+  }
+
+  {% if block.settings.video_aspect_ratio == 'custom' %}
+    .ai-video-block__video-wrapper-{{ ai_gen_id }} {
+      height: {{ block.settings.video_height }}px;
+    }
+
+    .ai-video-block__video-wrapper-{{ ai_gen_id }} iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+  {% else %}
+    .ai-video-block__video-wrapper-{{ ai_gen_id }} {
+      {% if block.settings.video_aspect_ratio == '16-9' %}
+        padding-bottom: 56.25%;
+      {% elsif block.settings.video_aspect_ratio == '4-3' %}
+        padding-bottom: 75%;
+      {% elsif block.settings.video_aspect_ratio == '1-1' %}
+        padding-bottom: 100%;
+      {% elsif block.settings.video_aspect_ratio == '21-9' %}
+        padding-bottom: 42.86%;
+      {% endif %}
+    }
+
+    .ai-video-block__video-wrapper-{{ ai_gen_id }} iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+  {% endif %}
+
+  .ai-video-block__placeholder-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f4f4f4;
+  }
+
+  .ai-video-block__placeholder-message-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 20px;
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .ai-video-block__placeholder-{{ ai_gen_id }} svg {
+    width: 80px;
+    height: 80px;
+    opacity: 0.3;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-video-block-{{ ai_gen_id }} {
+      padding: {{ block.settings.padding_top | times: 0.7 }}px 0 {{ block.settings.padding_bottom | times: 0.7 }}px;
+    }
+
+    {% if block.settings.video_aspect_ratio == 'custom' %}
+      .ai-video-block__video-wrapper-{{ ai_gen_id }} {
+        height: {{ block.settings.video_height | times: 0.7 }}px;
+      }
+    {% endif %}
+  }
+{% endstyle %}
+
+<div class="ai-video-block-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-video-block__container-{{ ai_gen_id }}">
+    <div class="ai-video-block__video-wrapper-{{ ai_gen_id }}">
+      {% if block.settings.youtube_url != blank %}
+        {% assign video_id = block.settings.youtube_url | split: 'v=' | last | split: '&' | first %}
+        {% if video_id == block.settings.youtube_url %}
+          {% assign video_id = block.settings.youtube_url | split: 'youtu.be/' | last | split: '?' | first %}
+        {% endif %}
+        <iframe
+          src="https://www.youtube.com/embed/{{ video_id }}"
+          title="YouTube video player"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          loading="lazy"
+        ></iframe>
+      {% else %}
+        <div class="ai-video-block__placeholder-{{ ai_gen_id }}">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          <div class="ai-video-block__placeholder-message-{{ ai_gen_id }}">
+            Next, add a YouTube video URL
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
 {% schema %}
- {
-   "name": "AI_Block",
-   "tag": "shopify-ai-generated-block"
- }
+{
+  "name": "YouTube video",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Video"
+    },
+    {
+      "type": "text",
+      "id": "youtube_url",
+      "label": "YouTube URL",
+      "default": "https://www.youtube.com/watch?v=yekfJ2MsxVM",
+      "info": "Paste the full YouTube video URL (e.g., https://www.youtube.com/watch?v=VIDEO_ID)"
+    },
+    {
+      "type": "select",
+      "id": "video_aspect_ratio",
+      "label": "Aspect ratio",
+      "options": [
+        {
+          "value": "16-9",
+          "label": "16:9 (Widescreen)"
+        },
+        {
+          "value": "4-3",
+          "label": "4:3 (Standard)"
+        },
+        {
+          "value": "1-1",
+          "label": "1:1 (Square)"
+        },
+        {
+          "value": "21-9",
+          "label": "21:9 (Ultrawide)"
+        },
+        {
+          "value": "custom",
+          "label": "Custom height"
+        }
+      ],
+      "default": "16-9"
+    },
+    {
+      "type": "range",
+      "id": "video_height",
+      "label": "Custom height",
+      "min": 200,
+      "max": 800,
+      "step": 50,
+      "unit": "px",
+      "default": 450,
+      "info": "Only applies when aspect ratio is set to Custom height"
+    },
+    {
+      "type": "range",
+      "id": "video_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "YouTube video"
+    }
+  ]
+}
 {% endschema %}
