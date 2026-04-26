@@ -12,29 +12,16 @@
     "main": {
       "type": "main-page",
       "blocks": {
-        "heading": {
-          "type": "text",
-          "name": "Title",
+        "ai_gen_block_f807ac8_CQgnB4": {
+          "type": "ai_gen_block_f807ac8",
           "settings": {
-            "text": "<h1>{{ closest.page.title }}</h1>",
-            "width": "100%",
-            "max_width": "normal",
-            "alignment": "left",
-            "type_preset": "h2",
-            "font": "var(--font-primary--family)",
-            "font_size": "",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "color": "",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
+            "youtube_url": "https://www.youtube.com/watch?v=yekfJ2MsxVM",
+            "video_aspect_ratio": "16-9",
+            "video_height": 450,
+            "video_border_radius": 0,
+            "padding_top": 0,
+            "padding_bottom": 0,
+            "background_color": "#ffffff"
           },
           "blocks": {}
         },
@@ -45,12 +32,12 @@
         }
       },
       "block_order": [
-        "heading",
+        "ai_gen_block_f807ac8_CQgnB4",
         "page-content"
       ],
       "settings": {
         "content_direction": "column",
-        "gap": 32,
+        "gap": 100,
         "color_scheme": "",
         "padding-block-start": 40,
         "padding-block-end": 80
