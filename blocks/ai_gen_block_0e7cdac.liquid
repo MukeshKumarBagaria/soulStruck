@@ -361,6 +361,14 @@
     }
   }
 
+  @media screen and (max-width: 989px) {
+    .ai-product-tabs-{{ ai_gen_id }} .ai-product-tabs__card-{{ ai_gen_id }} {
+      flex: 0 0 calc((100% - {{ block.settings.product_gap }}px) / 2) !important;
+      width: calc((100% - {{ block.settings.product_gap }}px) / 2);
+      min-width: 0;
+    }
+  }
+
   @media screen and (max-width: 749px) {
     .ai-product-tabs-{{ ai_gen_id }} {
       padding: {{ block.settings.section_padding_top | times: 0.6 | round }}px 0 {{ block.settings.section_padding_bottom | times: 0.6 | round }}px;
@@ -371,23 +379,25 @@
     }
 
     .ai-product-tabs__header-{{ ai_gen_id }} {
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     .ai-product-tabs__title-{{ ai_gen_id }} {
       font-size: {{ block.settings.title_size | times: 0.65 | round }}px;
-      margin: 0 0 16px;
+      margin: 0 0 14px;
     }
 
     .ai-product-tabs__nav-{{ ai_gen_id }} {
       justify-content: flex-start;
       gap: 8px;
       flex-wrap: nowrap;
+      scroll-snap-type: x proximity;
     }
 
     .ai-product-tabs__tab-{{ ai_gen_id }} {
-      padding: 8px 16px;
+      padding: 8px 14px;
       font-size: {{ block.settings.tab_font_size | minus: 1 }}px;
+      scroll-snap-align: start;
     }
 
     .ai-product-tabs__content-{{ ai_gen_id }} {
@@ -395,52 +405,60 @@
     }
 
     .ai-product-tabs__track-{{ ai_gen_id }} {
-      gap: 12px;
+      gap: 10px;
+      padding: 4px 0;
     }
 
-    .ai-product-tabs__card-{{ ai_gen_id }} {
-      flex: 0 0 calc((100% - 12px) / 2);
+    .ai-product-tabs-{{ ai_gen_id }} .ai-product-tabs__card-{{ ai_gen_id }} {
+      flex: 0 0 calc((100% - 10px) / 2) !important;
+      width: calc((100% - 10px) / 2);
+      max-width: calc((100% - 10px) / 2);
       min-width: 0;
     }
 
+    .ai-product-tabs__image-wrapper-{{ ai_gen_id }} {
+      padding-bottom: 115%;
+    }
+
     .ai-product-tabs__info-{{ ai_gen_id }} {
-      padding: 10px;
+      padding: 10px 8px;
     }
 
     .ai-product-tabs__product-title-{{ ai_gen_id }} {
       font-size: {{ block.settings.product_title_size | minus: 1 }}px;
       margin: 0 0 6px;
+      line-height: 1.3;
     }
 
     .ai-product-tabs__price-wrapper-{{ ai_gen_id }} {
       flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 10px;
+      gap: 4px 6px;
+      margin-bottom: 8px;
     }
 
     .ai-product-tabs__price-{{ ai_gen_id }} {
-      font-size: {{ block.settings.price_size | minus: 1 }}px;
+      font-size: {{ block.settings.price_size | minus: 2 }}px;
     }
 
     .ai-product-tabs__compare-price-{{ ai_gen_id }} {
-      font-size: {{ block.settings.price_size | minus: 3 }}px;
+      font-size: {{ block.settings.price_size | minus: 4 }}px;
     }
 
     .ai-product-tabs__rating-{{ ai_gen_id }} {
-      font-size: 12px;
+      font-size: 11px;
       margin-bottom: 6px;
     }
 
     .ai-product-tabs__badge-{{ ai_gen_id }} {
-      top: 8px;
-      right: 8px;
-      padding: 4px 8px;
-      font-size: 11px;
+      top: 6px;
+      right: 6px;
+      padding: 3px 7px;
+      font-size: 10px;
     }
 
     .ai-product-tabs__add-to-cart-{{ ai_gen_id }} {
-      padding: 10px 12px;
-      font-size: 13px;
+      padding: 9px 6px;
+      font-size: 12px;
       line-height: 1.2;
     }
 
@@ -458,18 +476,35 @@
     }
   }
 
-  @media screen and (max-width: 480px) {
-    .ai-product-tabs__tab-{{ ai_gen_id }} {
-      padding: 7px 14px;
+  @media screen and (max-width: 380px) {
+    .ai-product-tabs__container-{{ ai_gen_id }} {
+      padding: 0 10px;
     }
 
-    .ai-product-tabs__add-to-cart-{{ ai_gen_id }} {
-      padding: 9px 8px;
+    .ai-product-tabs__tab-{{ ai_gen_id }} {
+      padding: 7px 12px;
       font-size: 12px;
     }
 
+    .ai-product-tabs__product-title-{{ ai_gen_id }} {
+      font-size: 12px;
+    }
+
+    .ai-product-tabs__price-{{ ai_gen_id }} {
+      font-size: 13px;
+    }
+
+    .ai-product-tabs__compare-price-{{ ai_gen_id }} {
+      font-size: 11px;
+    }
+
+    .ai-product-tabs__add-to-cart-{{ ai_gen_id }} {
+      padding: 8px 4px;
+      font-size: 11px;
+    }
+
     .ai-product-tabs__info-{{ ai_gen_id }} {
-      padding: 8px;
+      padding: 8px 6px;
     }
   }
 {% endstyle %}
