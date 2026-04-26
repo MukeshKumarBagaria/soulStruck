@@ -733,7 +733,7 @@
             "show_arrows": false,
             "arrow_background": "#ffffff",
             "arrow_color": "#000000",
-            "show_dots": true,
+            "show_dots": false,
             "dot_color": "#000000",
             "controls_bottom_spacing": -10,
             "autoplay": true,
