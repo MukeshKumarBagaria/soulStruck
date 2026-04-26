@@ -735,7 +735,7 @@
             "arrow_color": "#000000",
             "show_dots": true,
             "dot_color": "#000000",
-            "controls_bottom_spacing": 40,
+            "controls_bottom_spacing": -10,
             "autoplay": true,
             "autoplay_speed": 5,
             "slide_1_enabled": true,
