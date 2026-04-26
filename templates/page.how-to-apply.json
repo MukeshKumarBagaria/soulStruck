@@ -12,6 +12,39 @@
     "main": {
       "type": "main-page",
       "blocks": {
+        "ai_gen_block_a783262_PftBaP": {
+          "type": "ai_gen_block_a783262",
+          "settings": {
+            "title": "Welcome to our store",
+            "subtitle": "<p>Discover our collection of premium products</p>",
+            "text_alignment": "center",
+            "content_max_width": 1200,
+            "background_color": "#ffffff",
+            "title_font": "sans_serif_n4",
+            "title_size": 70,
+            "mobile_title_size": 32,
+            "title_line_height": 1.2,
+            "title_color": "#000000",
+            "title_text_transform": "none",
+            "title_letter_spacing": 0,
+            "title_margin_bottom": 16,
+            "subtitle_font": "sans_serif_n4",
+            "subtitle_size": 18,
+            "mobile_subtitle_size": 16,
+            "subtitle_line_height": 1.5,
+            "subtitle_color": "#666666",
+            "subtitle_text_transform": "none",
+            "subtitle_letter_spacing": 0,
+            "subtitle_opacity": 1,
+            "padding_top": 40,
+            "padding_bottom": 40,
+            "padding_horizontal": 20,
+            "mobile_padding_top": 24,
+            "mobile_padding_bottom": 24,
+            "mobile_padding_horizontal": 16
+          },
+          "blocks": {}
+        },
         "ai_gen_block_f807ac8_CQgnB4": {
           "type": "ai_gen_block_f807ac8",
           "settings": {
@@ -32,6 +65,7 @@
         }
       },
       "block_order": [
+        "ai_gen_block_a783262_PftBaP",
         "ai_gen_block_f807ac8_CQgnB4",
         "page-content"
       ],
