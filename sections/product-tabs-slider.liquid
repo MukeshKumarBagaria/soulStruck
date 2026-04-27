@@ -227,39 +227,41 @@
   /* Badge */
   .pts-{{ sid }} .pts__badge {
     position: absolute;
-    top: 8px;
-    left: 8px;
+    top: 10px;
+    left: 10px;
     background: var(--pts-badge-bg);
     color: var(--pts-badge-text);
-    padding: 4px 8px;
+    padding: 5px 10px;
     border-radius: 999px;
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 700;
     z-index: 2;
     line-height: 1.2;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   }
 
   /* Quick-view + wishlist icons */
   .pts-{{ sid }} .pts__icon-btn {
     position: absolute;
-    right: 8px;
-    width: 32px;
-    height: 32px;
+    right: 10px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     border: none;
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     color: #111;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     z-index: 2;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     opacity: 1;
-    transition: opacity 0.25s ease, transform 0.25s ease, background 0.2s ease;
+    transition: opacity 0.25s ease, transform 0.25s ease, background 0.2s ease, color 0.2s ease;
   }
 
   @media (hover: hover) {
@@ -274,72 +276,21 @@
   }
 
   .pts-{{ sid }} .pts__icon-btn:hover {
-    background: #fff;
+    background: #111;
+    color: #fff;
   }
 
-  .pts-{{ sid }} .pts__icon-btn--wishlist { top: 8px; }
-  .pts-{{ sid }} .pts__icon-btn--quickview { top: 48px; }
+  .pts-{{ sid }} .pts__icon-btn.is-active {
+    background: var(--pts-accent);
+    color: #fff;
+  }
+
+  .pts-{{ sid }} .pts__icon-btn--wishlist { top: 10px; }
+  .pts-{{ sid }} .pts__icon-btn--quickview { top: 54px; }
 
   .pts-{{ sid }} .pts__icon-btn svg {
     width: 16px;
     height: 16px;
-  }
-
-  /* Add-to-cart hover overlay (desktop) */
-  .pts-{{ sid }} .pts__quick-add {
-    position: absolute;
-    left: 50%;
-    bottom: 12px;
-    transform: translate(-50%, 8px);
-    background: rgba(255, 255, 255, 0.96);
-    color: #111;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    z-index: 3;
-    opacity: 0;
-    transition: opacity 0.25s ease, transform 0.25s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-    white-space: nowrap;
-  }
-
-  .pts-{{ sid }} .pts__quick-add:hover:not(:disabled) {
-    background: #fff;
-  }
-
-  @media (hover: hover) {
-    .pts-{{ sid }} .pts__card:hover .pts__quick-add {
-      opacity: 1;
-      transform: translate(-50%, 0);
-    }
-  }
-
-  .pts-{{ sid }} .pts__quick-add:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  .pts-{{ sid }} .pts__quick-add.is-loading {
-    color: transparent;
-    pointer-events: none;
-  }
-
-  .pts-{{ sid }} .pts__quick-add.is-loading::after {
-    content: '';
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    top: 50%;
-    left: 50%;
-    margin-top: -8px;
-    margin-left: -8px;
-    border: 2px solid #111;
-    border-top-color: transparent;
-    border-radius: 50%;
-    animation: pts-spin-{{ sid }} 0.6s linear infinite;
   }
 
   @keyframes pts-spin-{{ sid }} {
@@ -348,17 +299,17 @@
 
   /* Card body */
   .pts-{{ sid }} .pts__body {
-    padding: 10px 8px;
+    padding: 14px 12px 14px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
     flex: 1;
   }
 
   .pts-{{ sid }} .pts__title {
-    font-size: clamp(12px, 3vw, 14px);
+    font-size: clamp(13px, 3.2vw, 14px);
     font-weight: 500;
-    line-height: 1.35;
+    line-height: 1.4;
     margin: 0;
     color: var(--pts-text);
     text-decoration: none;
@@ -368,6 +319,7 @@
     overflow: hidden;
     word-break: break-word;
     text-transform: lowercase;
+    letter-spacing: 0.005em;
   }
 
   .pts-{{ sid }} .pts__price-row {
@@ -378,36 +330,41 @@
   }
 
   .pts-{{ sid }} .pts__price {
-    font-size: clamp(13px, 3.4vw, 15px);
+    font-size: clamp(14px, 3.6vw, 16px);
     font-weight: 700;
     color: var(--pts-text);
+    letter-spacing: 0.005em;
   }
 
   .pts-{{ sid }} .pts__compare {
     font-size: clamp(11px, 2.8vw, 13px);
     color: var(--pts-muted);
     text-decoration: line-through;
+    font-weight: 400;
   }
 
   .pts-{{ sid }} .pts__cart-btn {
-    margin-top: 4px;
+    margin-top: 6px;
     width: 100%;
-    padding: 10px 8px;
+    padding: 12px 10px;
     background: var(--pts-button-bg);
     color: var(--pts-button-text);
-    border: none;
+    border: 1px solid var(--pts-button-bg);
     border-radius: 999px;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
     line-height: 1.2;
-    min-height: 38px;
+    min-height: 42px;
     position: relative;
+    letter-spacing: 0.02em;
   }
 
   .pts-{{ sid }} .pts__cart-btn:hover:not(:disabled) {
-    opacity: 0.92;
+    background: transparent;
+    color: var(--pts-button-bg);
+    transform: translateY(-1px);
   }
 
   .pts-{{ sid }} .pts__cart-btn:disabled {
@@ -746,7 +703,7 @@
                           {% if tab_badge != blank %}
                             <span class="pts__badge">{{ tab_badge }}</span>
                           {% elsif on_sale %}
-                            <span class="pts__badge">-{{ discount_percent }}%</span>
+                            <span class="pts__badge">{{ discount_percent }}% off</span>
                           {% endif %}
                         {% endif %}
 
@@ -762,16 +719,6 @@
                           </button>
                         {% endif %}
 
-                        {% if section.settings.show_quick_add and product.available %}
-                          <button
-                            class="pts__quick-add"
-                            type="button"
-                            data-pts-quick-add
-                            data-variant-id="{{ product.selected_or_first_available_variant.id }}"
-                          >
-                            {{ section.settings.quick_add_label | default: 'add to cart' }}
-                          </button>
-                        {% endif %}
                       </div>
 
                       <div class="pts__body">
@@ -1011,7 +958,7 @@
     }
 
     sectionEl.addEventListener('click', function (e) {
-      var addBtn = e.target.closest('[data-pts-add-to-cart], [data-pts-quick-add]');
+      var addBtn = e.target.closest('[data-pts-add-to-cart]');
       if (addBtn) {
         e.preventDefault();
         e.stopPropagation();
@@ -1263,18 +1210,6 @@
       "id": "cart_button_label",
       "label": "Add to cart label",
       "default": "Add to cart"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_quick_add",
-      "label": "Show quick-add overlay (desktop hover)",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "quick_add_label",
-      "label": "Quick-add label",
-      "default": "add to cart"
     },
     {
       "type": "checkbox",
