@@ -129,6 +129,8 @@
                           <path d="M12 9v12"/>
                           <path d="M9 21h6"/>
                         </svg>
+                      {%- when 'soulstruck-s' -%}
+                        <span class="ni-ticker__glyph" aria-hidden="true">𝒮</span>
                     {%- endcase -%}
                   </span>
                 {%- endif -%}
@@ -228,6 +230,20 @@
   object-fit: contain;
   flex-shrink: 0;
 }
+
+.ni-ticker__glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ni-t-icon-sz, 32px);
+  height: var(--ni-t-icon-sz, 32px);
+  font-size: calc(var(--ni-t-icon-sz, 32px) * 1.15);
+  line-height: 1;
+  font-weight: 400;
+  font-family: 'Cambria Math', 'STIX Two Math', 'Times New Roman', serif;
+  color: currentColor;
+  flex-shrink: 0;
+}
 {% endstylesheet %}
 
 {% schema %}
@@ -264,7 +280,8 @@
             { "value": "diamond",  "label": "💎 Diamond" },
             { "value": "check",    "label": "✅ Check circle" },
             { "value": "flower",   "label": "🌸 Flower" },
-            { "value": "nail",     "label": "💅 Nail" }
+            { "value": "nail",     "label": "💅 Nail" },
+            { "value": "soulstruck-s", "label": "𝒮 SoulStruck S" }
           ],
           "default": "hand"
         },
