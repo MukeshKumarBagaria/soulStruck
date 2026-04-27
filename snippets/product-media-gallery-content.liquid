@@ -27,17 +27,34 @@
   assign selected_variant_media = selected_product.selected_or_first_available_variant.featured_media
   assign first_3d_model = selected_product.media | where: 'media_type', 'model' | first
 
+  # ====== Top-level "Thumbnails layout" override (vertical / horizontal) ======
+  # When a layout is chosen, force thumbnails-style pagination + the matching
+  # position. Otherwise fall back to the detailed legacy settings.
+  assign effective_controls_style = block_settings.slideshow_controls_style
+  assign effective_mobile_controls_style = block_settings.slideshow_mobile_controls_style
+  assign effective_thumbnail_position = block_settings.thumbnail_position
+
+  if block_settings.thumbnails_layout == 'vertical'
+    assign effective_controls_style = 'thumbnails'
+    assign effective_thumbnail_position = 'left'
+    assign effective_mobile_controls_style = 'thumbnails'
+  elsif block_settings.thumbnails_layout == 'horizontal'
+    assign effective_controls_style = 'thumbnails'
+    assign effective_thumbnail_position = 'bottom'
+    assign effective_mobile_controls_style = 'thumbnails'
+  endif
+
   if block_settings.hide_variants
     assign variant_images = selected_product.images | where: 'attached_to_variant?', true | map: 'src'
   endif
 
-  if block_settings.slideshow_controls_style == 'thumbnails'
+  if effective_controls_style == 'thumbnails'
     assign controls_on_media = false
   else
     assign controls_on_media = true
   endif
 
-  if block_settings.slideshow_mobile_controls_style == 'thumbnails'
+  if effective_mobile_controls_style == 'thumbnails'
     assign mobile_controls_on_media = false
   else
     assign mobile_controls_on_media = true
@@ -45,21 +62,21 @@
 
   assign render_slideshow_controls = false
 
-  if media_presentation == 'carousel' or block_settings.slideshow_controls_style == block_settings.slideshow_mobile_controls_style
+  if media_presentation == 'carousel' or effective_controls_style == effective_mobile_controls_style
     assign render_slideshow_controls = true
   endif
 
   assign render_mobile_slideshow_controls = false
 
-  if block_settings.slideshow_controls_style != block_settings.slideshow_mobile_controls_style
+  if effective_controls_style != effective_mobile_controls_style
     assign slideshow_controls_class = 'mobile:hidden'
 
-    if block_settings.slideshow_mobile_controls_style != 'hint'
+    if effective_mobile_controls_style != 'hint'
       assign render_mobile_slideshow_controls = true
     endif
   endif
 
-  assign slideshow_controls_style = block_settings.slideshow_controls_style
+  assign slideshow_controls_style = effective_controls_style
   # Use a counter instead of dots when there are many images to avoid cropping/overflow.
   if slideshow_controls_style == 'dots' and selected_product.media.size > 15
     assign slideshow_controls_style = 'counter'
@@ -78,7 +95,7 @@
   endif
 
   if slideshow_controls_style == 'thumbnails'
-    assign pagination_position = block_settings.thumbnail_position
+    assign pagination_position = effective_thumbnail_position
   else
     assign pagination_position = 'center'
   endif
@@ -411,14 +428,19 @@
         {% if block_settings.media_columns == "two" and block_settings.large_first_image%}media-gallery--large-first-image{% endif %}
       {% endif %}
       media-gallery--{{ media_presentation }}
-      {% if block_settings.slideshow_mobile_controls_style == 'hint' %}
+      {% if effective_mobile_controls_style == 'hint' %}
         media-gallery--hint
+      {% endif %}
+      {% if block_settings.thumbnails_layout == 'vertical' %}
+        media-gallery--thumbs-vertical
+      {% elsif block_settings.thumbnails_layout == 'horizontal' %}
+        media-gallery--thumbs-horizontal
       {% endif %}
       {% if block_settings.extend_media %}
         media-gallery--extend
       {% endif %}
     "
-    style="{% render 'spacing-style', settings: block_settings %} --thumbnail-width: {{ block_settings.thumbnail_width }}px; --media-radius: {{ block_settings.media_radius }}px;{% if block_settings.icons_style contains 'large' %} --slideshow-icon-padding: 0px;{% endif %}--image-gap: {{ block_settings.image_gap }}px;{% unless block_settings.aspect_ratio == 'adapt' %} --gallery-aspect-ratio: {{ block_settings.aspect_ratio }};{% endunless %}{% unless block_settings.arrow_icon_color == blank or block_settings.arrow_icon_color == 'rgba(0,0,0,0)' %} --ss-arrow-icon-color: {{ block_settings.arrow_icon_color }};{% endunless %}{% unless block_settings.arrow_bg_color == blank or block_settings.arrow_bg_color == 'rgba(0,0,0,0)' %} --ss-arrow-bg-color: {{ block_settings.arrow_bg_color }};{% endunless %}"
+    style="{% render 'spacing-style', settings: block_settings %} --thumbnail-width: {{ block_settings.thumbnail_width }}px; --media-radius: {{ block_settings.media_radius }}px;{% if block_settings.icons_style contains 'large' %} --slideshow-icon-padding: 0px;{% endif %}--image-gap: {{ block_settings.image_gap }}px;{% unless block_settings.aspect_ratio == 'adapt' %} --gallery-aspect-ratio: {{ block_settings.aspect_ratio }};{% endunless %}{% unless block_settings.arrow_icon_color == blank or block_settings.arrow_icon_color == 'rgba(0,0,0,0)' %} --ss-arrow-icon-color: {{ block_settings.arrow_icon_color }};{% endunless %}{% unless block_settings.arrow_bg_color == blank or block_settings.arrow_bg_color == 'rgba(0,0,0,0)' %} --ss-arrow-bg-color: {{ block_settings.arrow_bg_color }};{% endunless %} --thumbs-max-height: {{ block_settings.thumbnails_max_height | default: 480 }}px;"
     data-presentation="{{ media_presentation }}"
     {{ block_shopify_attributes }}
   >
@@ -484,7 +506,7 @@
         {% if render_mobile_slideshow_controls %}
           {%- render 'slideshow-controls',
             class: 'desktop:hidden media-gallery__mobile-controls',
-            style: block_settings.slideshow_mobile_controls_style,
+            style: effective_mobile_controls_style,
             item_count: sorted_media.size,
             thumbnails: sorted_media,
             controls_on_media: mobile_controls_on_media,

@@ -543,6 +543,130 @@ slideshow-controls[pagination-position="center"] .slideshow-controls__thumbnail[
   margin-left: -4px;
 }
 
+/* ============================================
+   11a. THUMBNAILS LAYOUT TOGGLE (vertical / horizontal)
+   ============================================ */
+
+/* Stronger active-state highlight (works for both layouts) */
+.media-gallery--thumbs-vertical .slideshow-controls__thumbnail,
+.media-gallery--thumbs-horizontal .slideshow-controls__thumbnail {
+  border-radius: var(--ss-radius-sm);
+  border: 2px solid transparent;
+  opacity: 0.6;
+  transition: opacity 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+  cursor: pointer;
+}
+
+.media-gallery--thumbs-vertical .slideshow-controls__thumbnail:hover,
+.media-gallery--thumbs-horizontal .slideshow-controls__thumbnail:hover {
+  opacity: 0.9;
+  border-color: var(--ss-border, #d9d9d9);
+}
+
+.media-gallery--thumbs-vertical .slideshow-controls__thumbnail[aria-selected="true"],
+.media-gallery--thumbs-horizontal .slideshow-controls__thumbnail[aria-selected="true"] {
+  opacity: 1;
+  border-color: var(--ss-text-dark, #111);
+  transform: scale(1.02);
+}
+
+/* ─── VERTICAL (left of main image) ────────────────────────── */
+.media-gallery--thumbs-vertical slideshow-controls[pagination-position="left"] {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.media-gallery--thumbs-vertical slideshow-controls[pagination-position="left"] .slideshow-controls__thumbnails-list,
+.media-gallery--thumbs-vertical slideshow-controls[pagination-position="left"] [part="thumbnails"] {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: var(--thumbs-max-height, 480px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.18) transparent;
+  scroll-behavior: smooth;
+  scroll-snap-type: y proximity;
+}
+
+.media-gallery--thumbs-vertical slideshow-controls[pagination-position="left"] .slideshow-controls__thumbnails-list::-webkit-scrollbar,
+.media-gallery--thumbs-vertical slideshow-controls[pagination-position="left"] [part="thumbnails"]::-webkit-scrollbar {
+  width: 4px;
+}
+
+.media-gallery--thumbs-vertical slideshow-controls[pagination-position="left"] .slideshow-controls__thumbnails-list::-webkit-scrollbar-thumb,
+.media-gallery--thumbs-vertical slideshow-controls[pagination-position="left"] [part="thumbnails"]::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+}
+
+.media-gallery--thumbs-vertical slideshow-controls[pagination-position="left"] .slideshow-controls__thumbnail {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+
+/* ─── HORIZONTAL (below main image) ────────────────────────── */
+.media-gallery--thumbs-horizontal slideshow-controls .slideshow-controls__thumbnails-list,
+.media-gallery--thumbs-horizontal slideshow-controls [part="thumbnails"] {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 4px 2px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.18) transparent;
+  scroll-behavior: smooth;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+}
+
+.media-gallery--thumbs-horizontal slideshow-controls .slideshow-controls__thumbnails-list::-webkit-scrollbar,
+.media-gallery--thumbs-horizontal slideshow-controls [part="thumbnails"]::-webkit-scrollbar {
+  height: 4px;
+}
+
+.media-gallery--thumbs-horizontal slideshow-controls .slideshow-controls__thumbnails-list::-webkit-scrollbar-thumb,
+.media-gallery--thumbs-horizontal slideshow-controls [part="thumbnails"]::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+}
+
+.media-gallery--thumbs-horizontal slideshow-controls .slideshow-controls__thumbnail {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+
+/* ─── RESPONSIVE: force horizontal on mobile regardless of choice ─── */
+@media screen and (max-width: 749px) {
+  .media-gallery--thumbs-vertical slideshow-controls,
+  .media-gallery--thumbs-horizontal slideshow-controls {
+    display: block !important;
+  }
+
+  .media-gallery--thumbs-vertical slideshow-controls .slideshow-controls__thumbnails-list,
+  .media-gallery--thumbs-vertical slideshow-controls [part="thumbnails"],
+  .media-gallery--thumbs-horizontal slideshow-controls .slideshow-controls__thumbnails-list,
+  .media-gallery--thumbs-horizontal slideshow-controls [part="thumbnails"] {
+    flex-direction: row;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x proximity;
+    padding: 4px 0;
+    gap: 6px;
+  }
+
+  .media-gallery--thumbs-vertical .slideshow-controls__thumbnail,
+  .media-gallery--thumbs-horizontal .slideshow-controls__thumbnail {
+    width: 56px !important;
+    height: 56px !important;
+  }
+}
+
 /* Main image polish */
 .product-information__media .product-media {
   border-radius: var(--ss-radius-lg);
