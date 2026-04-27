@@ -17,6 +17,8 @@
           "static": true,
           "settings": {
             "media_presentation": "carousel",
+            "thumbnails_layout": "horizontal",
+            "thumbnails_max_height": 480,
             "media_columns": "one",
             "image_gap": 0,
             "large_first_image": false,
