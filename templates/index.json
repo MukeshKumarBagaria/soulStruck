@@ -419,37 +419,6 @@
         "padding-block-end": 0
       }
     },
-    "177660249963948a16": {
-      "type": "_blocks",
-      "name": "product tabs",
-      "settings": {
-        "content_direction": "column",
-        "vertical_on_mobile": true,
-        "horizontal_alignment": "flex-start",
-        "vertical_alignment": "center",
-        "align_baseline": false,
-        "horizontal_alignment_flex_direction_column": "flex-start",
-        "vertical_alignment_flex_direction_column": "center",
-        "gap": 12,
-        "section_width": "page-width",
-        "section_height": "",
-        "section_height_custom": 50,
-        "color_scheme": "",
-        "background_media": "none",
-        "video_position": "cover",
-        "background_image_position": "cover",
-        "border": "none",
-        "border_width": 1,
-        "border_opacity": 100,
-        "border_radius": 0,
-        "toggle_overlay": false,
-        "overlay_color": "#00000026",
-        "overlay_style": "solid",
-        "gradient_direction": "to top",
-        "padding-block-start": 0,
-        "padding-block-end": 0
-      }
-    },
     "177619440557b8ea32": {
       "type": "_blocks",
       "blocks": {
@@ -1017,6 +986,105 @@
         "padding-block-start": 0,
         "padding-block-end": 0
       }
+    },
+    "product_tabs_slider_VmxNrQ": {
+      "type": "product-tabs-slider",
+      "blocks": {
+        "tab_ChNKza": {
+          "type": "tab",
+          "settings": {
+            "tab_name": "all",
+            "collection": "3d-nails",
+            "badge_label": ""
+          }
+        },
+        "tab_gMhAiz": {
+          "type": "tab",
+          "settings": {
+            "tab_name": "offers",
+            "collection": "blacks-whites",
+            "badge_label": ""
+          }
+        },
+        "tab_mixN8y": {
+          "type": "tab",
+          "settings": {
+            "tab_name": "best sellers",
+            "collection": "bestseller",
+            "badge_label": ""
+          }
+        },
+        "tab_MDxNNP": {
+          "type": "tab",
+          "settings": {
+            "tab_name": "french",
+            "collection": "french-manicure",
+            "badge_label": ""
+          }
+        },
+        "tab_kNAewm": {
+          "type": "tab",
+          "settings": {
+            "tab_name": "trending",
+            "collection": "casual",
+            "badge_label": ""
+          }
+        },
+        "tab_awgdm6": {
+          "type": "tab",
+          "settings": {
+            "tab_name": "Casual",
+            "collection": "casual",
+            "badge_label": ""
+          }
+        }
+      },
+      "block_order": [
+        "tab_ChNKza",
+        "tab_gMhAiz",
+        "tab_mixN8y",
+        "tab_MDxNNP",
+        "tab_kNAewm",
+        "tab_awgdm6"
+      ],
+      "name": "Product tabs slider",
+      "settings": {
+        "heading": "Shop by category",
+        "heading_align": "left",
+        "heading_size": 32,
+        "tabs_align": "center",
+        "default_tab": 1,
+        "tab_font_size": 15,
+        "tab_text_transform": "lowercase",
+        "products_to_show": 12,
+        "cards_mobile": 2,
+        "cards_tablet": 3,
+        "cards_desktop": 5,
+        "show_arrows": true,
+        "autoplay": false,
+        "autoplay_interval": 5,
+        "card_radius": 14,
+        "card_shadow": true,
+        "show_price": true,
+        "show_compare": true,
+        "show_badge": true,
+        "show_cart_button": true,
+        "cart_button_label": "Add to cart",
+        "show_quick_add": true,
+        "quick_add_label": "add to cart",
+        "show_quickview": false,
+        "show_wishlist": false,
+        "bg_color": "#ffffff",
+        "text_color": "#111111",
+        "muted_color": "#777777",
+        "accent_color": "#111111",
+        "card_bg": "#ffffff",
+        "badge_bg": "#111111",
+        "badge_text": "#ffffff",
+        "button_bg": "#111111",
+        "button_text": "#ffffff",
+        "section_padding": 56
+      }
     }
   },
   "order": [
@@ -1025,11 +1093,11 @@
     "soulstruck_marquee_fQDt47",
     "soulstruck_bestsellers_AgVgXr",
     "17765955435681d3e1",
-    "177660249963948a16",
     "177619440557b8ea32",
     "17765982920983bbc2",
     "177667234430136b04",
     "1776615002243e8093",
-    "17766087610ab8ede2"
+    "17766087610ab8ede2",
+    "product_tabs_slider_VmxNrQ"
   ]
 }
