@@ -1083,6 +1083,54 @@
         "padding-block-start": 0,
         "padding-block-end": 0
       }
+    },
+    "soulstruck_marquee_cMwV6H": {
+      "type": "soulstruck-marquee",
+      "blocks": {
+        "item_PtbC6n": {
+          "type": "item",
+          "settings": {
+            "text": "feel soulstruck",
+            "icon": "soulstruck-s"
+          }
+        },
+        "item_wHndWF": {
+          "type": "item",
+          "settings": {
+            "text": "be soulstruck",
+            "icon": "soulstruck-s"
+          }
+        },
+        "item_KzicfR": {
+          "type": "item",
+          "settings": {
+            "text": "stay soulstruck",
+            "icon": "soulstruck-s"
+          }
+        }
+      },
+      "block_order": [
+        "item_PtbC6n",
+        "item_wHndWF",
+        "item_KzicfR"
+      ],
+      "name": "SoulStruck Marquee",
+      "settings": {
+        "speed": 30,
+        "direction": "normal",
+        "text_size": 22,
+        "font_weight": "800",
+        "icon_size": 32,
+        "bg_color": "#ffffff",
+        "text_color": "#1a1a1a",
+        "icon_color": "#FF2D7C",
+        "border_top": false,
+        "border_bottom": false,
+        "border_color": "#e8e8e8",
+        "item_gap": 60,
+        "padding_top": 20,
+        "padding_bottom": 20
+      }
     }
   },
   "order": [
@@ -1096,6 +1144,7 @@
     "177619440557b8ea32",
     "17765982920983bbc2",
     "1776615002243e8093",
-    "17766087610ab8ede2"
+    "17766087610ab8ede2",
+    "soulstruck_marquee_cMwV6H"
   ]
 }
