@@ -119,6 +119,15 @@
             "custom_url": "",
             "hover_text": ""
           }
+        },
+        "circle_m8PKT3": {
+          "type": "circle",
+          "settings": {
+            "collection": "nail-care-tools",
+            "custom_label": "",
+            "custom_url": "",
+            "hover_text": ""
+          }
         }
       },
       "block_order": [
@@ -133,7 +142,8 @@
         "circle_H7EnAM",
         "circle_wUQ6xT",
         "circle_ppgB6e",
-        "circle_JBb6NX"
+        "circle_JBb6NX",
+        "circle_m8PKT3"
       ],
       "name": "SS Collection Circles",
       "settings": {
@@ -1123,7 +1133,7 @@
         "icon_size": 42,
         "bg_color": "#ffffff",
         "text_color": "#1a1a1a",
-        "icon_color": "#FF2D7C",
+        "icon_color": "#ff2d7c",
         "border_top": false,
         "border_bottom": false,
         "border_color": "#e8e8e8",
