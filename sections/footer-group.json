@@ -209,7 +209,7 @@
               "settings": {
                 "icon": "heart",
                 "image_upload": "shopify://shop_images/customer_1688401.png",
-                "width": 32,
+                "width": 24,
                 "link": "",
                 "open_in_new_tab": false
               },
@@ -360,7 +360,7 @@
               "settings": {
                 "icon": "silhouette",
                 "image_upload": "shopify://shop_images/technology_432667.png",
-                "width": 32,
+                "width": 24,
                 "link": "",
                 "open_in_new_tab": false
               },
