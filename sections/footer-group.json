@@ -106,11 +106,11 @@
                 "text_LM8K9n": {
                   "type": "text",
                   "settings": {
-                    "text": "<p>Women-Led. Always.</p>",
+                    "text": "<p><strong>Women-Led.</strong></p>",
                     "width": "100%",
                     "max_width": "normal",
                     "alignment": "center",
-                    "type_preset": "h4",
+                    "type_preset": "h5",
                     "font": "var(--font-body--family)",
                     "font_size": "1rem",
                     "line_height": "normal",
@@ -257,11 +257,11 @@
                 "text_RjXLxW": {
                   "type": "text",
                   "settings": {
-                    "text": "<p>Support </p>",
+                    "text": "<p><strong>Support </strong></p>",
                     "width": "100%",
                     "max_width": "normal",
                     "alignment": "center",
-                    "type_preset": "h4",
+                    "type_preset": "h5",
                     "font": "var(--font-body--family)",
                     "font_size": "1rem",
                     "line_height": "normal",
@@ -408,11 +408,11 @@
                 "text_gxEbEk": {
                   "type": "text",
                   "settings": {
-                    "text": "<p>Contact </p>",
+                    "text": "<p><strong>Contact </strong></p>",
                     "width": "100%",
                     "max_width": "normal",
                     "alignment": "center",
-                    "type_preset": "h4",
+                    "type_preset": "h5",
                     "font": "var(--font-body--family)",
                     "font_size": "1rem",
                     "line_height": "normal",
