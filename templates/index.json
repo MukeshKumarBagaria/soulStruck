@@ -309,7 +309,7 @@
       "settings": {
         "eyebrow": "BESTSELLERS",
         "heading": "Everyone's Got Their Eye On These.",
-        "subheading": "Products we’re Soulstrucked by",
+        "subheading": "",
         "collection": "bestseller",
         "max_products": 5,
         "columns_desktop": 5,
