@@ -896,8 +896,8 @@
         "ai_gen_block_fc9b29f_qYiLa8": {
           "type": "ai_gen_block_fc9b29f",
           "settings": {
-            "show_badge": true,
-            "badge_text": "Trusted Platforms",
+            "show_badge": false,
+            "badge_text": "",
             "badge_background": "#000000",
             "badge_text_color": "#ffffff",
             "heading": "Available On",
