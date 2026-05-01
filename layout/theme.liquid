@@ -36,6 +36,7 @@
     {% endif %}
 
     {{ 'soulstruck-header.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'soulstruck-mega-menu.js' | asset_url }}" defer></script>
 
     {% if request.page_type == 'product' %}
       {{ 'soulstruck-product.css' | asset_url | stylesheet_tag }}

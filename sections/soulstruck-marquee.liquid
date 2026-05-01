@@ -182,7 +182,7 @@
 
 @keyframes ni-ticker-scroll {
   0%   { transform: translate3d(0, 0, 0); }
-  100% { transform: translate3d(-50%, 0, 0); }
+  100% { transform: translate3d(var(--ni-t-translate, -50%), 0, 0); }
 }
 
 .ni-ticker__group {
@@ -245,6 +245,66 @@
   flex-shrink: 0;
 }
 {% endstylesheet %}
+
+<script>
+  (function () {
+    var ticker = document.getElementById('ni-ticker-{{ section.id }}');
+    if (!ticker) return;
+    var track = ticker.querySelector('.ni-ticker__track');
+    if (!track) return;
+
+    function fit() {
+      // Strip any clones from a previous run, leave the original 2 Liquid-rendered groups.
+      var groups = track.querySelectorAll('.ni-ticker__group');
+      for (var i = groups.length - 1; i >= 2; i--) {
+        groups[i].parentNode.removeChild(groups[i]);
+      }
+
+      var firstGroup = track.querySelector('.ni-ticker__group');
+      if (!firstGroup) return;
+
+      // Force layout, then measure.
+      void firstGroup.offsetWidth;
+      var groupWidth = firstGroup.getBoundingClientRect().width;
+      var viewportWidth = ticker.getBoundingClientRect().width;
+      if (groupWidth <= 0 || viewportWidth <= 0) return;
+
+      // Need >= 2× viewport of content so the loop swap is invisible.
+      // +1 extra group as safety margin against sub-pixel rounding.
+      var minWidth = viewportWidth * 2;
+      var groupsNeeded = Math.max(2, Math.ceil(minWidth / groupWidth) + 1);
+      var current = track.querySelectorAll('.ni-ticker__group').length;
+
+      for (var j = current; j < groupsNeeded; j++) {
+        var clone = firstGroup.cloneNode(true);
+        clone.setAttribute('aria-hidden', 'true');
+        track.appendChild(clone);
+      }
+
+      // Translate by exactly one group width per animation cycle — true seamless loop.
+      ticker.style.setProperty('--ni-t-translate', '-' + groupWidth + 'px');
+
+      // Kick the animation so it picks up the new translate value.
+      track.style.animation = 'none';
+      void track.offsetWidth;
+      track.style.animation = '';
+    }
+
+    fit();
+
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(fit, 200);
+    }, { passive: true });
+
+    // Re-fit once webfonts/images finish loading — sizes can shift.
+    if (document.fonts && document.fonts.ready && typeof document.fonts.ready.then === 'function') {
+      document.fonts.ready.then(fit).catch(function () {});
+    }
+    window.addEventListener('load', fit, { once: true });
+  })();
+</script>
 
 {% schema %}
 {
