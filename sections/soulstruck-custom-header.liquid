@@ -1322,6 +1322,144 @@ cart-icon:has(.cart-bubble__text-count:empty) {
   .ni-ch__drawer-panel,
   .ni-ch__drawer-subsublist { transition: none !important; animation: none !important; }
 }
+
+/* ============================================================
+   SOULSTRUCK MEGA MENU — pastel pink redesign
+   - Pastel pink panel background
+   - Bold pink uppercase column headers (no underline, no arrow)
+   - Show more / less toggle for columns with >7 items
+   - Zero opening animation
+   ============================================================ */
+
+/* Pastel panel — wins via specificity (3 classes vs original 1) */
+#ni-ch-{{ section.id }} .ni-ch .ni-ch__megamenu {
+  background: #fbeaf1 !important;
+  border-top: 1px solid rgba(255, 64, 129, 0.10) !important;
+  box-shadow: 0 12px 28px rgba(255, 64, 129, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+  /* Kill open/close transition */
+  transition: opacity 0.01ms linear, visibility 0.01ms linear, transform 0.01ms linear !important;
+  transform: none !important;
+}
+
+#ni-ch-{{ section.id }} .ni-ch .ni-ch__megamenu::before {
+  display: none !important;
+}
+
+#ni-ch-{{ section.id }} .ni-ch .ni-ch__megamenu-inner {
+  padding: 32px 40px 36px !important;
+  background: #fbeaf1 !important;
+}
+
+/* Kill the per-column fade-up animation */
+#ni-ch-{{ section.id }} .ni-ch .ni-ch__megamenu-col {
+  animation: none !important;
+  animation-delay: 0s !important;
+}
+
+/* Column header — bold uppercase pink, no underline, no arrow icon */
+#ni-ch-{{ section.id }} .ni-ch .ni-ch__megamenu-heading {
+  color: #ff3d8b !important;
+  font-weight: 800 !important;
+  font-size: 0.78rem !important;
+  letter-spacing: 0.12em !important;
+  padding-bottom: 14px !important;
+  text-transform: uppercase !important;
+  transition: none !important;
+}
+
+#ni-ch-{{ section.id }} .ni-ch .ni-ch__megamenu-heading::after {
+  display: none !important;
+}
+
+#ni-ch-{{ section.id }} .ni-ch .ni-ch__megamenu-heading-arrow {
+  display: none !important;
+}
+
+#ni-ch-{{ section.id }} .ni-ch .ni-ch__megamenu-heading:hover {
+  color: #ff1f78 !important;
+}
+
+#ni-ch-{{ section.id }} .ni-ch .ni-ch__megamenu-heading--active {
+  color: #ff3d8b !important;
+}
+
+/* Child links — regular weight, gray, hover to pink, no arrow indicator */
+#ni-ch-{{ section.id }} .ni-ch .ni-ch__megamenu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#ni-ch-{{ section.id }} .ni-ch .ni-ch__megamenu-link {
+  color: #4a4a4a !important;
+  font-weight: 400 !important;
+  font-size: 14px !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  padding: 4px 0 !important;
+  transition: color 0.15s ease !important;
+  text-decoration: none !important;
+  display: inline-block;
+}
+
+#ni-ch-{{ section.id }} .ni-ch .ni-ch__megamenu-link::before,
+#ni-ch-{{ section.id }} .ni-ch .ni-ch__megamenu-link::after {
+  display: none !important;
+}
+
+#ni-ch-{{ section.id }} .ni-ch .ni-ch__megamenu-link:hover {
+  color: #ff3d8b !important;
+}
+
+#ni-ch-{{ section.id }} .ni-ch .ni-ch__megamenu-link--active {
+  color: #ff3d8b !important;
+  font-weight: 600 !important;
+}
+
+/* Show-more / show-less toggle (injected by JS) */
+#ni-ch-{{ section.id }} .ni-ch .ss-mega-show-more {
+  background: none;
+  border: none;
+  color: #ff3d8b;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 8px 0 0;
+  margin: 6px 0 0;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  letter-spacing: 0;
+  text-transform: none;
+  line-height: 1.3;
+  align-self: flex-start;
+  transition: color 0.15s ease;
+}
+
+#ni-ch-{{ section.id }} .ni-ch .ss-mega-show-more:hover {
+  color: #ff1f78;
+  text-decoration: underline;
+}
+
+#ni-ch-{{ section.id }} .ni-ch .ss-mega-hidden {
+  display: none !important;
+}
+
+#ni-ch-{{ section.id }} .ni-ch .ni-ch__megamenu-col.is-expanded .ss-mega-hidden {
+  display: block !important;
+}
+
+/* Tablet: tighter padding */
+@media (max-width: 1024px) {
+  #ni-ch-{{ section.id }} .ni-ch .ni-ch__megamenu-inner {
+    padding: 24px 24px 28px !important;
+  }
+  #ni-ch-{{ section.id }} .ni-ch .ni-ch__megamenu-grid {
+    gap: 22px 24px !important;
+  }
+}
 </style>
 
 <script>

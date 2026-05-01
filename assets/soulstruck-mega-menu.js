@@ -1,8 +1,8 @@
 /* ============================================================
-   SoulStruck Mega Menu — "Show more" for long columns
-   - Hides items past the threshold (default 7)
-   - Adds a Show more / Show less toggle
-   - Works with Shopify's standard .mega-menu__column markup
+   SoulStruck Mega Menu — "Show more" toggle for long columns
+   Targets the custom header (.ni-ch__megamenu-col / .ni-ch__megamenu-list)
+   - Hides items past THRESHOLD
+   - Adds a Show more / Show less button styled via CSS
    - Re-runs on Shopify section reload (theme editor)
    ============================================================ */
 (function () {
@@ -11,12 +11,7 @@
   function processColumn(column) {
     if (!column || column.dataset.ssMegaProcessed === '1') return;
 
-    // Find the deepest <ul> of links (skip the column wrapper itself)
-    var lists = column.querySelectorAll('ul');
-    var listEl = null;
-    for (var i = 0; i < lists.length; i++) {
-      if (lists[i].children.length > 0) { listEl = lists[i]; break; }
-    }
+    var listEl = column.querySelector('.ni-ch__megamenu-list');
     if (!listEl) return;
 
     var items = listEl.querySelectorAll(':scope > li');
@@ -25,10 +20,12 @@
       return;
     }
 
-    column.classList.add('ss-mega-column');
     for (var j = THRESHOLD; j < items.length; j++) {
       items[j].classList.add('ss-mega-hidden');
     }
+
+    var existing = column.querySelector('.ss-mega-show-more');
+    if (existing) existing.remove();
 
     var toggle = document.createElement('button');
     toggle.type = 'button';
@@ -44,14 +41,28 @@
       toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
     });
 
-    listEl.parentNode.appendChild(toggle);
+    column.appendChild(toggle);
     column.dataset.ssMegaProcessed = '1';
   }
 
   function run(scope) {
     var root = scope || document;
-    var columns = root.querySelectorAll('.menu-list__submenu .mega-menu__column');
+    var columns = root.querySelectorAll('.ni-ch__megamenu-col');
     columns.forEach(processColumn);
+  }
+
+  function reset(scope) {
+    var root = scope || document;
+    var columns = root.querySelectorAll('.ni-ch__megamenu-col');
+    columns.forEach(function (col) {
+      col.removeAttribute('data-ss-mega-processed');
+      col.classList.remove('is-expanded');
+      col.querySelectorAll('.ss-mega-hidden').forEach(function (el) {
+        el.classList.remove('ss-mega-hidden');
+      });
+      var btn = col.querySelector('.ss-mega-show-more');
+      if (btn) btn.remove();
+    });
   }
 
   if (document.readyState === 'loading') {
@@ -62,6 +73,11 @@
 
   // Re-run when Shopify's editor swaps a header section
   document.addEventListener('shopify:section:load', function (e) {
+    reset(e.target);
+    run(e.target);
+  });
+  document.addEventListener('shopify:section:reorder', function (e) {
+    reset(e.target);
     run(e.target);
   });
   document.addEventListener('shopify:block:select', function (e) {
