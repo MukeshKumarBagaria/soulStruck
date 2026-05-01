@@ -6,7 +6,7 @@
    - Re-runs on Shopify section reload (theme editor)
    ============================================================ */
 (function () {
-  var THRESHOLD = 7;
+  var THRESHOLD = 6;
 
   function processColumn(column) {
     if (!column || column.dataset.ssMegaProcessed === '1') return;
