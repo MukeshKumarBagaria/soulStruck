@@ -116,20 +116,28 @@
     max-width: 360px;
   }
 
-  /* Decorative letter mark */
+  /* Decorative letter mark — sits at top-right of the header, behind the text */
   .ssbs-{{ sid }}__decoration {
     position: absolute;
-    right: 12px;
+    right: -20px;
     top: 50%;
-    transform: translateY(-55%);
+    transform: translate(15%, -50%);
     font-family: {{ heading_font_family }};
-    font-size: clamp(80px, 16vw, 220px);
+    font-size: clamp(120px, 18vw, 260px);
     font-style: italic;
     color: var(--ssbs-decoration);
     line-height: 1;
     pointer-events: none;
     user-select: none;
     z-index: 0;
+  }
+
+  @media screen and (max-width: 699px) {
+    .ssbs-{{ sid }}__decoration {
+      right: -10px;
+      transform: translate(20%, -50%);
+      font-size: clamp(100px, 30vw, 180px);
+    }
   }
 
   /* ── Cards grid ──────────────────────────────────── */
@@ -409,12 +417,11 @@
 <div class="ssbs-{{ sid }}" {{ block.shopify_attributes }}>
   <div class="ssbs-{{ sid }}__container">
 
-    {% if section.settings.decoration_letter != blank %}
-      <span class="ssbs-{{ sid }}__decoration" aria-hidden="true">{{ section.settings.decoration_letter }}</span>
-    {% endif %}
-
     {% if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.description != blank %}
       <div class="ssbs-{{ sid }}__header">
+        {% if section.settings.decoration_letter != blank %}
+          <span class="ssbs-{{ sid }}__decoration" aria-hidden="true">{{ section.settings.decoration_letter }}</span>
+        {% endif %}
         <div>
           {% if section.settings.eyebrow != blank %}
             <span class="ssbs-{{ sid }}__eyebrow">{{ section.settings.eyebrow }}</span>
