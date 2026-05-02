@@ -1,6 +1,135 @@
+{% doc %}
+  @prompt
+    create an beautiful copyright block with very minmila height which will be place below the footer , which will contain the brand name and year  
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-copyright-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    padding: {{ block.settings.padding_vertical }}px 20px;
+    background-color: {{ block.settings.background_color }};
+    text-align: {{ block.settings.text_alignment }};
+  }
+
+  .ai-copyright-content-{{ ai_gen_id }} {
+    max-width: 1200px;
+    margin: 0 auto;
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.font_size }}px;
+    line-height: 1.5;
+  }
+
+  .ai-copyright-content-{{ ai_gen_id }} a {
+    color: {{ block.settings.link_color }};
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .ai-copyright-content-{{ ai_gen_id }} a:hover {
+    opacity: 0.7;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-copyright-{{ ai_gen_id }} {
+      padding: {{ block.settings.padding_vertical | times: 0.8 }}px 16px;
+    }
+
+    .ai-copyright-content-{{ ai_gen_id }} {
+      font-size: {{ block.settings.font_size | times: 0.9 }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-copyright-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-copyright-content-{{ ai_gen_id }}">
+    {% if block.settings.copyright_text != blank %}
+      {{ block.settings.copyright_text }}
+    {% else %}
+      &copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. All rights reserved.
+    {% endif %}
+  </div>
+</div>
+
 {% schema %}
- {
-   "name": "AI_Block",
-   "tag": "shopify-ai-generated-block"
- }
+{
+  "name": "Copyright",
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "copyright_text",
+      "label": "Copyright text",
+      "default": "&copy; 2026 soulstruck. All rights reserved.",
+      "info": "Leave blank to use shop name and current year automatically"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical",
+      "label": "Vertical padding",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "link_color",
+      "label": "Links",
+      "default": "#000000"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Copyright"
+    }
+  ]
+}
 {% endschema %}
