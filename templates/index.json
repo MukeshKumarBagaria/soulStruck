@@ -12,6 +12,15 @@
     "soulstruck_collection_circles_iyrMVN": {
       "type": "soulstruck-collection-circles",
       "blocks": {
+        "circle_beB7wc": {
+          "type": "circle",
+          "settings": {
+            "collection": "shop-all",
+            "custom_label": "",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        },
         "circle_McQhAd": {
           "type": "circle",
           "settings": {
@@ -131,6 +140,7 @@
         }
       },
       "block_order": [
+        "circle_beB7wc",
         "circle_McQhAd",
         "circle_Wbmikq",
         "circle_bDnVkQ",
@@ -1026,6 +1036,8 @@
             "columns_mobile": "2",
             "grid_spacing": 16,
             "image_border_radius": 16,
+            "post_aspect_ratio": "9 / 16",
+            "post_aspect_ratio_mobile": "4 / 5",
             "show_hover_overlay": true,
             "hover_zoom": 1.1,
             "show_load_more": true,
