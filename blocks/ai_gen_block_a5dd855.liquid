@@ -197,7 +197,7 @@
 
   .ai-instagram-feed__post-{{ ai_gen_id }} {
     position: relative;
-    aspect-ratio: 1;
+    aspect-ratio: {{ block.settings.post_aspect_ratio }};
     overflow: hidden;
     border-radius: {{ block.settings.image_border_radius }}px;
     background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
@@ -295,6 +295,10 @@
     .ai-instagram-feed__grid-{{ ai_gen_id }} {
       grid-template-columns: repeat({{ block.settings.columns_mobile }}, 1fr);
       gap: {{ block.settings.grid_spacing | times: 0.7 }}px;
+    }
+
+    .ai-instagram-feed__post-{{ ai_gen_id }} {
+      aspect-ratio: {{ block.settings.post_aspect_ratio_mobile }};
     }
 
     .ai-instagram-feed__profile-{{ ai_gen_id }} {
@@ -721,6 +725,33 @@
       "step": 2,
       "unit": "px",
       "default": 16
+    },
+    {
+      "type": "select",
+      "id": "post_aspect_ratio",
+      "label": "Post card shape (desktop)",
+      "info": "Controls the height of each post card relative to its width.",
+      "options": [
+        { "value": "1 / 1",  "label": "Square (1:1)" },
+        { "value": "4 / 5",  "label": "Portrait (4:5) — Instagram feed" },
+        { "value": "3 / 4",  "label": "Tall portrait (3:4)" },
+        { "value": "2 / 3",  "label": "Vertical (2:3)" },
+        { "value": "9 / 16", "label": "Story / Reel (9:16)" }
+      ],
+      "default": "9 / 16"
+    },
+    {
+      "type": "select",
+      "id": "post_aspect_ratio_mobile",
+      "label": "Post card shape (mobile)",
+      "options": [
+        { "value": "1 / 1",  "label": "Square (1:1)" },
+        { "value": "4 / 5",  "label": "Portrait (4:5)" },
+        { "value": "3 / 4",  "label": "Tall portrait (3:4)" },
+        { "value": "2 / 3",  "label": "Vertical (2:3)" },
+        { "value": "9 / 16", "label": "Story / Reel (9:16)" }
+      ],
+      "default": "4 / 5"
     },
     {
       "type": "checkbox",
