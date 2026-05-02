@@ -144,6 +144,15 @@
               <div class="ni-bs__shipping">{{ shipping_text | escape }}</div>
             {%- endif -%}
 
+            <div class="ni-bs__price">
+              {%- if save_amount > 0 -%}
+                <span class="ni-bs__price-current">{{ product.price | money_without_trailing_zeros }}</span>
+                <s class="ni-bs__price-compare">{{ product.compare_at_price | money_without_trailing_zeros }}</s>
+              {%- else -%}
+                <span class="ni-bs__price-current">{{ product.price | money_without_trailing_zeros }}</span>
+              {%- endif -%}
+            </div>
+
             <form
               class="ni-bs__cta-form"
               action="{{ routes.cart_add_url }}"
@@ -159,14 +168,6 @@
                 {% unless product.available %}disabled aria-disabled="true"{% endunless %}
                 data-bs-cta
               >
-                <span class="ni-bs__price">
-                  {%- if save_amount > 0 -%}
-                    <span class="ni-bs__price-current">{{ product.price | money_without_trailing_zeros }}</span>
-                    <s class="ni-bs__price-compare">{{ product.compare_at_price | money_without_trailing_zeros }}</s>
-                  {%- else -%}
-                    <span class="ni-bs__price-current">{{ product.price | money_without_trailing_zeros }}</span>
-                  {%- endif -%}
-                </span>
                 <span class="ni-bs__cta-label" data-bs-label>
                   {%- if product.available -%}
                     Add To Cart
@@ -189,8 +190,8 @@
           <div class="ni-bs__body">
             <h3 class="ni-bs__product-title">Product title</h3>
             <div class="ni-bs__shipping">{{ shipping_text | escape }}</div>
+            <div class="ni-bs__price"><span class="ni-bs__price-current">₹0</span></div>
             <button class="ni-bs__cta" type="button" disabled>
-              <span class="ni-bs__price"><span class="ni-bs__price-current">₹0</span></span>
               <span class="ni-bs__cta-label">Add To Cart</span>
             </button>
           </div>
@@ -447,31 +448,57 @@
 }
 
 /* CTA */
+/* Price block — sits above the CTA, left-aligned with the rest of the card body */
+.ni-bs__price {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 12px;
+  line-height: 1.2;
+  min-width: 0;
+}
+.ni-bs__price-current {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--ni-bs-text, #1a1a1a);
+  white-space: nowrap;
+}
+.ni-bs__price-compare {
+  font-weight: 400;
+  font-size: 0.88rem;
+  color: var(--ni-bs-text-muted, #999);
+  opacity: 0.85;
+  white-space: nowrap;
+}
+
+/* CTA form & button — clean, single-purpose "Add To Cart" pill */
 .ni-bs__cta-form {
   margin-top: auto;
-  padding: 12px 0 14px;
+  padding: 0;
 }
 .ni-bs__cta {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  column-gap: 16px;
-  row-gap: 4px;
+  justify-content: center;
+  gap: 6px;
   width: 100%;
-  padding: 11px 18px;
+  padding: 12px 16px;
   background: var(--ni-bs-btn-bg, #1a1a1a);
   color: var(--ni-bs-btn-color, #fff);
   border: none;
-  border-radius: 22px;
+  border-radius: 999px;
   font: inherit;
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   font-weight: 700;
+  letter-spacing: 0.02em;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.25s ease, opacity 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.25s ease, opacity 0.2s ease, background 0.25s ease;
   -webkit-tap-highlight-color: transparent;
   line-height: 1.2;
+  min-height: 44px;
   position: relative;
+  overflow: hidden;
 }
 .ni-bs__cta:disabled { opacity: 0.5; cursor: not-allowed; }
 @media (hover: hover) {
@@ -481,70 +508,62 @@
   }
 }
 .ni-bs__cta:not(:disabled):active { transform: translateY(0); }
-.ni-bs__price {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 6px;
-  min-width: 0;
-  white-space: nowrap;
-  flex: 0 1 auto;
-}
-.ni-bs__price-current { font-weight: 700; white-space: nowrap; }
-.ni-bs__price-compare { font-weight: 400; opacity: 0.55; font-size: 0.82em; white-space: nowrap; }
+
 .ni-bs__cta-label {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   font-weight: 700;
   white-space: nowrap;
-  flex: 0 0 auto;
-  margin-left: auto; /* push CTA label to the right edge of the row */
 }
-/* Tablet & narrow desktop: stack price above CTA label inside the pill so they never overlap */
-@media (max-width: 1199px) {
-  .ni-bs__cta {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    row-gap: 4px;
-    column-gap: 0;
-    padding: 9px 14px;
-    border-radius: 18px;
-    min-height: 48px;
+.ni-bs__cta-label svg {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+@media (hover: hover) {
+  .ni-bs__cta:not(:disabled):hover .ni-bs__cta-label svg {
+    transform: translateX(2px);
   }
+}
+
+/* Tablet & smaller: tighter price + button */
+@media (max-width: 989px) {
   .ni-bs__price {
-    justify-content: center;
-    flex: 0 0 auto;
+    gap: 6px;
+    margin: 4px 0 10px;
   }
-  .ni-bs__cta-label {
-    margin-left: 0;
-    font-size: 0.82em;
-    opacity: 0.92;
+  .ni-bs__price-current { font-size: 0.98rem; }
+  .ni-bs__price-compare { font-size: 0.82rem; }
+  .ni-bs__cta {
+    padding: 11px 14px;
+    font-size: 0.84rem;
+    min-height: 42px;
   }
 }
 
 @media (max-width: 749px) {
-  .ni-bs__cta {
-    padding: 8px 12px;
-    min-height: 44px;
-    font-size: 0.78rem;
-    row-gap: 3px;
-  }
   .ni-bs__price {
-    gap: 4px;
-    font-size: 0.86rem;
+    margin: 2px 0 8px;
+    gap: 6px;
   }
-  .ni-bs__price-compare { font-size: 0.74em; }
-  .ni-bs__cta-label {
-    font-size: 0.7rem;
-    letter-spacing: 0.02em;
-    gap: 2px;
+  .ni-bs__price-current { font-size: 0.92rem; }
+  .ni-bs__price-compare { font-size: 0.78rem; }
+  .ni-bs__cta {
+    padding: 10px 12px;
+    font-size: 0.8rem;
+    min-height: 40px;
+    border-radius: 999px;
   }
-  .ni-bs__cta-label svg { display: none; }
+  .ni-bs__cta-label svg { width: 12px; height: 12px; }
 }
+
 @media (max-width: 380px) {
-  .ni-bs__price-compare { display: none; }
-  .ni-bs__cta { padding: 8px 10px; min-height: 40px; }
+  .ni-bs__price-compare { font-size: 0.72rem; }
+  .ni-bs__cta {
+    padding: 9px 10px;
+    font-size: 0.76rem;
+    min-height: 38px;
+  }
 }
 
 /* Loading / success state */
