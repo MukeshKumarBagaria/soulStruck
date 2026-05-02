@@ -491,7 +491,7 @@
       ],
       "name": "Product tabs slider",
       "settings": {
-        "heading": "Shop by category",
+        "heading": "",
         "heading_align": "left",
         "heading_size": 32,
         "tabs_align": "center",
