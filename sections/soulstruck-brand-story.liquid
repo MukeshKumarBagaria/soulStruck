@@ -1,0 +1,857 @@
+{% comment %}
+  SoulStruck Brand Story / Feature cards
+  - Editorial header (eyebrow + serif heading + description + decorative letter)
+  - 3 feature cards: one "highlighted" dark card, two light cards
+  - Icon, eyebrow, heading, body, optional stats row, optional CTA per card
+  - Fully customizable colors, typography, spacing
+{% endcomment %}
+
+{%- liquid
+  assign sid = section.id
+-%}
+
+{% style %}
+  .ssbs-{{ sid }} {
+    --ssbs-bg: {{ section.settings.bg_color }};
+    --ssbs-text-dark: {{ section.settings.heading_color }};
+    --ssbs-text-body: {{ section.settings.body_color }};
+    --ssbs-accent: {{ section.settings.accent_color }};
+    --ssbs-decoration: {{ section.settings.decoration_color }};
+    --ssbs-border: {{ section.settings.border_color }};
+    --ssbs-card-light-bg: {{ section.settings.light_card_bg }};
+    --ssbs-card-dark-bg: {{ section.settings.dark_card_bg }};
+    --ssbs-card-dark-text: {{ section.settings.dark_card_text }};
+    --ssbs-icon-tint: {{ section.settings.icon_tint }};
+    background: var(--ssbs-bg);
+    padding: clamp(36px, 6vw, {{ section.settings.padding_top }}px) 0 clamp(36px, 6vw, {{ section.settings.padding_bottom }}px);
+    color: var(--ssbs-text-body);
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ssbs-{{ sid }} *,
+  .ssbs-{{ sid }} *::before,
+  .ssbs-{{ sid }} *::after { box-sizing: border-box; }
+
+  .ssbs-{{ sid }}__container {
+    max-width: {{ section.settings.max_width }}px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+  }
+
+  /* ── Header ──────────────────────────────────────── */
+  .ssbs-{{ sid }}__header {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    align-items: end;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--ssbs-border);
+    margin-bottom: 32px;
+    position: relative;
+  }
+
+  .ssbs-{{ sid }}__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ssbs-accent);
+    margin: 0 0 16px;
+    line-height: 1;
+  }
+
+  .ssbs-{{ sid }}__eyebrow::before {
+    content: '';
+    width: 26px;
+    height: 1.5px;
+    background: var(--ssbs-accent);
+    display: inline-block;
+  }
+
+  .ssbs-{{ sid }}__heading {
+    font-family: {{ section.settings.heading_font }};
+    font-size: clamp(28px, 5.5vw, {{ section.settings.heading_size }}px);
+    font-weight: 500;
+    color: var(--ssbs-text-dark);
+    margin: 0;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  .ssbs-{{ sid }}__heading em,
+  .ssbs-{{ sid }}__heading i {
+    font-style: italic;
+    color: var(--ssbs-accent);
+    font-weight: 400;
+  }
+
+  .ssbs-{{ sid }}__description {
+    font-size: clamp(13px, 1.6vw, 14px);
+    color: var(--ssbs-text-body);
+    line-height: 1.6;
+    margin: 0;
+    max-width: 360px;
+  }
+
+  /* Decorative letter mark */
+  .ssbs-{{ sid }}__decoration {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-55%);
+    font-family: {{ section.settings.heading_font }};
+    font-size: clamp(80px, 16vw, 220px);
+    font-style: italic;
+    color: var(--ssbs-decoration);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+  }
+
+  /* ── Cards grid ──────────────────────────────────── */
+  .ssbs-{{ sid }}__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Card ────────────────────────────────────────── */
+  .ssbs-{{ sid }}__card {
+    background: var(--ssbs-card-light-bg);
+    border-radius: {{ section.settings.card_radius }}px;
+    padding: 28px 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    border: 1px solid var(--ssbs-border);
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  @media (hover: hover) {
+    .ssbs-{{ sid }}__card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
+    }
+  }
+
+  .ssbs-{{ sid }}__card--highlighted {
+    background: var(--ssbs-card-dark-bg);
+    color: var(--ssbs-card-dark-text);
+    border-color: transparent;
+  }
+
+  .ssbs-{{ sid }}__card--highlighted .ssbs-{{ sid }}__card-heading,
+  .ssbs-{{ sid }}__card--highlighted .ssbs-{{ sid }}__card-heading em,
+  .ssbs-{{ sid }}__card--highlighted .ssbs-{{ sid }}__stat-value {
+    color: var(--ssbs-card-dark-text);
+  }
+
+  .ssbs-{{ sid }}__card--highlighted .ssbs-{{ sid }}__card-body,
+  .ssbs-{{ sid }}__card--highlighted .ssbs-{{ sid }}__stat-label {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .ssbs-{{ sid }}__card--highlighted .ssbs-{{ sid }}__icon-wrap {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--ssbs-card-dark-text);
+  }
+
+  .ssbs-{{ sid }}__card--highlighted .ssbs-{{ sid }}__card-eyebrow {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  /* Icon */
+  .ssbs-{{ sid }}__icon-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--ssbs-icon-tint);
+    color: var(--ssbs-accent);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    flex-shrink: 0;
+  }
+
+  .ssbs-{{ sid }}__icon-wrap svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    display: block;
+  }
+
+  .ssbs-{{ sid }}__icon-img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+  }
+
+  /* Eyebrow */
+  .ssbs-{{ sid }}__card-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ssbs-accent);
+    line-height: 1;
+  }
+
+  .ssbs-{{ sid }}__card-eyebrow::before {
+    content: '—';
+    font-weight: 400;
+  }
+
+  /* Heading */
+  .ssbs-{{ sid }}__card-heading {
+    font-family: {{ section.settings.heading_font }};
+    font-size: clamp(20px, 3vw, 26px);
+    font-weight: 500;
+    color: var(--ssbs-text-dark);
+    margin: 0;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+
+  .ssbs-{{ sid }}__card-heading em,
+  .ssbs-{{ sid }}__card-heading i {
+    font-style: italic;
+    color: var(--ssbs-accent);
+    font-weight: 400;
+  }
+
+  /* Body */
+  .ssbs-{{ sid }}__card-body {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--ssbs-text-body);
+    margin: 0;
+    flex-grow: 1;
+  }
+
+  .ssbs-{{ sid }}__card-body p { margin: 0 0 8px; }
+  .ssbs-{{ sid }}__card-body p:last-child { margin: 0; }
+  .ssbs-{{ sid }}__card-body strong { font-weight: 600; }
+  .ssbs-{{ sid }}__card-body a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+
+  /* Stats row */
+  .ssbs-{{ sid }}__stats {
+    display: flex;
+    align-items: baseline;
+    gap: 32px;
+    padding-top: 14px;
+    margin-top: 4px;
+  }
+
+  .ssbs-{{ sid }}__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .ssbs-{{ sid }}__stat-value {
+    font-family: {{ section.settings.heading_font }};
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 500;
+    color: var(--ssbs-text-dark);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .ssbs-{{ sid }}__stat-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ssbs-text-body);
+    line-height: 1;
+  }
+
+  /* CTA */
+  .ssbs-{{ sid }}__card-cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 0 2px;
+    margin-top: 14px;
+    border-top: 1px solid var(--ssbs-border);
+    text-decoration: none;
+    color: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    transition: gap 0.3s ease;
+  }
+
+  .ssbs-{{ sid }}__card--highlighted .ssbs-{{ sid }}__card-cta {
+    border-color: rgba(255, 255, 255, 0.18);
+  }
+
+  .ssbs-{{ sid }}__cta-arrow {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--ssbs-border);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+    color: var(--ssbs-text-dark);
+  }
+
+  .ssbs-{{ sid }}__cta-arrow svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .ssbs-{{ sid }}__card--highlighted .ssbs-{{ sid }}__cta-arrow {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: var(--ssbs-card-dark-text);
+  }
+
+  .ssbs-{{ sid }}__card-cta:hover .ssbs-{{ sid }}__cta-arrow {
+    background: var(--ssbs-text-dark);
+    color: var(--ssbs-card-light-bg);
+    border-color: var(--ssbs-text-dark);
+    transform: translateX(2px);
+  }
+
+  .ssbs-{{ sid }}__card--highlighted .ssbs-{{ sid }}__card-cta:hover .ssbs-{{ sid }}__cta-arrow {
+    background: var(--ssbs-card-dark-text);
+    color: var(--ssbs-card-dark-bg);
+    border-color: var(--ssbs-card-dark-text);
+  }
+
+  /* ── Tablet ──────────────────────────────────────── */
+  @media screen and (min-width: 700px) {
+    .ssbs-{{ sid }}__container { padding: 0 28px; }
+    .ssbs-{{ sid }}__header {
+      grid-template-columns: 1.6fr 1fr;
+      gap: 24px;
+      padding-bottom: 36px;
+      margin-bottom: 40px;
+    }
+    .ssbs-{{ sid }}__description {
+      max-width: none;
+      padding-left: 24px;
+    }
+    .ssbs-{{ sid }}__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+    .ssbs-{{ sid }}__card { padding: 30px 28px; }
+  }
+
+  /* ── Desktop ─────────────────────────────────────── */
+  @media screen and (min-width: 990px) {
+    .ssbs-{{ sid }}__container { padding: 0 36px; }
+    .ssbs-{{ sid }}__header {
+      grid-template-columns: 1.4fr 1fr;
+      gap: 40px;
+      padding-bottom: 44px;
+      margin-bottom: 44px;
+    }
+    .ssbs-{{ sid }}__description { padding-left: 0; }
+    .ssbs-{{ sid }}__grid {
+      grid-template-columns: 1.15fr 1fr 1fr;
+      gap: 20px;
+    }
+    .ssbs-{{ sid }}__card { padding: 36px 32px; gap: 16px; }
+    .ssbs-{{ sid }}__icon-wrap { width: 48px; height: 48px; }
+    .ssbs-{{ sid }}__icon-wrap svg { width: 22px; height: 22px; }
+  }
+
+  @media screen and (min-width: 1200px) {
+    .ssbs-{{ sid }}__card { padding: 40px 36px; }
+  }
+{% endstyle %}
+
+<div class="ssbs-{{ sid }}" {{ block.shopify_attributes }}>
+  <div class="ssbs-{{ sid }}__container">
+
+    {% if section.settings.decoration_letter != blank %}
+      <span class="ssbs-{{ sid }}__decoration" aria-hidden="true">{{ section.settings.decoration_letter }}</span>
+    {% endif %}
+
+    {% if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.description != blank %}
+      <div class="ssbs-{{ sid }}__header">
+        <div>
+          {% if section.settings.eyebrow != blank %}
+            <span class="ssbs-{{ sid }}__eyebrow">{{ section.settings.eyebrow }}</span>
+          {% endif %}
+          {% if section.settings.heading != blank %}
+            <h2 class="ssbs-{{ sid }}__heading">{{ section.settings.heading }}</h2>
+          {% endif %}
+        </div>
+        {% if section.settings.description != blank %}
+          <p class="ssbs-{{ sid }}__description">{{ section.settings.description }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% if section.blocks.size > 0 %}
+      <div class="ssbs-{{ sid }}__grid">
+        {% for block in section.blocks %}
+          {%- liquid
+            assign use_image = false
+            if block.settings.icon_image != blank
+              assign use_image = true
+            endif
+          -%}
+          <div class="ssbs-{{ sid }}__card ssbs-{{ sid }}__card--{{ block.settings.style }}" {{ block.shopify_attributes }}>
+
+            {% if use_image or block.settings.icon != 'none' %}
+              <span class="ssbs-{{ sid }}__icon-wrap" aria-hidden="true">
+                {% if use_image %}
+                  <img class="ssbs-{{ sid }}__icon-img" src="{{ block.settings.icon_image | image_url: width: 64 }}" alt="" loading="lazy" width="22" height="22">
+                {% else %}
+                  {%- case block.settings.icon -%}
+                    {%- when 'users' -%}
+                      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    {%- when 'silhouette' -%}
+                      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    {%- when 'chat' -%}
+                      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    {%- when 'mail' -%}
+                      <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
+                    {%- when 'phone' -%}
+                      <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    {%- when 'support' -%}
+                      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg>
+                    {%- when 'heart' -%}
+                      <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    {%- when 'sparkle' -%}
+                      <svg viewBox="0 0 24 24"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                    {%- when 'shield' -%}
+                      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                    {%- when 'leaf' -%}
+                      <svg viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                    {%- when 'gift' -%}
+                      <svg viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                    {%- when 'star' -%}
+                      <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    {%- when 'globe' -%}
+                      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    {%- when 'truck' -%}
+                      <svg viewBox="0 0 24 24"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+                    {%- when 'flower' -%}
+                      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2a4 4 0 0 1 0 8 4 4 0 0 1 0-8zM12 14a4 4 0 0 1 0 8 4 4 0 0 1 0-8zM2 12a4 4 0 0 1 8 0 4 4 0 0 1-8 0zM14 12a4 4 0 0 1 8 0 4 4 0 0 1-8 0z"/></svg>
+                    {%- when 'none' -%}
+                  {%- endcase -%}
+                {% endif %}
+              </span>
+            {% endif %}
+
+            {% if block.settings.eyebrow != blank %}
+              <span class="ssbs-{{ sid }}__card-eyebrow">{{ block.settings.eyebrow }}</span>
+            {% endif %}
+
+            {% if block.settings.heading != blank %}
+              <h3 class="ssbs-{{ sid }}__card-heading">{{ block.settings.heading }}</h3>
+            {% endif %}
+
+            {% if block.settings.body != blank %}
+              <div class="ssbs-{{ sid }}__card-body">{{ block.settings.body }}</div>
+            {% endif %}
+
+            {% if block.settings.show_stats %}
+              <div class="ssbs-{{ sid }}__stats">
+                {% if block.settings.stat_1_value != blank %}
+                  <div class="ssbs-{{ sid }}__stat">
+                    <span class="ssbs-{{ sid }}__stat-value">{{ block.settings.stat_1_value }}</span>
+                    <span class="ssbs-{{ sid }}__stat-label">{{ block.settings.stat_1_label }}</span>
+                  </div>
+                {% endif %}
+                {% if block.settings.stat_2_value != blank %}
+                  <div class="ssbs-{{ sid }}__stat">
+                    <span class="ssbs-{{ sid }}__stat-value">{{ block.settings.stat_2_value }}</span>
+                    <span class="ssbs-{{ sid }}__stat-label">{{ block.settings.stat_2_label }}</span>
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+
+            {% if block.settings.cta_label != blank %}
+              <a class="ssbs-{{ sid }}__card-cta" href="{{ block.settings.cta_link | default: '#' }}"{% if block.settings.cta_open_new_tab %} target="_blank" rel="noopener"{% endif %}>
+                <span>{{ block.settings.cta_label }}</span>
+                <span class="ssbs-{{ sid }}__cta-arrow" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </span>
+              </a>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="text-align:center;padding:32px 16px;color:var(--ssbs-text-body);font-size:14px;">
+        Add a Feature card block in the theme editor to populate this section.
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Brand story cards",
+  "tag": "section",
+  "class": "section-brand-story",
+  "disabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Behind the brand"
+    },
+    {
+      "type": "richtext",
+      "id": "heading",
+      "label": "Heading",
+      "info": "Wrap a word with <em>...</em> to italicize it in the accent color.",
+      "default": "<p>A little <em>love</em> in every set.</p>"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "From the women who make them to the hands they live on — SoulStruck is more than nails. It's a feeling."
+    },
+    {
+      "type": "text",
+      "id": "decoration_letter",
+      "label": "Decorative letter mark",
+      "info": "Single character / letter rendered as a large background flourish on the right.",
+      "default": "S"
+    },
+    {
+      "type": "select",
+      "id": "heading_font",
+      "label": "Heading font",
+      "options": [
+        { "value": "'Cormorant Garamond', 'Playfair Display', Georgia, serif", "label": "Cormorant / Playfair (serif)" },
+        { "value": "'Playfair Display', Georgia, serif",                       "label": "Playfair Display" },
+        { "value": "'EB Garamond', Georgia, serif",                            "label": "EB Garamond" },
+        { "value": "Georgia, 'Times New Roman', serif",                        "label": "Georgia (system serif)" },
+        { "value": "var(--font-heading--family, inherit)",                     "label": "Theme heading font" },
+        { "value": "inherit",                                                  "label": "Theme body font" }
+      ],
+      "default": "'Cormorant Garamond', 'Playfair Display', Georgia, serif"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size (desktop)",
+      "min": 28,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max content width",
+      "min": 800,
+      "max": 1600,
+      "step": 20,
+      "unit": "px",
+      "default": 1180
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card border radius",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section background",
+      "default": "#f2e4dd"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#1a1414"
+    },
+    {
+      "type": "color",
+      "id": "body_color",
+      "label": "Body text",
+      "default": "#5a4948"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent (eyebrow + italic)",
+      "default": "#a85b6c"
+    },
+    {
+      "type": "color",
+      "id": "decoration_color",
+      "label": "Decorative letter",
+      "default": "#e8c9c0"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border / divider",
+      "default": "#e6cfc6"
+    },
+    {
+      "type": "color",
+      "id": "light_card_bg",
+      "label": "Light card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "dark_card_bg",
+      "label": "Highlighted card background",
+      "default": "#6e323e"
+    },
+    {
+      "type": "color",
+      "id": "dark_card_text",
+      "label": "Highlighted card text",
+      "default": "#f5e8e3"
+    },
+    {
+      "type": "color",
+      "id": "icon_tint",
+      "label": "Light card icon background tint",
+      "default": "#f5e1da"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Feature card",
+      "settings": [
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Card style",
+          "options": [
+            { "value": "light",       "label": "Light (default)" },
+            { "value": "highlighted", "label": "Highlighted (dark)" }
+          ],
+          "default": "light"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "none",       "label": "— No icon —" },
+            { "value": "silhouette", "label": "Silhouette / Person" },
+            { "value": "users",      "label": "Users / Team" },
+            { "value": "chat",       "label": "Chat / Message" },
+            { "value": "mail",       "label": "Mail" },
+            { "value": "phone",      "label": "Phone" },
+            { "value": "support",    "label": "Support / WhatsApp" },
+            { "value": "heart",      "label": "Heart" },
+            { "value": "sparkle",    "label": "Sparkle" },
+            { "value": "shield",     "label": "Shield" },
+            { "value": "leaf",       "label": "Leaf" },
+            { "value": "gift",       "label": "Gift" },
+            { "value": "star",       "label": "Star" },
+            { "value": "globe",      "label": "Globe" },
+            { "value": "truck",      "label": "Truck" },
+            { "value": "flower",     "label": "Flower" }
+          ],
+          "default": "silhouette"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Custom icon image (overrides dropdown)"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow label",
+          "default": "Our team"
+        },
+        {
+          "type": "richtext",
+          "id": "heading",
+          "label": "Heading",
+          "info": "Wrap a word in <em>...</em> for italic accent color.",
+          "default": "<p>Heading goes here.</p>"
+        },
+        {
+          "type": "richtext",
+          "id": "body",
+          "label": "Body",
+          "default": "<p>Add a short, warm description here.</p>"
+        },
+        {
+          "type": "header",
+          "content": "Stats (optional)"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_stats",
+          "label": "Show stats row",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "stat_1_value",
+          "label": "Stat 1 value",
+          "default": "90%"
+        },
+        {
+          "type": "text",
+          "id": "stat_1_label",
+          "label": "Stat 1 label",
+          "default": "Women team"
+        },
+        {
+          "type": "text",
+          "id": "stat_2_value",
+          "label": "Stat 2 value",
+          "default": "100%"
+        },
+        {
+          "type": "text",
+          "id": "stat_2_label",
+          "label": "Stat 2 label",
+          "default": "Cruelty-free"
+        },
+        {
+          "type": "header",
+          "content": "Call to action (optional)"
+        },
+        {
+          "type": "text",
+          "id": "cta_label",
+          "label": "CTA label",
+          "info": "Leave blank to hide the CTA row."
+        },
+        {
+          "type": "url",
+          "id": "cta_link",
+          "label": "CTA link"
+        },
+        {
+          "type": "checkbox",
+          "id": "cta_open_new_tab",
+          "label": "Open in new tab",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Brand story cards",
+      "blocks": [
+        {
+          "type": "card",
+          "settings": {
+            "style": "highlighted",
+            "icon": "silhouette",
+            "eyebrow": "Our team",
+            "heading": "<p>Women-Led, <em>always</em>.</p>",
+            "body": "<p>Over 90% of our team is women — from creation to customer experience. Every set supports independence, creativity, and real empowerment.</p>",
+            "show_stats": true,
+            "stat_1_value": "90%",
+            "stat_1_label": "Women team",
+            "stat_2_value": "100%",
+            "stat_2_label": "Cruelty-free"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "style": "light",
+            "icon": "chat",
+            "eyebrow": "Support",
+            "heading": "<p>We're here to <em>listen</em>.</p>",
+            "body": "<p>Feedback, bulk orders, collaborations, or just a quick question — reach out anytime at <strong>support@soulstruck.com</strong></p>",
+            "cta_label": "Drop us a line",
+            "cta_link": "mailto:support@soulstruck.com"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "style": "light",
+            "icon": "phone",
+            "eyebrow": "Contact",
+            "heading": "<p>Order help <em>&amp;</em> styling.</p>",
+            "body": "<p>Need help with your order or styling advice? Call or WhatsApp us at <strong>+91 XXXXXXXXXX</strong> — we've got you covered.</p>",
+            "cta_label": "WhatsApp now",
+            "cta_link": "https://wa.me/"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
