@@ -8,6 +8,23 @@
 
 {%- liquid
   assign sid = section.id
+
+  case section.settings.heading_font
+    when 'cormorant'
+      assign heading_font_family = "'Cormorant Garamond', 'Playfair Display', Georgia, serif"
+    when 'playfair'
+      assign heading_font_family = "'Playfair Display', Georgia, serif"
+    when 'garamond'
+      assign heading_font_family = "'EB Garamond', Georgia, serif"
+    when 'georgia'
+      assign heading_font_family = "Georgia, 'Times New Roman', serif"
+    when 'theme-heading'
+      assign heading_font_family = 'var(--font-heading--family, inherit)'
+    when 'theme-body'
+      assign heading_font_family = 'inherit'
+    else
+      assign heading_font_family = "'Cormorant Garamond', 'Playfair Display', Georgia, serif"
+  endcase
 -%}
 
 {% style %}
@@ -75,7 +92,7 @@
   }
 
   .ssbs-{{ sid }}__heading {
-    font-family: {{ section.settings.heading_font }};
+    font-family: {{ heading_font_family }};
     font-size: clamp(28px, 5.5vw, {{ section.settings.heading_size }}px);
     font-weight: 500;
     color: var(--ssbs-text-dark);
@@ -105,7 +122,7 @@
     right: 12px;
     top: 50%;
     transform: translateY(-55%);
-    font-family: {{ section.settings.heading_font }};
+    font-family: {{ heading_font_family }};
     font-size: clamp(80px, 16vw, 220px);
     font-style: italic;
     color: var(--ssbs-decoration);
@@ -221,7 +238,7 @@
 
   /* Heading */
   .ssbs-{{ sid }}__card-heading {
-    font-family: {{ section.settings.heading_font }};
+    font-family: {{ heading_font_family }};
     font-size: clamp(20px, 3vw, 26px);
     font-weight: 500;
     color: var(--ssbs-text-dark);
@@ -267,7 +284,7 @@
   }
 
   .ssbs-{{ sid }}__stat-value {
-    font-family: {{ section.settings.heading_font }};
+    font-family: {{ heading_font_family }};
     font-size: clamp(28px, 4vw, 40px);
     font-weight: 500;
     color: var(--ssbs-text-dark);
@@ -557,14 +574,14 @@
       "id": "heading_font",
       "label": "Heading font",
       "options": [
-        { "value": "'Cormorant Garamond', 'Playfair Display', Georgia, serif", "label": "Cormorant / Playfair (serif)" },
-        { "value": "'Playfair Display', Georgia, serif",                       "label": "Playfair Display" },
-        { "value": "'EB Garamond', Georgia, serif",                            "label": "EB Garamond" },
-        { "value": "Georgia, 'Times New Roman', serif",                        "label": "Georgia (system serif)" },
-        { "value": "var(--font-heading--family, inherit)",                     "label": "Theme heading font" },
-        { "value": "inherit",                                                  "label": "Theme body font" }
+        { "value": "cormorant",     "label": "Cormorant / Playfair (serif)" },
+        { "value": "playfair",      "label": "Playfair Display" },
+        { "value": "garamond",      "label": "EB Garamond" },
+        { "value": "georgia",       "label": "Georgia (system serif)" },
+        { "value": "theme-heading", "label": "Theme heading font" },
+        { "value": "theme-body",    "label": "Theme body font" }
       ],
-      "default": "'Cormorant Garamond', 'Playfair Display', Georgia, serif"
+      "default": "cormorant"
     },
     {
       "type": "range",
