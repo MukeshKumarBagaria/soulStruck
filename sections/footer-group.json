@@ -98,139 +98,82 @@
         "icon_tint": "#f5e1da"
       }
     },
-    "footer": {
-      "type": "footer",
+    "soulstruck_footer_modern_YwP3NY": {
+      "type": "soulstruck-footer-modern",
       "blocks": {
-        "menu_UPKKDn": {
-          "type": "menu",
-          "name": "t:names.menu",
+        "links_i88wXM": {
+          "type": "links",
           "settings": {
-            "menu": "main-menu",
-            "heading": "Shop All",
-            "menu_spacing": 10,
-            "show_as_accordion": false,
-            "accordion_icon": "caret",
-            "accordion_dividers": false,
-            "inherit_color_scheme": true,
-            "color_scheme": "",
-            "heading_preset": "h4",
-            "link_preset": "paragraph",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
+            "heading": "Shop",
+            "menu": ""
+          }
         },
-        "menu_E8UVqH": {
-          "type": "menu",
-          "name": "t:names.menu",
+        "links_nLfK7B": {
+          "type": "links",
           "settings": {
-            "menu": "main-menu",
-            "heading": "Navigate",
-            "menu_spacing": 12,
-            "show_as_accordion": false,
-            "accordion_icon": "caret",
-            "accordion_dividers": false,
-            "inherit_color_scheme": true,
-            "color_scheme": "",
-            "heading_preset": "h4",
-            "link_preset": "paragraph",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
+            "heading": "Help",
+            "menu": ""
+          }
         },
-        "menu_mYqPnT": {
-          "type": "menu",
-          "name": "t:names.menu",
+        "contact_X49bGN": {
+          "type": "contact",
           "settings": {
-            "menu": "main-menu",
-            "heading": "Terms",
-            "menu_spacing": 12,
-            "show_as_accordion": false,
-            "accordion_icon": "caret",
-            "accordion_dividers": false,
-            "inherit_color_scheme": true,
-            "color_scheme": "",
-            "heading_preset": "h4",
-            "link_preset": "paragraph",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
+            "heading": "Get in touch",
+            "email": "support@soulstruck.com",
+            "phone": "+91 8591365198",
+            "address": "<p>Mumbai, India</p>"
+          }
         }
       },
       "block_order": [
-        "menu_UPKKDn",
-        "menu_E8UVqH",
-        "menu_mYqPnT"
+        "links_i88wXM",
+        "links_nLfK7B",
+        "contact_X49bGN"
       ],
-      "name": "t:names.footer",
+      "name": "Modern footer",
       "settings": {
-        "section_width": "page-width",
-        "gap": 20,
-        "color_scheme": "scheme-1",
-        "padding-block-start": 36,
-        "padding-block-end": 36
-      }
-    },
-    "1777713559aac55706": {
-      "type": "_blocks",
-      "blocks": {
-        "ai_gen_block_810ba20_G43XUx": {
-          "type": "ai_gen_block_810ba20",
-          "settings": {
-            "copyright_text": "© 2026 soulstruck. All rights reserved.",
-            "text_alignment": "center",
-            "padding_vertical": 16,
-            "font_size": 12,
-            "background_color": "#ffffff",
-            "text_color": "#000000",
-            "link_color": "#000000"
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "ai_gen_block_810ba20_G43XUx"
-      ],
-      "settings": {
-        "content_direction": "column",
-        "vertical_on_mobile": true,
-        "horizontal_alignment": "flex-start",
-        "vertical_alignment": "center",
-        "align_baseline": false,
-        "horizontal_alignment_flex_direction_column": "center",
-        "vertical_alignment_flex_direction_column": "center",
-        "gap": 12,
-        "section_width": "page-width",
-        "section_height": "",
-        "section_height_custom": 50,
-        "color_scheme": "scheme-1",
-        "background_media": "none",
-        "video_position": "cover",
-        "background_image_position": "cover",
-        "border": "none",
-        "border_width": 1,
-        "border_opacity": 100,
-        "border_radius": 0,
-        "toggle_overlay": false,
-        "overlay_color": "#00000026",
-        "overlay_style": "solid",
-        "gradient_direction": "to top",
-        "padding-block-start": 0,
-        "padding-block-end": 0
+        "show_top": true,
+        "top_eyebrow": "Stay in touch",
+        "top_statement": "Press-on perfection, delivered to your door.",
+        "show_newsletter": true,
+        "newsletter_label": "Get 10% off your first order — plus weekly drops & restock alerts.",
+        "newsletter_placeholder": "Enter your email",
+        "newsletter_button_label": "Subscribe",
+        "newsletter_success": "Thanks for subscribing!",
+        "logo_max_width": 160,
+        "logo_text": "SoulStruck",
+        "logo_font_family": "inherit",
+        "tagline": "Premium press-on nails for every mood. India's favorite — designed to last, easy to wear, and ready in minutes.",
+        "columns_count": 3,
+        "show_socials": true,
+        "social_instagram": "",
+        "social_facebook": "",
+        "social_tiktok": "",
+        "social_youtube": "",
+        "social_x": "",
+        "social_pinterest": "",
+        "social_whatsapp": "",
+        "copyright_suffix": "All rights reserved.",
+        "legal_menu": "",
+        "show_payments": true,
+        "bg_color": "#faf3ee",
+        "heading_color": "#2a1f1d",
+        "text_color": "#6b5d5b",
+        "muted_color": "#9d8d8a",
+        "accent_color": "#a85b6c",
+        "border_color": "#e6cfc6",
+        "input_bg": "#ffffff",
+        "input_text": "#2a1f1d",
+        "button_bg": "#2a1f1d",
+        "button_text": "#faf3ee",
+        "padding_top": 64,
+        "padding_bottom": 26,
+        "input_radius": 60
       }
     }
   },
   "order": [
     "soulstruck_brand_story_DnndpK",
-    "footer",
-    "1777713559aac55706"
+    "soulstruck_footer_modern_YwP3NY"
   ]
 }
