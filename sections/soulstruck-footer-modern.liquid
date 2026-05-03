@@ -1,0 +1,936 @@
+{% comment %}
+  SoulStruck Modern Footer
+  - Top: brand statement + newsletter signup
+  - Middle: brand identity (logo, tagline, socials) + configurable link columns (blocks)
+  - Bottom: copyright + legal links + payment badges
+  - Fully customizable, fully responsive
+{% endcomment %}
+
+{%- liquid
+  assign sid = section.id
+-%}
+
+{% style %}
+  .ssfm-{{ sid }} {
+    --ssfm-bg: {{ section.settings.bg_color }};
+    --ssfm-text: {{ section.settings.text_color }};
+    --ssfm-heading: {{ section.settings.heading_color }};
+    --ssfm-muted: {{ section.settings.muted_color }};
+    --ssfm-accent: {{ section.settings.accent_color }};
+    --ssfm-border: {{ section.settings.border_color }};
+    --ssfm-input-bg: {{ section.settings.input_bg }};
+    --ssfm-input-text: {{ section.settings.input_text }};
+    --ssfm-button-bg: {{ section.settings.button_bg }};
+    --ssfm-button-text: {{ section.settings.button_text }};
+    background: var(--ssfm-bg);
+    color: var(--ssfm-text);
+    padding: clamp(40px, 6vw, 72px) 0 0;
+    box-sizing: border-box;
+    font-family: inherit;
+  }
+
+  .ssfm-{{ sid }} *,
+  .ssfm-{{ sid }} *::before,
+  .ssfm-{{ sid }} *::after { box-sizing: border-box; }
+
+  .ssfm-{{ sid }}__container {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* ─── Top: brand statement + newsletter ─────────────────────────── */
+  .ssfm-{{ sid }}__top {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 28px;
+    align-items: end;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--ssfm-border);
+  }
+
+  .ssfm-{{ sid }}__top-left .ssfm-{{ sid }}__eyebrow {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ssfm-accent);
+    margin: 0 0 14px;
+    line-height: 1;
+  }
+
+  .ssfm-{{ sid }}__statement {
+    font-size: clamp(22px, 4vw, 36px);
+    font-weight: 600;
+    color: var(--ssfm-heading);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin: 0;
+    max-width: 560px;
+  }
+
+  .ssfm-{{ sid }}__statement em,
+  .ssfm-{{ sid }}__statement i {
+    font-style: italic;
+    color: var(--ssfm-accent);
+    font-weight: 400;
+  }
+
+  /* Newsletter */
+  .ssfm-{{ sid }}__newsletter-label {
+    font-size: 13px;
+    color: var(--ssfm-muted);
+    margin: 0 0 10px;
+    line-height: 1.5;
+  }
+
+  .ssfm-{{ sid }}__newsletter-form {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    background: var(--ssfm-input-bg);
+    border: 1px solid var(--ssfm-border);
+    border-radius: 999px;
+    overflow: hidden;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    max-width: 460px;
+  }
+
+  .ssfm-{{ sid }}__newsletter-form:focus-within {
+    border-color: var(--ssfm-accent);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.04);
+  }
+
+  .ssfm-{{ sid }}__newsletter-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 14px 18px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--ssfm-input-text);
+    min-width: 0;
+  }
+
+  .ssfm-{{ sid }}__newsletter-input::placeholder { color: var(--ssfm-muted); opacity: 0.8; }
+
+  .ssfm-{{ sid }}__newsletter-button {
+    flex-shrink: 0;
+    padding: 12px 22px;
+    margin: 4px;
+    background: var(--ssfm-button-bg);
+    color: var(--ssfm-button-text);
+    border: none;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ssfm-{{ sid }}__newsletter-button svg {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.25s ease;
+  }
+
+  .ssfm-{{ sid }}__newsletter-button:hover {
+    opacity: 0.92;
+  }
+
+  .ssfm-{{ sid }}__newsletter-button:hover svg {
+    transform: translateX(3px);
+  }
+
+  .ssfm-{{ sid }}__newsletter-success,
+  .ssfm-{{ sid }}__newsletter-error {
+    margin: 8px 0 0;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .ssfm-{{ sid }}__newsletter-success { color: var(--ssfm-accent); }
+  .ssfm-{{ sid }}__newsletter-error { color: #c0392b; }
+
+  /* ─── Main: brand + link columns ────────────────────────────────── */
+  .ssfm-{{ sid }}__main {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 36px;
+    padding: 44px 0;
+  }
+
+  .ssfm-{{ sid }}__brand {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    max-width: 360px;
+  }
+
+  .ssfm-{{ sid }}__logo {
+    display: inline-block;
+    line-height: 0;
+  }
+
+  .ssfm-{{ sid }}__logo img {
+    max-width: {{ section.settings.logo_max_width }}px;
+    height: auto;
+    width: 100%;
+    object-fit: contain;
+  }
+
+  .ssfm-{{ sid }}__logo-text {
+    font-family: {{ section.settings.logo_font_family }};
+    font-size: clamp(28px, 4vw, 38px);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--ssfm-heading);
+    text-decoration: none;
+    line-height: 1;
+  }
+
+  .ssfm-{{ sid }}__tagline {
+    font-size: 14px;
+    color: var(--ssfm-text);
+    line-height: 1.6;
+    margin: 0;
+    max-width: 320px;
+  }
+
+  /* Socials */
+  .ssfm-{{ sid }}__socials {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .ssfm-{{ sid }}__social {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--ssfm-border);
+    color: var(--ssfm-heading);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+  }
+
+  .ssfm-{{ sid }}__social svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .ssfm-{{ sid }}__social:hover {
+    background: var(--ssfm-heading);
+    color: var(--ssfm-bg);
+    border-color: var(--ssfm-heading);
+    transform: translateY(-2px);
+  }
+
+  /* Link columns */
+  .ssfm-{{ sid }}__columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px 24px;
+  }
+
+  .ssfm-{{ sid }}__col-heading {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ssfm-heading);
+    margin: 0 0 16px;
+    line-height: 1;
+  }
+
+  .ssfm-{{ sid }}__col-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .ssfm-{{ sid }}__col-link {
+    color: var(--ssfm-text);
+    text-decoration: none;
+    font-size: 14px;
+    line-height: 1.5;
+    transition: color 0.2s ease;
+  }
+
+  .ssfm-{{ sid }}__col-link:hover { color: var(--ssfm-heading); }
+
+  .ssfm-{{ sid }}__contact-line {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ssfm-text);
+    margin: 0 0 6px;
+  }
+
+  .ssfm-{{ sid }}__contact-line a {
+    color: var(--ssfm-text);
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+  }
+
+  .ssfm-{{ sid }}__contact-line a:hover { color: var(--ssfm-heading); }
+
+  .ssfm-{{ sid }}__contact-line strong {
+    color: var(--ssfm-heading);
+    font-weight: 600;
+  }
+
+  /* ─── Bottom bar ────────────────────────────────────────────────── */
+  .ssfm-{{ sid }}__bottom {
+    border-top: 1px solid var(--ssfm-border);
+    padding: 22px 0 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+    text-align: center;
+  }
+
+  .ssfm-{{ sid }}__copyright {
+    font-size: 12px;
+    color: var(--ssfm-muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .ssfm-{{ sid }}__legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+    justify-content: center;
+  }
+
+  .ssfm-{{ sid }}__legal a {
+    font-size: 12px;
+    color: var(--ssfm-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .ssfm-{{ sid }}__legal a:hover { color: var(--ssfm-heading); }
+
+  .ssfm-{{ sid }}__payments {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .ssfm-{{ sid }}__payment {
+    height: 22px;
+    width: 36px;
+    border: 1px solid var(--ssfm-border);
+    border-radius: 4px;
+    background: #fff;
+    color: #1a1a1a;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 4px;
+  }
+
+  .ssfm-{{ sid }}__payment svg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* ─── Tablet ────────────────────────────────────────────────────── */
+  @media screen and (min-width: 700px) {
+    .ssfm-{{ sid }}__container { padding: 0 28px; }
+    .ssfm-{{ sid }}__top {
+      grid-template-columns: 1.4fr 1fr;
+      gap: 40px;
+      padding-bottom: 48px;
+    }
+    .ssfm-{{ sid }}__main {
+      grid-template-columns: 1fr 1.6fr;
+      gap: 48px;
+      padding: 56px 0;
+    }
+    .ssfm-{{ sid }}__columns {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .ssfm-{{ sid }}__bottom {
+      flex-direction: row;
+      justify-content: space-between;
+      text-align: left;
+    }
+    .ssfm-{{ sid }}__legal { justify-content: flex-start; }
+    .ssfm-{{ sid }}__payments { justify-content: flex-end; }
+  }
+
+  /* ─── Desktop ───────────────────────────────────────────────────── */
+  @media screen and (min-width: 990px) {
+    .ssfm-{{ sid }}__container { padding: 0 36px; }
+    .ssfm-{{ sid }}__main {
+      grid-template-columns: 1.1fr 2fr;
+      gap: 64px;
+      padding: 64px 0;
+    }
+    .ssfm-{{ sid }}__columns {
+      grid-template-columns: repeat({{ section.settings.columns_count }}, minmax(0, 1fr));
+      gap: 32px;
+    }
+  }
+{% endstyle %}
+
+<footer class="ssfm-{{ sid }} soulstruck-footer-modern" {{ block.shopify_attributes }}>
+  <div class="ssfm-{{ sid }}__container">
+
+    {%- comment -%} ─── TOP: statement + newsletter ─── {%- endcomment -%}
+    {% if section.settings.show_top %}
+      <div class="ssfm-{{ sid }}__top">
+        <div class="ssfm-{{ sid }}__top-left">
+          {% if section.settings.top_eyebrow != blank %}
+            <span class="ssfm-{{ sid }}__eyebrow">{{ section.settings.top_eyebrow }}</span>
+          {% endif %}
+          {% if section.settings.top_statement != blank %}
+            <h2 class="ssfm-{{ sid }}__statement">{{ section.settings.top_statement }}</h2>
+          {% endif %}
+        </div>
+
+        {% if section.settings.show_newsletter %}
+          <div class="ssfm-{{ sid }}__top-right">
+            {% if section.settings.newsletter_label != blank %}
+              <p class="ssfm-{{ sid }}__newsletter-label">{{ section.settings.newsletter_label }}</p>
+            {% endif %}
+            {% form 'customer', class: 'ssfm-' | append: sid | append: '__newsletter-wrap' %}
+              <input type="hidden" name="contact[tags]" value="newsletter">
+              {% if form.posted_successfully? %}
+                <p class="ssfm-{{ sid }}__newsletter-success">{{ section.settings.newsletter_success | default: "Thanks for subscribing!" }}</p>
+              {% else %}
+                <div class="ssfm-{{ sid }}__newsletter-form">
+                  <input
+                    type="email"
+                    name="contact[email]"
+                    class="ssfm-{{ sid }}__newsletter-input"
+                    placeholder="{{ section.settings.newsletter_placeholder | default: 'Enter your email' }}"
+                    aria-label="Email address"
+                    required
+                  >
+                  <button type="submit" class="ssfm-{{ sid }}__newsletter-button">
+                    {{ section.settings.newsletter_button_label | default: 'Subscribe' }}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                  </button>
+                </div>
+                {% if form.errors %}
+                  <p class="ssfm-{{ sid }}__newsletter-error">{{ form.errors.translated_messages.email | default: "Please enter a valid email." }}</p>
+                {% endif %}
+              {% endif %}
+            {% endform %}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {%- comment -%} ─── MAIN: brand + columns ─── {%- endcomment -%}
+    <div class="ssfm-{{ sid }}__main">
+
+      <div class="ssfm-{{ sid }}__brand">
+        {% if section.settings.logo_image != blank %}
+          <a href="{{ routes.root_url }}" class="ssfm-{{ sid }}__logo" aria-label="{{ shop.name | escape }}">
+            <img src="{{ section.settings.logo_image | image_url: width: 400 }}"
+                 alt="{{ shop.name | escape }}"
+                 width="{{ section.settings.logo_max_width }}"
+                 height="auto"
+                 loading="lazy">
+          </a>
+        {% elsif section.settings.logo_text != blank %}
+          <a href="{{ routes.root_url }}" class="ssfm-{{ sid }}__logo-text">{{ section.settings.logo_text }}</a>
+        {% endif %}
+
+        {% if section.settings.tagline != blank %}
+          <p class="ssfm-{{ sid }}__tagline">{{ section.settings.tagline }}</p>
+        {% endif %}
+
+        {% if section.settings.show_socials %}
+          {%- liquid
+            assign socials = ''
+            if section.settings.social_instagram != blank
+              assign socials = socials | append: 'instagram,'
+            endif
+            if section.settings.social_facebook != blank
+              assign socials = socials | append: 'facebook,'
+            endif
+            if section.settings.social_tiktok != blank
+              assign socials = socials | append: 'tiktok,'
+            endif
+            if section.settings.social_youtube != blank
+              assign socials = socials | append: 'youtube,'
+            endif
+            if section.settings.social_x != blank
+              assign socials = socials | append: 'x,'
+            endif
+            if section.settings.social_pinterest != blank
+              assign socials = socials | append: 'pinterest,'
+            endif
+            if section.settings.social_whatsapp != blank
+              assign socials = socials | append: 'whatsapp,'
+            endif
+          -%}
+          {% if socials != blank %}
+            <div class="ssfm-{{ sid }}__socials">
+              {% if section.settings.social_instagram != blank %}
+                <a href="{{ section.settings.social_instagram }}" class="ssfm-{{ sid }}__social" target="_blank" rel="noopener" aria-label="Instagram">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                </a>
+              {% endif %}
+              {% if section.settings.social_facebook != blank %}
+                <a href="{{ section.settings.social_facebook }}" class="ssfm-{{ sid }}__social" target="_blank" rel="noopener" aria-label="Facebook">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                </a>
+              {% endif %}
+              {% if section.settings.social_tiktok != blank %}
+                <a href="{{ section.settings.social_tiktok }}" class="ssfm-{{ sid }}__social" target="_blank" rel="noopener" aria-label="TikTok">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
+                </a>
+              {% endif %}
+              {% if section.settings.social_youtube != blank %}
+                <a href="{{ section.settings.social_youtube }}" class="ssfm-{{ sid }}__social" target="_blank" rel="noopener" aria-label="YouTube">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>
+                </a>
+              {% endif %}
+              {% if section.settings.social_x != blank %}
+                <a href="{{ section.settings.social_x }}" class="ssfm-{{ sid }}__social" target="_blank" rel="noopener" aria-label="X (Twitter)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+                </a>
+              {% endif %}
+              {% if section.settings.social_pinterest != blank %}
+                <a href="{{ section.settings.social_pinterest }}" class="ssfm-{{ sid }}__social" target="_blank" rel="noopener" aria-label="Pinterest">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="22"/><path d="M9 14c0 2 1 4 3 4s4-3 4-7-3-5-5-5-4 2-4 4"/></svg>
+                </a>
+              {% endif %}
+              {% if section.settings.social_whatsapp != blank %}
+                <a href="{{ section.settings.social_whatsapp }}" class="ssfm-{{ sid }}__social" target="_blank" rel="noopener" aria-label="WhatsApp">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg>
+                </a>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endif %}
+      </div>
+
+      <div class="ssfm-{{ sid }}__columns">
+        {% for block in section.blocks %}
+          {%- liquid
+            case block.type
+              when 'links'
+                # rendered below
+              when 'contact'
+                # rendered below
+            endcase
+          -%}
+
+          {% if block.type == 'links' %}
+            <div class="ssfm-{{ sid }}__col" {{ block.shopify_attributes }}>
+              {% if block.settings.heading != blank %}
+                <h3 class="ssfm-{{ sid }}__col-heading">{{ block.settings.heading }}</h3>
+              {% endif %}
+              {% if block.settings.menu != blank and block.settings.menu.links.size > 0 %}
+                <ul class="ssfm-{{ sid }}__col-list" role="list">
+                  {% for link in block.settings.menu.links %}
+                    <li><a class="ssfm-{{ sid }}__col-link" href="{{ link.url }}">{{ link.title }}</a></li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          {% if block.type == 'contact' %}
+            <div class="ssfm-{{ sid }}__col" {{ block.shopify_attributes }}>
+              {% if block.settings.heading != blank %}
+                <h3 class="ssfm-{{ sid }}__col-heading">{{ block.settings.heading }}</h3>
+              {% endif %}
+              {% if block.settings.email != blank %}
+                <p class="ssfm-{{ sid }}__contact-line">
+                  <a href="mailto:{{ block.settings.email }}">{{ block.settings.email }}</a>
+                </p>
+              {% endif %}
+              {% if block.settings.phone != blank %}
+                <p class="ssfm-{{ sid }}__contact-line">
+                  <a href="tel:{{ block.settings.phone | replace: ' ', '' }}">{{ block.settings.phone }}</a>
+                </p>
+              {% endif %}
+              {% if block.settings.address != blank %}
+                <div class="ssfm-{{ sid }}__contact-line">{{ block.settings.address }}</div>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+    </div>
+
+    {%- comment -%} ─── BOTTOM bar ─── {%- endcomment -%}
+    <div class="ssfm-{{ sid }}__bottom">
+      <p class="ssfm-{{ sid }}__copyright">
+        © {{ 'now' | date: '%Y' }} {{ shop.name }}. {{ section.settings.copyright_suffix | default: 'All rights reserved.' }}
+      </p>
+
+      {% if section.settings.legal_menu != blank and section.settings.legal_menu.links.size > 0 %}
+        <nav class="ssfm-{{ sid }}__legal" aria-label="Legal">
+          {% for link in section.settings.legal_menu.links %}
+            <a href="{{ link.url }}">{{ link.title }}</a>
+          {% endfor %}
+        </nav>
+      {% endif %}
+
+      {% if section.settings.show_payments %}
+        <div class="ssfm-{{ sid }}__payments" aria-label="Accepted payment methods">
+          {% for type in shop.enabled_payment_types %}
+            <span class="ssfm-{{ sid }}__payment">{{ type | payment_type_svg_tag: class: 'ssfm-payment-svg' }}</span>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Modern footer",
+  "tag": "section",
+  "class": "section-footer-modern",
+  "enabled_on": {
+    "groups": ["footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Top — brand statement & newsletter"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_top",
+      "label": "Show top section",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "top_eyebrow",
+      "label": "Eyebrow",
+      "default": "Stay in touch"
+    },
+    {
+      "type": "text",
+      "id": "top_statement",
+      "label": "Statement",
+      "info": "Wrap a word in <em>...</em> for italic accent.",
+      "default": "Press-on perfection, delivered to your door."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_newsletter",
+      "label": "Show newsletter signup",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "newsletter_label",
+      "label": "Newsletter label",
+      "default": "Get 10% off your first order — plus weekly drops & restock alerts."
+    },
+    {
+      "type": "text",
+      "id": "newsletter_placeholder",
+      "label": "Email placeholder",
+      "default": "Enter your email"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_button_label",
+      "label": "Subscribe button label",
+      "default": "Subscribe"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_success",
+      "label": "Success message",
+      "default": "Thanks for subscribing!"
+    },
+    {
+      "type": "header",
+      "content": "Brand"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_image",
+      "label": "Logo image"
+    },
+    {
+      "type": "range",
+      "id": "logo_max_width",
+      "label": "Logo max width",
+      "min": 80,
+      "max": 320,
+      "step": 10,
+      "unit": "px",
+      "default": 160
+    },
+    {
+      "type": "text",
+      "id": "logo_text",
+      "label": "Logo text (used if no image)",
+      "default": "SoulStruck"
+    },
+    {
+      "type": "select",
+      "id": "logo_font_family",
+      "label": "Logo text font",
+      "options": [
+        { "value": "inherit",       "label": "Theme body font" },
+        { "value": "theme-heading", "label": "Theme heading font" },
+        { "value": "playfair",      "label": "Playfair (serif)" },
+        { "value": "cormorant",     "label": "Cormorant (serif)" }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "textarea",
+      "id": "tagline",
+      "label": "Brand tagline",
+      "default": "Premium press-on nails for every mood. India's favorite — designed to last, easy to wear, and ready in minutes."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "columns_count",
+      "label": "Link columns (desktop)",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "header",
+      "content": "Social media"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_socials",
+      "label": "Show social icons",
+      "default": true
+    },
+    {
+      "type": "url",
+      "id": "social_instagram",
+      "label": "Instagram URL"
+    },
+    {
+      "type": "url",
+      "id": "social_facebook",
+      "label": "Facebook URL"
+    },
+    {
+      "type": "url",
+      "id": "social_tiktok",
+      "label": "TikTok URL"
+    },
+    {
+      "type": "url",
+      "id": "social_youtube",
+      "label": "YouTube URL"
+    },
+    {
+      "type": "url",
+      "id": "social_x",
+      "label": "X (Twitter) URL"
+    },
+    {
+      "type": "url",
+      "id": "social_pinterest",
+      "label": "Pinterest URL"
+    },
+    {
+      "type": "url",
+      "id": "social_whatsapp",
+      "label": "WhatsApp URL"
+    },
+    {
+      "type": "header",
+      "content": "Bottom bar"
+    },
+    {
+      "type": "text",
+      "id": "copyright_suffix",
+      "label": "Copyright suffix",
+      "default": "All rights reserved."
+    },
+    {
+      "type": "link_list",
+      "id": "legal_menu",
+      "label": "Legal menu",
+      "info": "Privacy, Terms, Refund policy, etc."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payments",
+      "label": "Show payment badges",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#0f0f0f"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading / strong text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Body text",
+      "default": "#bdbdbd"
+    },
+    {
+      "type": "color",
+      "id": "muted_color",
+      "label": "Muted text (legal, copyright)",
+      "default": "#888888"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent (eyebrow, italic)",
+      "default": "#ff7aa3"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border / divider",
+      "default": "#272727"
+    },
+    {
+      "type": "color",
+      "id": "input_bg",
+      "label": "Newsletter input background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "input_text",
+      "label": "Newsletter input text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_bg",
+      "label": "Newsletter button background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_text",
+      "label": "Newsletter button text",
+      "default": "#0f0f0f"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "links",
+      "name": "Link column",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Column heading",
+          "default": "Shop"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu",
+          "info": "Pick a menu created in Online Store → Navigation."
+        }
+      ]
+    },
+    {
+      "type": "contact",
+      "name": "Contact column",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Column heading",
+          "default": "Get in touch"
+        },
+        {
+          "type": "text",
+          "id": "email",
+          "label": "Email"
+        },
+        {
+          "type": "text",
+          "id": "phone",
+          "label": "Phone"
+        },
+        {
+          "type": "richtext",
+          "id": "address",
+          "label": "Address"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 5,
+  "presets": [
+    {
+      "name": "Modern footer",
+      "category": "Footer",
+      "blocks": [
+        {
+          "type": "links",
+          "settings": { "heading": "Shop" }
+        },
+        {
+          "type": "links",
+          "settings": { "heading": "Help" }
+        },
+        {
+          "type": "contact",
+          "settings": {
+            "heading": "Get in touch",
+            "email": "support@soulstruck.com",
+            "phone": "+91 8591365198",
+            "address": "<p>Mumbai, India</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
