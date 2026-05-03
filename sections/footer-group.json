@@ -120,8 +120,8 @@
           "settings": {
             "heading": "Get in touch",
             "email": "support@soulstruck.com",
-            "phone": "+91 8591365198",
-            "address": "<p>Mumbai, India</p>"
+            "phone": "+91 9997174366",
+            "address": "<p>Agra, India</p>"
           }
         }
       },
@@ -140,10 +140,11 @@
         "newsletter_placeholder": "Enter your email",
         "newsletter_button_label": "Subscribe",
         "newsletter_success": "Thanks for subscribing!",
-        "logo_max_width": 160,
+        "logo_image": "shopify://shop_images/logo.png",
+        "logo_max_width": 200,
         "logo_text": "SoulStruck",
         "logo_font_family": "inherit",
-        "tagline": "Premium press-on nails for every mood. India's favorite — designed to last, easy to wear, and ready in minutes.",
+        "tagline": "At Soul Struck™, we believe beauty should be effortless, expressive, and part of your everyday story. Our press-on nails are designed to give you that flawless, salon-like finish — anytime, anywhere — without the time or commitment.\n\nSoul Struck combines passion, purpose, and practicality to create nails that are bold, modern, and made for real life. We exist to inspire confidence and celebrate individuality — with beauty that sticks with you.",
         "columns_count": 3,
         "show_socials": true,
         "social_instagram": "",
