@@ -22,9 +22,10 @@
     --ssfm-input-text: {{ section.settings.input_text }};
     --ssfm-button-bg: {{ section.settings.button_bg }};
     --ssfm-button-text: {{ section.settings.button_text }};
+    --ssfm-input-radius: {{ section.settings.input_radius }}px;
     background: var(--ssfm-bg);
     color: var(--ssfm-text);
-    padding: clamp(40px, 6vw, 72px) 0 0;
+    padding: clamp(32px, 6vw, {{ section.settings.padding_top }}px) 0 {{ section.settings.padding_bottom }}px;
     box-sizing: border-box;
     font-family: inherit;
   }
@@ -91,7 +92,7 @@
     gap: 0;
     background: var(--ssfm-input-bg);
     border: 1px solid var(--ssfm-border);
-    border-radius: 999px;
+    border-radius: var(--ssfm-input-radius, 999px);
     overflow: hidden;
     transition: border-color 0.25s ease, box-shadow 0.25s ease;
     max-width: 460px;
@@ -123,7 +124,7 @@
     background: var(--ssfm-button-bg);
     color: var(--ssfm-button-text);
     border: none;
-    border-radius: 999px;
+    border-radius: var(--ssfm-input-radius, 999px);
     font-size: 13px;
     font-weight: 700;
     letter-spacing: 0.02em;
@@ -416,17 +417,17 @@
             {% if section.settings.newsletter_label != blank %}
               <p class="ssfm-{{ sid }}__newsletter-label">{{ section.settings.newsletter_label }}</p>
             {% endif %}
-            {% form 'customer', class: 'ssfm-' | append: sid | append: '__newsletter-wrap' %}
+            {% form 'customer' %}
               <input type="hidden" name="contact[tags]" value="newsletter">
               {% if form.posted_successfully? %}
-                <p class="ssfm-{{ sid }}__newsletter-success">{{ section.settings.newsletter_success | default: "Thanks for subscribing!" }}</p>
+                <p class="ssfm-{{ sid }}__newsletter-success">{{ section.settings.newsletter_success | default: 'Thanks for subscribing!' }}</p>
               {% else %}
                 <div class="ssfm-{{ sid }}__newsletter-form">
                   <input
                     type="email"
                     name="contact[email]"
                     class="ssfm-{{ sid }}__newsletter-input"
-                    placeholder="{{ section.settings.newsletter_placeholder | default: 'Enter your email' }}"
+                    placeholder="{{ section.settings.newsletter_placeholder | default: 'Enter your email' | escape }}"
                     aria-label="Email address"
                     required
                   >
@@ -436,7 +437,7 @@
                   </button>
                 </div>
                 {% if form.errors %}
-                  <p class="ssfm-{{ sid }}__newsletter-error">{{ form.errors.translated_messages.email | default: "Please enter a valid email." }}</p>
+                  <p class="ssfm-{{ sid }}__newsletter-error">{{ form.errors.translated_messages.email | default: 'Please enter a valid email.' }}</p>
                 {% endif %}
               {% endif %}
             {% endform %}
@@ -802,61 +803,95 @@
       "type": "color",
       "id": "bg_color",
       "label": "Background",
-      "default": "#0f0f0f"
+      "default": "#faf3ee"
     },
     {
       "type": "color",
       "id": "heading_color",
       "label": "Heading / strong text",
-      "default": "#ffffff"
+      "default": "#2a1f1d"
     },
     {
       "type": "color",
       "id": "text_color",
       "label": "Body text",
-      "default": "#bdbdbd"
+      "default": "#6b5d5b"
     },
     {
       "type": "color",
       "id": "muted_color",
       "label": "Muted text (legal, copyright)",
-      "default": "#888888"
+      "default": "#9d8d8a"
     },
     {
       "type": "color",
       "id": "accent_color",
       "label": "Accent (eyebrow, italic)",
-      "default": "#ff7aa3"
+      "default": "#a85b6c"
     },
     {
       "type": "color",
       "id": "border_color",
       "label": "Border / divider",
-      "default": "#272727"
+      "default": "#e6cfc6"
     },
     {
       "type": "color",
       "id": "input_bg",
       "label": "Newsletter input background",
-      "default": "#1a1a1a"
+      "default": "#ffffff"
     },
     {
       "type": "color",
       "id": "input_text",
       "label": "Newsletter input text",
-      "default": "#ffffff"
+      "default": "#2a1f1d"
     },
     {
       "type": "color",
       "id": "button_bg",
       "label": "Newsletter button background",
-      "default": "#ffffff"
+      "default": "#2a1f1d"
     },
     {
       "type": "color",
       "id": "button_text",
       "label": "Newsletter button text",
-      "default": "#0f0f0f"
+      "default": "#faf3ee"
+    },
+    {
+      "type": "header",
+      "content": "Spacing & shape"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 24,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 26
+    },
+    {
+      "type": "range",
+      "id": "input_radius",
+      "label": "Input / button radius",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 999
     }
   ],
   "blocks": [
