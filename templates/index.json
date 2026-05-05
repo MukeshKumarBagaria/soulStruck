@@ -542,7 +542,7 @@
         "ai_gen_block_0a3a686_QzicUC": {
           "type": "ai_gen_block_0a3a686",
           "settings": {
-            "heading": "🫶 Loved by favourites & 20,000+ more just like you",
+            "heading": "🫶 Loved by Favourites & 20,000+ More Just Like You",
             "heading_size": 32,
             "heading_margin_bottom": 40,
             "enable_image_1": true,
@@ -1008,8 +1008,8 @@
           "type": "ai_gen_block_a5dd855",
           "settings": {
             "show_header": true,
-            "section_title": "Follow Us on Instagram",
-            "section_subtitle": "Join our community and stay inspired",
+            "section_title": "Follow Us On Instagram",
+            "section_subtitle": "Join Our Community and Stay Inspired",
             "title_size": 42,
             "subtitle_size": 18,
             "header_spacing": 50,
