@@ -260,13 +260,24 @@
       <div class="ssnf-{{ sid }}__lengths">
         {%- liquid
           assign labels = 'x-short,short,medium,long,x-long' | split: ','
+          assign coll_keys = 'length_xshort_collection,length_short_collection,length_medium_collection,length_long_collection,length_xlong_collection' | split: ','
           assign url_keys = 'length_xshort_url,length_short_url,length_medium_url,length_long_url,length_xlong_url' | split: ','
         -%}
 
         {% for label in labels %}
           {%- liquid
+            assign coll_key = coll_keys[forloop.index0]
             assign url_key = url_keys[forloop.index0]
-            assign target_url = section.settings[url_key] | default: '#'
+            assign chosen_collection = section.settings[coll_key]
+            assign manual_url = section.settings[url_key]
+
+            if manual_url != blank
+              assign target_url = manual_url
+            elsif chosen_collection != blank
+              assign target_url = chosen_collection.url
+            else
+              assign target_url = '#'
+            endif
           -%}
           <a class="ssnf-{{ sid }}__length" href="{{ target_url }}" aria-label="{{ label | escape }} nails">
             <span class="ssnf-{{ sid }}__length-icon" aria-hidden="true">
@@ -321,13 +332,37 @@
       <div class="ssnf-{{ sid }}__pills">
         {% for block in section.blocks %}
           {%- liquid
-            assign target_url = block.settings.link | default: '#'
-            assign label_text = block.settings.label | default: 'Category'
+            assign chosen_collection = block.settings.collection
+            assign manual_url = block.settings.link
+
+            if manual_url != blank
+              assign target_url = manual_url
+            elsif chosen_collection != blank
+              assign target_url = chosen_collection.url
+            else
+              assign target_url = '#'
+            endif
+
+            assign label_text = block.settings.label
+            if label_text == blank and chosen_collection != blank
+              assign label_text = chosen_collection.title
+            endif
+            if label_text == blank
+              assign label_text = 'Category'
+            endif
+
+            assign avatar_image = block.settings.avatar
+            if avatar_image == blank and chosen_collection != blank
+              assign avatar_image = chosen_collection.image
+              if avatar_image == blank and chosen_collection.products.first
+                assign avatar_image = chosen_collection.products.first.featured_image
+              endif
+            endif
           -%}
           <a class="ssnf-{{ sid }}__pill" href="{{ target_url }}" {{ block.shopify_attributes }}>
             <span class="ssnf-{{ sid }}__pill-avatar" aria-hidden="true">
-              {% if block.settings.avatar != blank %}
-                <img src="{{ block.settings.avatar | image_url: width: 80 }}"
+              {% if avatar_image != blank %}
+                <img src="{{ avatar_image | image_url: width: 80 }}"
                      alt=""
                      loading="lazy"
                      width="36"
@@ -371,29 +406,58 @@
       "default": "find nails in every length"
     },
     {
+      "type": "paragraph",
+      "content": "Pick a collection for each length. The link auto-resolves to the collection page. Use the URL override only if you need to point somewhere else (a blog, page, external link)."
+    },
+    {
+      "type": "collection",
+      "id": "length_xshort_collection",
+      "label": "x-short collection"
+    },
+    {
       "type": "url",
       "id": "length_xshort_url",
-      "label": "x-short link"
+      "label": "x-short URL override"
+    },
+    {
+      "type": "collection",
+      "id": "length_short_collection",
+      "label": "short collection"
     },
     {
       "type": "url",
       "id": "length_short_url",
-      "label": "short link"
+      "label": "short URL override"
+    },
+    {
+      "type": "collection",
+      "id": "length_medium_collection",
+      "label": "medium collection"
     },
     {
       "type": "url",
       "id": "length_medium_url",
-      "label": "medium link"
+      "label": "medium URL override"
+    },
+    {
+      "type": "collection",
+      "id": "length_long_collection",
+      "label": "long collection"
     },
     {
       "type": "url",
       "id": "length_long_url",
-      "label": "long link"
+      "label": "long URL override"
+    },
+    {
+      "type": "collection",
+      "id": "length_xlong_collection",
+      "label": "x-long collection"
     },
     {
       "type": "url",
       "id": "length_xlong_url",
-      "label": "x-long link"
+      "label": "x-long URL override"
     },
     {
       "type": "header",
@@ -506,20 +570,29 @@
       "name": "Category pill",
       "settings": [
         {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection",
+          "info": "Pick a collection — the pill links to its page. Label and avatar fall back to the collection's title and image when left blank."
+        },
+        {
           "type": "text",
           "id": "label",
-          "label": "Label",
+          "label": "Label override",
+          "info": "Leave blank to use the collection title.",
           "default": "shapes"
         },
         {
           "type": "image_picker",
           "id": "avatar",
-          "label": "Avatar image"
+          "label": "Avatar image override",
+          "info": "Leave blank to use the collection's image (or first product's image)."
         },
         {
           "type": "url",
           "id": "link",
-          "label": "Link"
+          "label": "URL override",
+          "info": "Optional — overrides the collection link with a custom URL."
         }
       ]
     }
