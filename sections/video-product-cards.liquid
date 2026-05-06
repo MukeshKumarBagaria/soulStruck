@@ -1,0 +1,1205 @@
+{% comment %}
+  Video Product Cards
+  - Premium grid of product cards with looping product videos
+  - Auto-plays on hover (desktop) and on viewport intersection (mobile)
+  - Discount + custom tag badges, wishlist + quickview placeholders
+  - Glassmorphism Add to Cart that slides up on hover with AJAX submission
+  - Shimmer loading state, gradient overlays, brand-color accents
+{% endcomment %}
+
+{%- liquid
+  assign sid = section.id
+-%}
+
+{% style %}
+  .vpc-{{ sid }} {
+    --vpc-pink: {{ section.settings.color_pink }};
+    --vpc-purple: {{ section.settings.color_purple }};
+    --vpc-gold: {{ section.settings.color_gold }};
+    --vpc-bg: {{ section.settings.bg_color }};
+    --vpc-card-bg: {{ section.settings.card_bg }};
+    --vpc-text: {{ section.settings.text_color }};
+    --vpc-text-muted: {{ section.settings.muted_color }};
+    --vpc-card-radius: {{ section.settings.card_radius }}px;
+    background: var(--vpc-bg);
+    color: var(--vpc-text);
+    padding: clamp(40px, 6vw, {{ section.settings.padding_top }}px) 0 clamp(40px, 6vw, {{ section.settings.padding_bottom }}px);
+    box-sizing: border-box;
+    font-family: inherit;
+  }
+
+  .vpc-{{ sid }} *,
+  .vpc-{{ sid }} *::before,
+  .vpc-{{ sid }} *::after { box-sizing: border-box; }
+
+  .vpc-{{ sid }}__container {
+    max-width: {{ section.settings.max_width }}px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  /* ─── Header ──────────────────────────────────────── */
+  .vpc-{{ sid }}__header {
+    text-align: {{ section.settings.text_align }};
+    margin-bottom: clamp(24px, 4vw, 48px);
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .vpc-{{ sid }}__eyebrow {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, var(--vpc-pink), var(--vpc-purple));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin: 0 0 12px;
+    line-height: 1;
+  }
+
+  .vpc-{{ sid }}__heading {
+    font-size: clamp(24px, 4.5vw, 40px);
+    font-weight: 600;
+    color: var(--vpc-text);
+    margin: 0 0 12px;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .vpc-{{ sid }}__heading em,
+  .vpc-{{ sid }}__heading i {
+    font-style: italic;
+    background: linear-gradient(90deg, var(--vpc-pink), var(--vpc-purple));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .vpc-{{ sid }}__subheading {
+    font-size: clamp(14px, 2vw, 16px);
+    color: var(--vpc-text-muted);
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* ─── Grid ────────────────────────────────────────── */
+  .vpc-{{ sid }}__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(16px, 2.5vw, 24px);
+  }
+
+  /* ─── Card ────────────────────────────────────────── */
+  .vpc-{{ sid }}__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--vpc-card-bg);
+    border-radius: var(--vpc-card-radius);
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 4px 20px rgba(15, 15, 20, 0.05);
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+  }
+
+  @media (hover: hover) {
+    .vpc-{{ sid }}__card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 24px 48px -8px rgba(224, 98, 133, 0.18),
+                  0 12px 24px rgba(15, 15, 20, 0.06);
+    }
+  }
+
+  /* ─── Media area ──────────────────────────────────── */
+  .vpc-{{ sid }}__media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f7f7f9 0%, #efeff3 100%);
+  }
+
+  .vpc-{{ sid }}__media-inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .vpc-{{ sid }}__video,
+  .vpc-{{ sid }}__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.4s ease;
+    background: transparent;
+  }
+
+  .vpc-{{ sid }}__video {
+    opacity: 0;
+  }
+
+  .vpc-{{ sid }}__video.is-ready {
+    opacity: 1;
+  }
+
+  @media (hover: hover) {
+    .vpc-{{ sid }}__card:hover .vpc-{{ sid }}__video,
+    .vpc-{{ sid }}__card:hover .vpc-{{ sid }}__image {
+      transform: scale(1.05);
+    }
+  }
+
+  /* Gradient overlay (fades on hover) */
+  .vpc-{{ sid }}__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0) 50%,
+      rgba(0, 0, 0, 0.18) 100%);
+    z-index: 1;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+
+  @media (hover: hover) {
+    .vpc-{{ sid }}__card:hover .vpc-{{ sid }}__overlay { opacity: 0.4; }
+  }
+
+  /* Shimmer placeholder */
+  .vpc-{{ sid }}__shimmer {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg,
+      #f0f0f3 0%,
+      #f8f8fa 50%,
+      #f0f0f3 100%);
+    background-size: 200% 100%;
+    animation: vpc-shimmer-{{ sid }} 1.6s ease-in-out infinite;
+    z-index: 0;
+  }
+
+  @keyframes vpc-shimmer-{{ sid }} {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* ─── Badges ──────────────────────────────────────── */
+  .vpc-{{ sid }}__badge {
+    position: absolute;
+    z-index: 3;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 11px;
+    border-radius: 999px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .vpc-{{ sid }}__badge--discount {
+    top: 14px;
+    left: 14px;
+    background: linear-gradient(135deg, var(--vpc-pink), var(--vpc-purple));
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(224, 98, 133, 0.32);
+  }
+
+  .vpc-{{ sid }}__badge--tag {
+    top: 14px;
+    right: 14px;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: var(--vpc-pink);
+    border: 1px solid rgba(224, 98, 133, 0.18);
+    box-shadow: 0 2px 10px rgba(15, 15, 20, 0.06);
+  }
+
+  /* If both shown, push tag down to avoid icon-btn overlap */
+  .vpc-{{ sid }}__badge--tag.has-icons { top: 64px; }
+
+  /* ─── Icon buttons (wishlist / quickview) ─────────── */
+  .vpc-{{ sid }}__icon-btn {
+    position: absolute;
+    z-index: 4;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: none;
+    color: #1a1a1a;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(15, 15, 20, 0.08);
+    opacity: 0;
+    transform: translateX(8px);
+    transition: opacity 0.35s ease,
+                transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                background 0.25s ease,
+                color 0.25s ease;
+  }
+
+  @media (hover: hover) {
+    .vpc-{{ sid }}__card:hover .vpc-{{ sid }}__icon-btn {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* On touch devices keep icons visible */
+  @media (hover: none) {
+    .vpc-{{ sid }}__icon-btn { opacity: 1; transform: none; }
+  }
+
+  .vpc-{{ sid }}__icon-btn:hover {
+    background: var(--vpc-pink);
+    color: #fff;
+  }
+
+  .vpc-{{ sid }}__icon-btn.is-active {
+    background: var(--vpc-pink);
+    color: #fff;
+  }
+
+  .vpc-{{ sid }}__icon-btn--wishlist  { top: 14px; right: 14px; }
+  .vpc-{{ sid }}__icon-btn--quickview { top: 14px; right: 14px; }
+  .vpc-{{ sid }}__card.has-wishlist .vpc-{{ sid }}__icon-btn--quickview { top: 60px; }
+
+  .vpc-{{ sid }}__icon-btn svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* ─── Play indicator ──────────────────────────────── */
+  .vpc-{{ sid }}__play {
+    position: absolute;
+    bottom: 14px;
+    left: 14px;
+    z-index: 2;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    box-shadow: 0 2px 10px rgba(15, 15, 20, 0.1);
+  }
+
+  .vpc-{{ sid }}__play svg {
+    width: 12px;
+    height: 12px;
+    fill: currentColor;
+    margin-left: 1px;
+  }
+
+  @media (hover: hover) {
+    .vpc-{{ sid }}__card:hover .vpc-{{ sid }}__play {
+      opacity: 0;
+      transform: scale(0.85);
+    }
+  }
+
+  /* ─── Add-to-cart slide-up (glassmorphism) ───────── */
+  .vpc-{{ sid }}__cart-wrap {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    z-index: 5;
+    transform: translateY(calc(100% + 16px));
+    opacity: 0;
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.35s ease;
+  }
+
+  @media (hover: hover) {
+    .vpc-{{ sid }}__card:hover .vpc-{{ sid }}__cart-wrap {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  /* Touch: button always visible at bottom of media */
+  @media (hover: none) {
+    .vpc-{{ sid }}__cart-wrap {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .vpc-{{ sid }}__cart-btn {
+    width: 100%;
+    padding: 13px 18px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 999px;
+    color: #1a1a1a;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, opacity 0.2s ease;
+    box-shadow: 0 8px 24px rgba(15, 15, 20, 0.12);
+    line-height: 1.2;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .vpc-{{ sid }}__cart-btn svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .vpc-{{ sid }}__cart-btn:hover:not(:disabled) {
+    background: var(--vpc-pink);
+    color: #fff;
+    border-color: var(--vpc-pink);
+  }
+
+  .vpc-{{ sid }}__cart-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .vpc-{{ sid }}__cart-btn.is-loading {
+    color: transparent;
+    pointer-events: none;
+  }
+
+  .vpc-{{ sid }}__cart-btn.is-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 14px;
+    height: 14px;
+    margin: -7px 0 0 -7px;
+    border: 2px solid #1a1a1a;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: vpc-spin-{{ sid }} 0.7s linear infinite;
+  }
+
+  .vpc-{{ sid }}__cart-btn.is-success {
+    background: var(--vpc-pink);
+    color: #fff;
+    border-color: var(--vpc-pink);
+  }
+
+  @keyframes vpc-spin-{{ sid }} {
+    to { transform: rotate(360deg); }
+  }
+
+  /* ─── Info area ───────────────────────────────────── */
+  .vpc-{{ sid }}__info {
+    padding: 18px 18px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .vpc-{{ sid }}__vendor {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--vpc-purple);
+    line-height: 1;
+  }
+
+  .vpc-{{ sid }}__title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--vpc-text);
+    margin: 0;
+    line-height: 1.4;
+    letter-spacing: -0.005em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .vpc-{{ sid }}__rating {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1;
+  }
+
+  .vpc-{{ sid }}__stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    color: var(--vpc-gold);
+  }
+
+  .vpc-{{ sid }}__stars svg {
+    width: 13px;
+    height: 13px;
+    fill: currentColor;
+    stroke: none;
+  }
+
+  .vpc-{{ sid }}__stars svg.is-empty {
+    fill: rgba(0, 0, 0, 0.12);
+  }
+
+  .vpc-{{ sid }}__rating-num {
+    font-size: 12px;
+    color: var(--vpc-text-muted);
+    font-weight: 500;
+  }
+
+  .vpc-{{ sid }}__pricing {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+
+  .vpc-{{ sid }}__price {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--vpc-text);
+    letter-spacing: -0.01em;
+  }
+
+  .vpc-{{ sid }}__compare {
+    font-size: 13px;
+    color: var(--vpc-text-muted);
+    text-decoration: line-through;
+    font-weight: 400;
+  }
+
+  .vpc-{{ sid }}__off {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--vpc-pink);
+    background: rgba(224, 98, 133, 0.1);
+    padding: 3px 8px;
+    border-radius: 999px;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+  }
+
+  /* ─── Empty state ─────────────────────────────────── */
+  .vpc-{{ sid }}__empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 48px 16px;
+    color: var(--vpc-text-muted);
+    font-size: 14px;
+  }
+
+  /* ─── Toast ───────────────────────────────────────── */
+  .vpc-{{ sid }}__toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: linear-gradient(135deg, var(--vpc-pink), var(--vpc-purple));
+    color: #fff;
+    padding: 12px 22px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    box-shadow: 0 12px 32px rgba(224, 98, 133, 0.32);
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    z-index: 9999;
+    white-space: nowrap;
+  }
+
+  .vpc-{{ sid }}__toast.is-visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ─── Responsive ─────────────────────────────────── */
+  @media (min-width: 600px) {
+    .vpc-{{ sid }}__container { padding: 0 24px; }
+    .vpc-{{ sid }}__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 990px) {
+    .vpc-{{ sid }}__container { padding: 0 32px; }
+    .vpc-{{ sid }}__grid {
+      grid-template-columns: repeat({{ section.settings.columns_desktop }}, minmax(0, 1fr));
+      gap: 24px;
+    }
+    .vpc-{{ sid }}__title { font-size: 16px; }
+    .vpc-{{ sid }}__info { padding: 20px 20px 24px; }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .vpc-{{ sid }}__card,
+    .vpc-{{ sid }}__video,
+    .vpc-{{ sid }}__image,
+    .vpc-{{ sid }}__icon-btn,
+    .vpc-{{ sid }}__cart-wrap,
+    .vpc-{{ sid }}__overlay,
+    .vpc-{{ sid }}__play {
+      transition: none !important;
+    }
+    .vpc-{{ sid }}__shimmer { animation: none; }
+  }
+{% endstyle %}
+
+<video-product-cards-{{ sid }} class="vpc-{{ sid }}" data-section-id="{{ sid }}">
+  <div class="vpc-{{ sid }}__container">
+
+    {%- comment -%} ─── Header ─── {%- endcomment -%}
+    {% if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subheading != blank %}
+      <header class="vpc-{{ sid }}__header">
+        {% if section.settings.eyebrow != blank %}
+          <span class="vpc-{{ sid }}__eyebrow">{{ section.settings.eyebrow }}</span>
+        {% endif %}
+        {% if section.settings.heading != blank %}
+          <h2 class="vpc-{{ sid }}__heading">{{ section.settings.heading }}</h2>
+        {% endif %}
+        {% if section.settings.subheading != blank %}
+          <p class="vpc-{{ sid }}__subheading">{{ section.settings.subheading }}</p>
+        {% endif %}
+      </header>
+    {% endif %}
+
+    {%- comment -%} ─── Grid ─── {%- endcomment -%}
+    <div class="vpc-{{ sid }}__grid">
+      {% if section.blocks.size > 0 %}
+        {% for block in section.blocks %}
+          {%- liquid
+            assign product = block.settings.product
+            if product == blank
+              continue
+            endif
+
+            assign on_sale = false
+            if product.compare_at_price > product.price
+              assign on_sale = true
+              assign discount_pct = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price | round
+            endif
+
+            # Resolve video: per-block override → first product video media → none
+            assign card_video = block.settings.video
+            assign product_video = product.media | where: 'media_type', 'video' | first
+
+            # Rating from metafield (Shopify reviews / Judge.me / etc.)
+            assign rating = 0
+            if product.metafields.reviews.rating.value != blank
+              assign rating = product.metafields.reviews.rating.value.rating | times: 1.0
+            elsif block.settings.fallback_rating > 0
+              assign rating = block.settings.fallback_rating
+            endif
+
+            assign rating_count = 0
+            if product.metafields.reviews.rating_count.value != blank
+              assign rating_count = product.metafields.reviews.rating_count.value | plus: 0
+            endif
+
+            assign has_icons = false
+            if section.settings.show_wishlist or section.settings.show_quickview
+              assign has_icons = true
+            endif
+          -%}
+
+          <a class="vpc-{{ sid }}__card{% if section.settings.show_wishlist %} has-wishlist{% endif %}"
+             href="{{ product.url }}"
+             data-product-card
+             aria-label="{{ product.title | escape }}"
+             {{ block.shopify_attributes }}>
+
+            <div class="vpc-{{ sid }}__media">
+              <div class="vpc-{{ sid }}__shimmer" aria-hidden="true"></div>
+
+              {%- comment -%} Featured image (always rendered as poster + fallback) {%- endcomment -%}
+              {% if product.featured_image %}
+                <img class="vpc-{{ sid }}__image"
+                     src="{{ product.featured_image | image_url: width: 800 }}"
+                     srcset="{{ product.featured_image | image_url: width: 400 }} 400w, {{ product.featured_image | image_url: width: 800 }} 800w, {{ product.featured_image | image_url: width: 1200 }} 1200w"
+                     sizes="(min-width: 990px) 30vw, (min-width: 600px) 50vw, 100vw"
+                     alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                     loading="lazy"
+                     width="{{ product.featured_image.width }}"
+                     height="{{ product.featured_image.height }}">
+              {% endif %}
+
+              {%- comment -%} Video — block override takes priority over product media {%- endcomment -%}
+              {% if card_video != blank %}
+                <video class="vpc-{{ sid }}__video"
+                       data-card-video
+                       muted
+                       loop
+                       playsinline
+                       preload="none"
+                       poster="{{ product.featured_image | image_url: width: 800 }}">
+                  {% for source in card_video.sources %}
+                    <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                  {% endfor %}
+                </video>
+              {% elsif product_video != blank %}
+                <video class="vpc-{{ sid }}__video"
+                       data-card-video
+                       muted
+                       loop
+                       playsinline
+                       preload="none"
+                       poster="{{ product.featured_image | image_url: width: 800 }}">
+                  {% for source in product_video.sources %}
+                    <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                  {% endfor %}
+                </video>
+              {% endif %}
+
+              <div class="vpc-{{ sid }}__overlay" aria-hidden="true"></div>
+
+              {%- comment -%} Discount badge {%- endcomment -%}
+              {% if on_sale and section.settings.show_discount_badge %}
+                <span class="vpc-{{ sid }}__badge vpc-{{ sid }}__badge--discount">
+                  {{ discount_pct }}% OFF
+                </span>
+              {% endif %}
+
+              {%- comment -%} Custom tag badge {%- endcomment -%}
+              {% if block.settings.tag_label != blank %}
+                <span class="vpc-{{ sid }}__badge vpc-{{ sid }}__badge--tag{% if has_icons %} has-icons{% endif %}"
+                      {% if block.settings.tag_color != blank %}style="color: {{ block.settings.tag_color }}; border-color: {{ block.settings.tag_color | color_modify: 'alpha', 0.25 }};"{% endif %}>
+                  {{ block.settings.tag_label }}
+                </span>
+              {% endif %}
+
+              {%- comment -%} Wishlist {%- endcomment -%}
+              {% if section.settings.show_wishlist %}
+                <button type="button" class="vpc-{{ sid }}__icon-btn vpc-{{ sid }}__icon-btn--wishlist" data-wishlist data-product-id="{{ product.id }}" aria-label="Add to wishlist">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                </button>
+              {% endif %}
+
+              {%- comment -%} Quick view {%- endcomment -%}
+              {% if section.settings.show_quickview %}
+                <button type="button" class="vpc-{{ sid }}__icon-btn vpc-{{ sid }}__icon-btn--quickview" data-quickview data-product-handle="{{ product.handle }}" aria-label="Quick view">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              {% endif %}
+
+              {%- comment -%} Play indicator (hidden when no video) {%- endcomment -%}
+              {% if card_video != blank or product_video != blank %}
+                <span class="vpc-{{ sid }}__play" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><polygon points="6 4 22 12 6 20 6 4"/></svg>
+                </span>
+              {% endif %}
+
+              {%- comment -%} Add to cart {%- endcomment -%}
+              {% if section.settings.show_add_to_cart %}
+                <div class="vpc-{{ sid }}__cart-wrap">
+                  <button type="button"
+                          class="vpc-{{ sid }}__cart-btn"
+                          data-add-cart
+                          data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+                          {% unless product.available %}disabled{% endunless %}>
+                    {% if product.available %}
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                      <span>{{ section.settings.add_to_cart_label | default: 'Add to bag' }}</span>
+                    {% else %}
+                      <span>Sold out</span>
+                    {% endif %}
+                  </button>
+                </div>
+              {% endif %}
+            </div>
+
+            {%- comment -%} Info area {%- endcomment -%}
+            <div class="vpc-{{ sid }}__info">
+              {% if section.settings.show_vendor and product.vendor != blank %}
+                <span class="vpc-{{ sid }}__vendor">{{ product.vendor }}</span>
+              {% endif %}
+
+              <h3 class="vpc-{{ sid }}__title">{{ product.title }}</h3>
+
+              {% if section.settings.show_rating and rating > 0 %}
+                <div class="vpc-{{ sid }}__rating">
+                  <span class="vpc-{{ sid }}__stars" aria-label="Rated {{ rating }} out of 5">
+                    {%- assign rating_full = rating | floor -%}
+                    {%- for i in (1..5) -%}
+                      {% if i <= rating_full %}
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+                      {% else %}
+                        <svg class="is-empty" viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+                      {% endif %}
+                    {%- endfor -%}
+                  </span>
+                  <span class="vpc-{{ sid }}__rating-num">
+                    {{ rating | round: 1 }}{% if rating_count > 0 %} <span aria-hidden="true">·</span> {{ rating_count }}{% endif %}
+                  </span>
+                </div>
+              {% endif %}
+
+              <div class="vpc-{{ sid }}__pricing">
+                <span class="vpc-{{ sid }}__price">{{ product.price | money }}</span>
+                {% if on_sale %}
+                  <s class="vpc-{{ sid }}__compare">{{ product.compare_at_price | money }}</s>
+                  <span class="vpc-{{ sid }}__off">{{ discount_pct }}% OFF</span>
+                {% endif %}
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      {% else %}
+        <div class="vpc-{{ sid }}__empty">
+          Add a Product card block in the theme editor to display products here.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="vpc-{{ sid }}__toast" data-toast role="status" aria-live="polite"></div>
+</video-product-cards-{{ sid }}>
+
+<script>
+  (function () {
+    if (customElements.get('video-product-cards-{{ sid }}')) return;
+
+    class VideoProductCards extends HTMLElement {
+      connectedCallback() {
+        this.cards = this.querySelectorAll('[data-product-card]');
+        this.toast = this.querySelector('[data-toast]');
+        this.setupVideos();
+        this.setupCart();
+        this.setupQuickview();
+        this.setupWishlist();
+      }
+
+      /* ─── Videos: hover on desktop, intersection on touch ─── */
+      setupVideos() {
+        var supportsHover = window.matchMedia('(hover: hover)').matches;
+
+        this.cards.forEach(function (card) {
+          var video = card.querySelector('[data-card-video]');
+          if (!video) return;
+
+          var markReady = function () { video.classList.add('is-ready'); };
+          video.addEventListener('loadeddata', markReady, { once: true });
+          if (video.readyState >= 2) markReady();
+
+          if (supportsHover) {
+            card.addEventListener('mouseenter', function () {
+              if (video.preload === 'none') video.preload = 'auto';
+              var p = video.play();
+              if (p && typeof p.catch === 'function') p.catch(function () {});
+            });
+            card.addEventListener('mouseleave', function () {
+              video.pause();
+              video.currentTime = 0;
+            });
+          }
+        });
+
+        if (!supportsHover && 'IntersectionObserver' in window) {
+          var observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+              var v = entry.target.querySelector('[data-card-video]');
+              if (!v) return;
+              if (entry.isIntersecting) {
+                if (v.preload === 'none') v.preload = 'auto';
+                var p = v.play();
+                if (p && typeof p.catch === 'function') p.catch(function () {});
+              } else {
+                v.pause();
+              }
+            });
+          }, { threshold: 0.6 });
+
+          this.cards.forEach(function (card) { observer.observe(card); });
+        }
+      }
+
+      /* ─── AJAX add to cart ─── */
+      setupCart() {
+        var self = this;
+        this.addEventListener('click', function (e) {
+          var btn = e.target.closest('[data-add-cart]');
+          if (!btn) return;
+          e.preventDefault();
+          e.stopPropagation();
+          self.addToCart(btn);
+        });
+      }
+
+      addToCart(btn) {
+        var self = this;
+        var variantId = btn.getAttribute('data-variant-id');
+        if (!variantId || btn.disabled || btn.classList.contains('is-loading')) return;
+
+        btn.classList.add('is-loading');
+
+        fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ id: variantId, quantity: 1 })
+        })
+          .then(function (r) {
+            if (!r.ok) throw new Error('add_failed');
+            return r.json();
+          })
+          .then(function () {
+            btn.classList.remove('is-loading');
+            btn.classList.add('is-success');
+            self.showToast('Added to bag');
+            self.refreshCart();
+            setTimeout(function () { btn.classList.remove('is-success'); }, 1800);
+          })
+          .catch(function () {
+            btn.classList.remove('is-loading');
+            self.showToast('Could not add — try again');
+          });
+      }
+
+      refreshCart() {
+        fetch('/cart.js', { headers: { Accept: 'application/json' } })
+          .then(function (r) { return r.json(); })
+          .then(function (cart) {
+            document.querySelectorAll('[data-cart-count], .cart-count').forEach(function (el) {
+              el.textContent = cart.item_count;
+            });
+            document.dispatchEvent(new CustomEvent('cart:refresh', { detail: cart }));
+            var drawer = document.querySelector('cart-drawer');
+            if (drawer && typeof drawer.open === 'function') drawer.open();
+          })
+          .catch(function () {});
+      }
+
+      /* ─── Wishlist (placeholder — toggles UI state + dispatches event) ─── */
+      setupWishlist() {
+        var self = this;
+        this.addEventListener('click', function (e) {
+          var btn = e.target.closest('[data-wishlist]');
+          if (!btn) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var active = btn.classList.toggle('is-active');
+          self.showToast(active ? 'Saved to wishlist' : 'Removed from wishlist');
+          document.dispatchEvent(new CustomEvent('wishlist:toggle', {
+            detail: { productId: btn.getAttribute('data-product-id'), active: active }
+          }));
+        });
+      }
+
+      /* ─── Quick view (placeholder — emits event your app can listen to) ─── */
+      setupQuickview() {
+        this.addEventListener('click', function (e) {
+          var btn = e.target.closest('[data-quickview]');
+          if (!btn) return;
+          e.preventDefault();
+          e.stopPropagation();
+          document.dispatchEvent(new CustomEvent('quickview:open', {
+            detail: { handle: btn.getAttribute('data-product-handle') }
+          }));
+        });
+      }
+
+      showToast(msg) {
+        if (!this.toast) return;
+        this.toast.textContent = msg;
+        this.toast.classList.add('is-visible');
+        clearTimeout(this._toastTimer);
+        this._toastTimer = setTimeout(function () {
+          this.toast.classList.remove('is-visible');
+        }.bind(this), 2400);
+      }
+    }
+
+    customElements.define('video-product-cards-{{ sid }}', VideoProductCards);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Video product cards",
+  "tag": "section",
+  "class": "section-video-product-cards",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Watch & shop"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "info": "Wrap a word in <em>...</em> to render it with the brand gradient.",
+      "default": "Discover the <em>collection</em>"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "See the products in motion. Tap any card to shop the look."
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text alignment",
+      "options": [
+        { "value": "left",   "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right",  "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns (desktop)",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max content width",
+      "min": 800,
+      "max": 1800,
+      "step": 20,
+      "unit": "px",
+      "default": 1320
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card border radius",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "header",
+      "content": "Card features"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_discount_badge",
+      "label": "Show % off badge",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wishlist",
+      "label": "Show wishlist icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quickview",
+      "label": "Show quick view icon",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "Show rating",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_add_to_cart",
+      "label": "Show Add to cart on hover",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "add_to_cart_label",
+      "label": "Add to cart label",
+      "default": "Add to bag"
+    },
+    {
+      "type": "header",
+      "content": "Brand colors"
+    },
+    {
+      "type": "color",
+      "id": "color_pink",
+      "label": "Primary pink",
+      "default": "#E06285"
+    },
+    {
+      "type": "color",
+      "id": "color_purple",
+      "label": "Soft purple",
+      "default": "#A08CCB"
+    },
+    {
+      "type": "color",
+      "id": "color_gold",
+      "label": "Gold accent (stars)",
+      "default": "#C9A961"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "muted_color",
+      "label": "Muted text",
+      "default": "#888888"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product card",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video override (optional)",
+          "info": "If left blank the section will use the product's first uploaded video, then fall back to the featured image."
+        },
+        {
+          "type": "text",
+          "id": "tag_label",
+          "label": "Tag badge text (optional)",
+          "info": "e.g. BESTSELLER, FREE GIFT, TRENDING, LIMITED STOCK"
+        },
+        {
+          "type": "color",
+          "id": "tag_color",
+          "label": "Tag badge text color (optional)"
+        },
+        {
+          "type": "range",
+          "id": "fallback_rating",
+          "label": "Fallback rating (used if no review metafield)",
+          "min": 0,
+          "max": 5,
+          "step": 0.1,
+          "default": 0
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "Video product cards",
+      "category": "Storytelling",
+      "blocks": [
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" }
+      ]
+    }
+  ]
+}
+{% endschema %}
