@@ -1,0 +1,540 @@
+{% comment %}
+  Nail Finder
+  - Part 1: Length selector — 5 fixed nail icons (x-short → x-long)
+  - Part 2: Search by — category pills as configurable blocks
+{% endcomment %}
+
+{%- liquid
+  assign sid = section.id
+-%}
+
+{% style %}
+  .ssnf-{{ sid }} {
+    --ssnf-bg: {{ section.settings.bg_color }};
+    --ssnf-text: {{ section.settings.text_color }};
+    --ssnf-muted: {{ section.settings.muted_color }};
+    --ssnf-icon-bg: {{ section.settings.icon_bg }};
+    --ssnf-icon-bg-hover: {{ section.settings.icon_bg_hover }};
+    --ssnf-icon-color: {{ section.settings.icon_color }};
+    --ssnf-pill-bg: {{ section.settings.pill_bg }};
+    --ssnf-pill-border: {{ section.settings.pill_border }};
+    --ssnf-pill-hover-bg: {{ section.settings.pill_hover_bg }};
+    --ssnf-pill-hover-text: {{ section.settings.pill_hover_text }};
+    background: var(--ssnf-bg);
+    color: var(--ssnf-text);
+    padding: clamp(36px, 6vw, {{ section.settings.padding_top }}px) 0 clamp(32px, 5vw, {{ section.settings.padding_bottom }}px);
+    box-sizing: border-box;
+  }
+
+  .ssnf-{{ sid }} *,
+  .ssnf-{{ sid }} *::before,
+  .ssnf-{{ sid }} *::after { box-sizing: border-box; }
+
+  .ssnf-{{ sid }}__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* ─── PART 1: Length selector ───────────────────────────── */
+  .ssnf-{{ sid }}__heading {
+    font-size: clamp(22px, 4vw, 32px);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0 0 clamp(20px, 3vw, 36px);
+    text-align: center;
+    color: var(--ssnf-text);
+    text-transform: lowercase;
+  }
+
+  .ssnf-{{ sid }}__lengths {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: clamp(8px, 2vw, 24px);
+    align-items: end;
+    margin-bottom: clamp(36px, 5vw, 56px);
+  }
+
+  .ssnf-{{ sid }}__length {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
+
+  .ssnf-{{ sid }}__length:hover {
+    transform: translateY(-4px);
+  }
+
+  .ssnf-{{ sid }}__length-icon {
+    width: clamp(80px, 14vw, 130px);
+    height: clamp(80px, 14vw, 130px);
+    border-radius: 50%;
+    background: var(--ssnf-icon-bg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ssnf-icon-color);
+    transition: background 0.3s ease;
+    overflow: hidden;
+  }
+
+  .ssnf-{{ sid }}__length:hover .ssnf-{{ sid }}__length-icon {
+    background: var(--ssnf-icon-bg-hover);
+  }
+
+  .ssnf-{{ sid }}__length-icon svg {
+    width: 60%;
+    height: 80%;
+    display: block;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .ssnf-{{ sid }}__length-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: clamp(13px, 1.6vw, 15px);
+    font-weight: 500;
+    color: var(--ssnf-text);
+    text-transform: lowercase;
+    line-height: 1.3;
+    transition: color 0.25s ease;
+  }
+
+  .ssnf-{{ sid }}__length-label svg {
+    width: 12px;
+    height: 12px;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  .ssnf-{{ sid }}__length:hover .ssnf-{{ sid }}__length-label svg {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* ─── PART 2: Search by categories ──────────────────────── */
+  .ssnf-{{ sid }}__subheading {
+    font-size: clamp(18px, 2.6vw, 22px);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0 0 clamp(16px, 2.5vw, 24px);
+    text-align: center;
+    color: var(--ssnf-text);
+    text-transform: lowercase;
+  }
+
+  .ssnf-{{ sid }}__pills {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .ssnf-{{ sid }}__pill {
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 22px 6px 6px;
+    background: var(--ssnf-pill-bg);
+    border: 1px solid var(--ssnf-pill-border);
+    border-radius: 999px;
+    text-decoration: none;
+    color: var(--ssnf-text);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1;
+    transition: color 0.35s cubic-bezier(0.65, 0, 0.35, 1), border-color 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+    overflow: hidden;
+    cursor: pointer;
+    text-transform: lowercase;
+    min-height: 48px;
+  }
+
+  /* Sweep fill — left-to-right scaleX */
+  .ssnf-{{ sid }}__pill::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--ssnf-pill-hover-bg);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+    z-index: -1;
+    border-radius: inherit;
+  }
+
+  .ssnf-{{ sid }}__pill:hover {
+    color: var(--ssnf-pill-hover-text);
+    border-color: var(--ssnf-pill-hover-bg);
+  }
+
+  .ssnf-{{ sid }}__pill:hover::before {
+    transform: scaleX(1);
+  }
+
+  .ssnf-{{ sid }}__pill-avatar {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #f4f4f4;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ssnf-{{ sid }}__pill-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ssnf-{{ sid }}__pill-avatar svg {
+    width: 18px;
+    height: 18px;
+    color: #999;
+  }
+
+  .ssnf-{{ sid }}__pill-label {
+    position: relative;
+    z-index: 1;
+    white-space: nowrap;
+  }
+
+  /* ─── Mobile ─────────────────────────────────────────────── */
+  @media screen and (max-width: 600px) {
+    .ssnf-{{ sid }}__lengths {
+      gap: 4px;
+    }
+    .ssnf-{{ sid }}__length-label {
+      font-size: 11px;
+    }
+    .ssnf-{{ sid }}__length-label svg {
+      display: none;
+    }
+    .ssnf-{{ sid }}__pill {
+      padding: 4px 16px 4px 4px;
+      font-size: 14px;
+      min-height: 42px;
+    }
+    .ssnf-{{ sid }}__pill-avatar {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ssnf-{{ sid }}__length,
+    .ssnf-{{ sid }}__length-icon,
+    .ssnf-{{ sid }}__pill,
+    .ssnf-{{ sid }}__pill::before,
+    .ssnf-{{ sid }}__length-label svg {
+      transition: none;
+    }
+  }
+{% endstyle %}
+
+<section class="ssnf-{{ sid }}" {{ block.shopify_attributes }}>
+  <div class="ssnf-{{ sid }}__container">
+
+    {%- comment -%} ─── Part 1: Length selector ─── {%- endcomment -%}
+    {% if section.settings.show_lengths %}
+      {% if section.settings.length_heading != blank %}
+        <h2 class="ssnf-{{ sid }}__heading">{{ section.settings.length_heading }}</h2>
+      {% endif %}
+
+      <div class="ssnf-{{ sid }}__lengths">
+        {%- liquid
+          assign labels = 'x-short,short,medium,long,x-long' | split: ','
+          assign url_keys = 'length_xshort_url,length_short_url,length_medium_url,length_long_url,length_xlong_url' | split: ','
+        -%}
+
+        {% for label in labels %}
+          {%- liquid
+            assign url_key = url_keys[forloop.index0]
+            assign target_url = section.settings[url_key] | default: '#'
+          -%}
+          <a class="ssnf-{{ sid }}__length" href="{{ target_url }}" aria-label="{{ label | escape }} nails">
+            <span class="ssnf-{{ sid }}__length-icon" aria-hidden="true">
+              {%- case forloop.index -%}
+                {%- when 1 -%}
+                  {%- comment -%} x-short — short rounded dome {%- endcomment -%}
+                  <svg viewBox="0 0 60 130" aria-hidden="true">
+                    <path d="M16 100 V 65 Q 30 35 44 65 V 100 Z"/>
+                    <line x1="13" y1="100" x2="47" y2="100"/>
+                  </svg>
+                {%- when 2 -%}
+                  {%- comment -%} short — slightly taller dome {%- endcomment -%}
+                  <svg viewBox="0 0 60 130" aria-hidden="true">
+                    <path d="M16 105 V 55 Q 30 22 44 55 V 105 Z"/>
+                    <line x1="13" y1="105" x2="47" y2="105"/>
+                  </svg>
+                {%- when 3 -%}
+                  {%- comment -%} medium — squoval (rounded square top) {%- endcomment -%}
+                  <svg viewBox="0 0 60 130" aria-hidden="true">
+                    <path d="M16 110 V 40 Q 30 12 44 40 V 110 Z"/>
+                    <line x1="13" y1="110" x2="47" y2="110"/>
+                  </svg>
+                {%- when 4 -%}
+                  {%- comment -%} long — soft taper (two Qs meeting at top center) {%- endcomment -%}
+                  <svg viewBox="0 0 60 130" aria-hidden="true">
+                    <path d="M16 115 V 30 Q 16 10 30 10 Q 44 10 44 30 V 115 Z"/>
+                    <line x1="13" y1="115" x2="47" y2="115"/>
+                  </svg>
+                {%- when 5 -%}
+                  {%- comment -%} x-long — almond / pointed peak {%- endcomment -%}
+                  <svg viewBox="0 0 60 130" aria-hidden="true">
+                    <path d="M17 120 V 25 Q 17 4 30 4 Q 43 4 43 25 V 120 Z"/>
+                    <line x1="14" y1="120" x2="46" y2="120"/>
+                  </svg>
+              {%- endcase -%}
+            </span>
+            <span class="ssnf-{{ sid }}__length-label">
+              {{ label }}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
+            </span>
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {%- comment -%} ─── Part 2: Search by categories ─── {%- endcomment -%}
+    {% if section.blocks.size > 0 and section.settings.show_categories %}
+      {% if section.settings.category_heading != blank %}
+        <h3 class="ssnf-{{ sid }}__subheading">{{ section.settings.category_heading }}</h3>
+      {% endif %}
+
+      <div class="ssnf-{{ sid }}__pills">
+        {% for block in section.blocks %}
+          {%- liquid
+            assign target_url = block.settings.link | default: '#'
+            assign label_text = block.settings.label | default: 'Category'
+          -%}
+          <a class="ssnf-{{ sid }}__pill" href="{{ target_url }}" {{ block.shopify_attributes }}>
+            <span class="ssnf-{{ sid }}__pill-avatar" aria-hidden="true">
+              {% if block.settings.avatar != blank %}
+                <img src="{{ block.settings.avatar | image_url: width: 80 }}"
+                     alt=""
+                     loading="lazy"
+                     width="36"
+                     height="36">
+              {% else %}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+              {% endif %}
+            </span>
+            <span class="ssnf-{{ sid }}__pill-label">{{ label_text }}</span>
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Nail Finder",
+  "tag": "section",
+  "class": "section-nail-finder",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Length selector"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_lengths",
+      "label": "Show length selector",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "length_heading",
+      "label": "Heading",
+      "default": "find nails in every length"
+    },
+    {
+      "type": "url",
+      "id": "length_xshort_url",
+      "label": "x-short link"
+    },
+    {
+      "type": "url",
+      "id": "length_short_url",
+      "label": "short link"
+    },
+    {
+      "type": "url",
+      "id": "length_medium_url",
+      "label": "medium link"
+    },
+    {
+      "type": "url",
+      "id": "length_long_url",
+      "label": "long link"
+    },
+    {
+      "type": "url",
+      "id": "length_xlong_url",
+      "label": "x-long link"
+    },
+    {
+      "type": "header",
+      "content": "Search-by categories"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_categories",
+      "label": "Show category pills",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "category_heading",
+      "label": "Subheading",
+      "default": "or search by"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "muted_color",
+      "label": "Muted text",
+      "default": "#777777"
+    },
+    {
+      "type": "color",
+      "id": "icon_bg",
+      "label": "Length icon background",
+      "default": "#f4f4f4"
+    },
+    {
+      "type": "color",
+      "id": "icon_bg_hover",
+      "label": "Length icon hover background",
+      "default": "#fbe4e8"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Nail icon stroke",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "pill_bg",
+      "label": "Pill background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "pill_border",
+      "label": "Pill border",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "color",
+      "id": "pill_hover_bg",
+      "label": "Pill hover fill",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "pill_hover_text",
+      "label": "Pill hover text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 16,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 16,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category pill",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "shapes"
+        },
+        {
+          "type": "image_picker",
+          "id": "avatar",
+          "label": "Avatar image"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "Nail Finder",
+      "category": "Storytelling",
+      "blocks": [
+        { "type": "category", "settings": { "label": "shapes" } },
+        { "type": "category", "settings": { "label": "occasions" } },
+        { "type": "category", "settings": { "label": "effect" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
