@@ -55,6 +55,35 @@
 {% enddoc %}
 {% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
 
+{%- liquid
+  # Count how many platforms are actually enabled so the grid can center
+  # itself when fewer platforms are visible than the desktop column setting.
+  assign enabled_count = 0
+  for i in (1..6)
+    assign key = 'platform_' | append: i | append: '_enabled'
+    if block.settings[key]
+      assign enabled_count = enabled_count | plus: 1
+    endif
+  endfor
+
+  assign desktop_cols_setting = block.settings.desktop_columns | times: 1
+  if enabled_count > 0 and enabled_count < desktop_cols_setting
+    assign effective_cols = enabled_count
+    assign constrain_grid_width = true
+  else
+    assign effective_cols = desktop_cols_setting
+    assign constrain_grid_width = false
+  endif
+
+  # Cap grid width when fewer cards are visible so they don't stretch huge.
+  # Each card targets ~260px wide + the configured gap between them.
+  assign card_target_width = 260
+  assign cards_total_width = effective_cols | times: card_target_width
+  assign gap_count = effective_cols | minus: 1
+  assign gaps_total_width = gap_count | times: block.settings.card_spacing
+  assign grid_max_width = cards_total_width | plus: gaps_total_width
+-%}
+
 {% style %}
   .ai-available-on-{{ ai_gen_id }} {
     display: block;
@@ -104,9 +133,13 @@
 
   .ai-available-on-grid-{{ ai_gen_id }} {
     display: grid;
-    grid-template-columns: repeat({{ block.settings.desktop_columns }}, 1fr);
+    grid-template-columns: repeat({{ effective_cols }}, minmax(0, 1fr));
     gap: {{ block.settings.card_spacing }}px;
     margin-top: {{ block.settings.grid_top_spacing }}px;
+    {% if constrain_grid_width %}max-width: {{ grid_max_width }}px;{% else %}max-width: 100%;{% endif %}
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: center;
   }
 
   .ai-available-on-card-{{ ai_gen_id }} {
