@@ -215,22 +215,75 @@
     white-space: nowrap;
   }
 
-  /* ─── Mobile ─────────────────────────────────────────────── */
+  /* ─── Mobile: horizontal scroll for both rows ────────────── */
   @media screen and (max-width: 600px) {
+    /* Lengths row → horizontal scroll, snap, full-bleed */
     .ssnf-{{ sid }}__lengths {
-      gap: 4px;
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x proximity;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      gap: 14px;
+      margin: 0 -20px;
+      padding: 4px 20px 10px;
+      scroll-padding-inline: 20px;
     }
+    .ssnf-{{ sid }}__lengths::-webkit-scrollbar { display: none; }
+
+    .ssnf-{{ sid }}__length {
+      flex: 0 0 auto;
+      width: 96px;
+      scroll-snap-align: start;
+    }
+
+    .ssnf-{{ sid }}__length-icon {
+      width: 92px;
+      height: 92px;
+    }
+
     .ssnf-{{ sid }}__length-label {
-      font-size: 11px;
+      font-size: 12px;
     }
+
     .ssnf-{{ sid }}__length-label svg {
       display: none;
     }
+
+    /* Pills row → horizontal scroll, snap, full-bleed */
+    .ssnf-{{ sid }}__pills {
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x proximity;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      gap: 10px;
+      margin: 0 -20px;
+      padding: 4px 20px;
+      scroll-padding-inline: 20px;
+    }
+    .ssnf-{{ sid }}__pills::-webkit-scrollbar { display: none; }
+
     .ssnf-{{ sid }}__pill {
+      flex-shrink: 0;
+      scroll-snap-align: start;
       padding: 4px 16px 4px 4px;
       font-size: 14px;
       min-height: 42px;
     }
+
+    .ssnf-{{ sid }}__pill-label {
+      white-space: nowrap;
+    }
+
     .ssnf-{{ sid }}__pill-avatar {
       width: 32px;
       height: 32px;
