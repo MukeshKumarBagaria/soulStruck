@@ -536,6 +536,69 @@
         "section_padding": 56
       }
     },
+    "nail_finder_J8YAaY": {
+      "type": "nail-finder",
+      "blocks": {
+        "category_jdxTWe": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "label": "shapes",
+            "link": ""
+          }
+        },
+        "category_ePWG9b": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "label": "occasions",
+            "link": ""
+          }
+        },
+        "category_4Ybtjr": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "label": "effect",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "category_jdxTWe",
+        "category_ePWG9b",
+        "category_4Ybtjr"
+      ],
+      "name": "Nail Finder",
+      "settings": {
+        "show_lengths": true,
+        "length_heading": "find nails in every length",
+        "length_xshort_collection": "3d-nails",
+        "length_xshort_url": "",
+        "length_short_collection": "",
+        "length_short_url": "",
+        "length_medium_collection": "",
+        "length_medium_url": "",
+        "length_long_collection": "",
+        "length_long_url": "",
+        "length_xlong_collection": "",
+        "length_xlong_url": "",
+        "show_categories": true,
+        "category_heading": "or search by",
+        "bg_color": "#ffffff",
+        "text_color": "#111111",
+        "muted_color": "#777777",
+        "icon_bg": "#f4f4f4",
+        "icon_bg_hover": "#fbe4e8",
+        "icon_color": "#1a1a1a",
+        "pill_bg": "#ffffff",
+        "pill_border": "#e5e5e5",
+        "pill_hover_bg": "#111111",
+        "pill_hover_text": "#ffffff",
+        "padding_top": 64,
+        "padding_bottom": 56
+      }
+    },
     "177667234430136b04": {
       "type": "_blocks",
       "blocks": {
@@ -1104,61 +1167,6 @@
         "gradient_direction": "to top",
         "padding-block-start": 0,
         "padding-block-end": 0
-      }
-    },
-    "nail_finder_J8YAaY": {
-      "type": "nail-finder",
-      "blocks": {
-        "category_jdxTWe": {
-          "type": "category",
-          "settings": {
-            "label": "shapes",
-            "link": ""
-          }
-        },
-        "category_ePWG9b": {
-          "type": "category",
-          "settings": {
-            "label": "occasions",
-            "link": ""
-          }
-        },
-        "category_4Ybtjr": {
-          "type": "category",
-          "settings": {
-            "label": "effect",
-            "link": ""
-          }
-        }
-      },
-      "block_order": [
-        "category_jdxTWe",
-        "category_ePWG9b",
-        "category_4Ybtjr"
-      ],
-      "name": "Nail Finder",
-      "settings": {
-        "show_lengths": true,
-        "length_heading": "find nails in every length",
-        "length_xshort_url": "",
-        "length_short_url": "",
-        "length_medium_url": "",
-        "length_long_url": "",
-        "length_xlong_url": "",
-        "show_categories": true,
-        "category_heading": "or search by",
-        "bg_color": "#ffffff",
-        "text_color": "#111111",
-        "muted_color": "#777777",
-        "icon_bg": "#f4f4f4",
-        "icon_bg_hover": "#fbe4e8",
-        "icon_color": "#1a1a1a",
-        "pill_bg": "#ffffff",
-        "pill_border": "#e5e5e5",
-        "pill_hover_bg": "#111111",
-        "pill_hover_text": "#ffffff",
-        "padding_top": 64,
-        "padding_bottom": 56
       }
     }
   },
