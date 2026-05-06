@@ -1,0 +1,670 @@
+{% comment %}
+  Product Feature Pills
+  - Inline row of icon + text pills (no borders, compact)
+  - Up to 8 items configurable per block
+  - Pink line icons by default; full color customization
+{% endcomment %}
+
+{%- liquid
+  assign bid = block.id | replace: '_', '' | downcase
+  assign max_items = 8
+-%}
+
+{% style %}
+  .pfp-{{ bid }} {
+    --pfp-icon-color: {{ block.settings.icon_color }};
+    --pfp-text-color: {{ block.settings.text_color }};
+    --pfp-text-size: {{ block.settings.text_size }}px;
+    --pfp-icon-size: {{ block.settings.icon_size }}px;
+    --pfp-row-gap: {{ block.settings.row_gap }}px;
+    --pfp-col-gap: {{ block.settings.col_gap }}px;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: {{ block.settings.padding_top }}px 0 {{ block.settings.padding_bottom }}px;
+  }
+
+  .pfp-{{ bid }} *,
+  .pfp-{{ bid }} *::before,
+  .pfp-{{ bid }} *::after { box-sizing: border-box; }
+
+  .pfp-{{ bid }}__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--pfp-row-gap) var(--pfp-col-gap);
+    align-items: center;
+    justify-content: {{ block.settings.alignment }};
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .pfp-{{ bid }}__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    line-height: 1;
+  }
+
+  .pfp-{{ bid }}__icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--pfp-icon-size);
+    height: var(--pfp-icon-size);
+    color: var(--pfp-icon-color);
+  }
+
+  .pfp-{{ bid }}__icon svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: {{ block.settings.icon_stroke }};
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    display: block;
+  }
+
+  .pfp-{{ bid }}__icon-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .pfp-{{ bid }}__label {
+    font-size: var(--pfp-text-size);
+    font-weight: {{ block.settings.text_weight }};
+    color: var(--pfp-text-color);
+    line-height: 1.4;
+    letter-spacing: -0.005em;
+    text-transform: {{ block.settings.text_transform }};
+  }
+
+  @media screen and (max-width: 600px) {
+    .pfp-{{ bid }} {
+      --pfp-text-size: {{ block.settings.text_size | minus: 1 }}px;
+      --pfp-col-gap: {{ block.settings.col_gap | times: 0.7 | round }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="pfp-{{ bid }}" {{ block.shopify_attributes }}>
+  <ul class="pfp-{{ bid }}__list">
+    {% for i in (1..max_items) %}
+      {%- liquid
+        assign enabled_key = 'item_' | append: i | append: '_enabled'
+        assign icon_key = 'item_' | append: i | append: '_icon'
+        assign image_key = 'item_' | append: i | append: '_image'
+        assign label_key = 'item_' | append: i | append: '_label'
+
+        assign item_enabled = block.settings[enabled_key]
+        assign item_icon = block.settings[icon_key]
+        assign item_image = block.settings[image_key]
+        assign item_label = block.settings[label_key]
+      -%}
+
+      {% if item_enabled and item_label != blank %}
+        <li class="pfp-{{ bid }}__item">
+          <span class="pfp-{{ bid }}__icon" aria-hidden="true">
+            {% if item_image != blank %}
+              <img class="pfp-{{ bid }}__icon-img" src="{{ item_image | image_url: width: 80 }}" alt="" loading="lazy" width="32" height="32">
+            {% else %}
+              {%- case item_icon -%}
+                {%- when 'celebrate' -%}
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5.8 11.3 2.5 6.5L20 9l-2-2-7.7 4.7"/><path d="M5.8 11.3 4 18l3-3"/><path d="m22 5-1.5 1.5"/><path d="m17 4-.5 1.5"/><path d="m21 9 1.5-.5"/><path d="m18 11 1 1"/></svg>
+                {%- when 'hourglass' -%}
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 22h14M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg>
+                {%- when 'bottle' -%}
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2 9 7v3l-1.5 1.5A2 2 0 0 0 7 13v7a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-7a2 2 0 0 0-.5-1.5L15 10V7l-1-5z"/><path d="M9 13h6"/></svg>
+                {%- when 'truck' -%}
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+                {%- when 'heart' -%}
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                {%- when 'pin' -%}
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 7-8 12-8 12s-8-5-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                {%- when 'lightning' -%}
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                {%- when 'chat' -%}
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 10h.01"/><path d="M12 10h.01"/><path d="M16 10h.01"/></svg>
+                {%- when 'check' -%}
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                {%- when 'check-circle' -%}
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                {%- when 'shield' -%}
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                {%- when 'sparkle' -%}
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                {%- when 'leaf' -%}
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                {%- when 'gift' -%}
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                {%- when 'star' -%}
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                {%- when 'clock' -%}
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                {%- when 'card' -%}
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                {%- when 'none' -%}
+              {%- endcase -%}
+            {% endif %}
+          </span>
+          <span class="pfp-{{ bid }}__label">{{ item_label }}</span>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</div>
+
+{% schema %}
+{
+  "name": "Feature pills",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "flex-start", "label": "Left" },
+        { "value": "center",     "label": "Center" },
+        { "value": "flex-end",   "label": "Right" }
+      ],
+      "default": "flex-start"
+    },
+    {
+      "type": "range",
+      "id": "row_gap",
+      "label": "Row gap",
+      "min": 4,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "col_gap",
+      "label": "Column gap",
+      "min": 8,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Icon"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon size",
+      "min": 14,
+      "max": 36,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "icon_stroke",
+      "label": "Icon stroke width",
+      "min": 1,
+      "max": 3,
+      "step": 0.25,
+      "default": 1.8
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon color",
+      "default": "#E06285"
+    },
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Text size",
+      "min": 11,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "text_weight",
+      "label": "Text weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "select",
+      "id": "text_transform",
+      "label": "Text style",
+      "options": [
+        { "value": "none",       "label": "Normal" },
+        { "value": "lowercase",  "label": "lowercase" },
+        { "value": "uppercase",  "label": "UPPERCASE" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "lowercase"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#0f0f0f"
+    },
+    {
+      "type": "header",
+      "content": "Item 1"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_1_enabled",
+      "label": "Show item 1",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "item_1_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none",         "label": "— No icon —" },
+        { "value": "celebrate",    "label": "Party / celebrate" },
+        { "value": "hourglass",    "label": "Hourglass" },
+        { "value": "bottle",       "label": "Bottle / glue" },
+        { "value": "truck",        "label": "Truck / shipping" },
+        { "value": "heart",        "label": "Heart" },
+        { "value": "pin",          "label": "Location pin" },
+        { "value": "lightning",    "label": "Lightning" },
+        { "value": "chat",         "label": "Chat / support" },
+        { "value": "check",        "label": "Check" },
+        { "value": "check-circle", "label": "Check circle" },
+        { "value": "shield",       "label": "Shield (secure)" },
+        { "value": "sparkle",      "label": "Sparkle" },
+        { "value": "leaf",         "label": "Leaf" },
+        { "value": "gift",         "label": "Gift" },
+        { "value": "star",         "label": "Star" },
+        { "value": "clock",        "label": "Clock" },
+        { "value": "card",         "label": "Credit card" }
+      ],
+      "default": "celebrate"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_1_image",
+      "label": "Custom icon (overrides dropdown)"
+    },
+    {
+      "type": "text",
+      "id": "item_1_label",
+      "label": "Label",
+      "default": "lasts 2-3 weeks"
+    },
+    {
+      "type": "header",
+      "content": "Item 2"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_2_enabled",
+      "label": "Show item 2",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "item_2_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none",         "label": "— No icon —" },
+        { "value": "celebrate",    "label": "Party / celebrate" },
+        { "value": "hourglass",    "label": "Hourglass" },
+        { "value": "bottle",       "label": "Bottle / glue" },
+        { "value": "truck",        "label": "Truck / shipping" },
+        { "value": "heart",        "label": "Heart" },
+        { "value": "pin",          "label": "Location pin" },
+        { "value": "lightning",    "label": "Lightning" },
+        { "value": "chat",         "label": "Chat / support" },
+        { "value": "check",        "label": "Check" },
+        { "value": "check-circle", "label": "Check circle" },
+        { "value": "shield",       "label": "Shield (secure)" },
+        { "value": "sparkle",      "label": "Sparkle" },
+        { "value": "leaf",         "label": "Leaf" },
+        { "value": "gift",         "label": "Gift" },
+        { "value": "star",         "label": "Star" },
+        { "value": "clock",        "label": "Clock" },
+        { "value": "card",         "label": "Credit card" }
+      ],
+      "default": "hourglass"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_2_image",
+      "label": "Custom icon (overrides dropdown)"
+    },
+    {
+      "type": "text",
+      "id": "item_2_label",
+      "label": "Label",
+      "default": "apply in < 10min without uv"
+    },
+    {
+      "type": "header",
+      "content": "Item 3"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_3_enabled",
+      "label": "Show item 3",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "item_3_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none",         "label": "— No icon —" },
+        { "value": "celebrate",    "label": "Party / celebrate" },
+        { "value": "hourglass",    "label": "Hourglass" },
+        { "value": "bottle",       "label": "Bottle / glue" },
+        { "value": "truck",        "label": "Truck / shipping" },
+        { "value": "heart",        "label": "Heart" },
+        { "value": "pin",          "label": "Location pin" },
+        { "value": "lightning",    "label": "Lightning" },
+        { "value": "chat",         "label": "Chat / support" },
+        { "value": "check",        "label": "Check" },
+        { "value": "check-circle", "label": "Check circle" },
+        { "value": "shield",       "label": "Shield (secure)" },
+        { "value": "sparkle",      "label": "Sparkle" },
+        { "value": "leaf",         "label": "Leaf" },
+        { "value": "gift",         "label": "Gift" },
+        { "value": "star",         "label": "Star" },
+        { "value": "clock",        "label": "Clock" },
+        { "value": "card",         "label": "Credit card" }
+      ],
+      "default": "bottle"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_3_image",
+      "label": "Custom icon (overrides dropdown)"
+    },
+    {
+      "type": "text",
+      "id": "item_3_label",
+      "label": "Label",
+      "default": "strong + non-toxic glue"
+    },
+    {
+      "type": "header",
+      "content": "Item 4"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_4_enabled",
+      "label": "Show item 4",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "item_4_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none",         "label": "— No icon —" },
+        { "value": "celebrate",    "label": "Party / celebrate" },
+        { "value": "hourglass",    "label": "Hourglass" },
+        { "value": "bottle",       "label": "Bottle / glue" },
+        { "value": "truck",        "label": "Truck / shipping" },
+        { "value": "heart",        "label": "Heart" },
+        { "value": "pin",          "label": "Location pin" },
+        { "value": "lightning",    "label": "Lightning" },
+        { "value": "chat",         "label": "Chat / support" },
+        { "value": "check",        "label": "Check" },
+        { "value": "check-circle", "label": "Check circle" },
+        { "value": "shield",       "label": "Shield (secure)" },
+        { "value": "sparkle",      "label": "Sparkle" },
+        { "value": "leaf",         "label": "Leaf" },
+        { "value": "gift",         "label": "Gift" },
+        { "value": "star",         "label": "Star" },
+        { "value": "clock",        "label": "Clock" },
+        { "value": "card",         "label": "Credit card" }
+      ],
+      "default": "sparkle"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_4_image",
+      "label": "Custom icon (overrides dropdown)"
+    },
+    {
+      "type": "text",
+      "id": "item_4_label",
+      "label": "Label"
+    },
+    {
+      "type": "header",
+      "content": "Item 5"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_5_enabled",
+      "label": "Show item 5",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "item_5_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none",         "label": "— No icon —" },
+        { "value": "celebrate",    "label": "Party / celebrate" },
+        { "value": "hourglass",    "label": "Hourglass" },
+        { "value": "bottle",       "label": "Bottle / glue" },
+        { "value": "truck",        "label": "Truck / shipping" },
+        { "value": "heart",        "label": "Heart" },
+        { "value": "pin",          "label": "Location pin" },
+        { "value": "lightning",    "label": "Lightning" },
+        { "value": "chat",         "label": "Chat / support" },
+        { "value": "check",        "label": "Check" },
+        { "value": "check-circle", "label": "Check circle" },
+        { "value": "shield",       "label": "Shield (secure)" },
+        { "value": "sparkle",      "label": "Sparkle" },
+        { "value": "leaf",         "label": "Leaf" },
+        { "value": "gift",         "label": "Gift" },
+        { "value": "star",         "label": "Star" },
+        { "value": "clock",        "label": "Clock" },
+        { "value": "card",         "label": "Credit card" }
+      ],
+      "default": "star"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_5_image",
+      "label": "Custom icon (overrides dropdown)"
+    },
+    {
+      "type": "text",
+      "id": "item_5_label",
+      "label": "Label"
+    },
+    {
+      "type": "header",
+      "content": "Item 6"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_6_enabled",
+      "label": "Show item 6",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "item_6_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none",         "label": "— No icon —" },
+        { "value": "celebrate",    "label": "Party / celebrate" },
+        { "value": "hourglass",    "label": "Hourglass" },
+        { "value": "bottle",       "label": "Bottle / glue" },
+        { "value": "truck",        "label": "Truck / shipping" },
+        { "value": "heart",        "label": "Heart" },
+        { "value": "pin",          "label": "Location pin" },
+        { "value": "lightning",    "label": "Lightning" },
+        { "value": "chat",         "label": "Chat / support" },
+        { "value": "check",        "label": "Check" },
+        { "value": "check-circle", "label": "Check circle" },
+        { "value": "shield",       "label": "Shield (secure)" },
+        { "value": "sparkle",      "label": "Sparkle" },
+        { "value": "leaf",         "label": "Leaf" },
+        { "value": "gift",         "label": "Gift" },
+        { "value": "star",         "label": "Star" },
+        { "value": "clock",        "label": "Clock" },
+        { "value": "card",         "label": "Credit card" }
+      ],
+      "default": "leaf"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_6_image",
+      "label": "Custom icon (overrides dropdown)"
+    },
+    {
+      "type": "text",
+      "id": "item_6_label",
+      "label": "Label"
+    },
+    {
+      "type": "header",
+      "content": "Item 7"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_7_enabled",
+      "label": "Show item 7",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "item_7_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none",         "label": "— No icon —" },
+        { "value": "celebrate",    "label": "Party / celebrate" },
+        { "value": "hourglass",    "label": "Hourglass" },
+        { "value": "bottle",       "label": "Bottle / glue" },
+        { "value": "truck",        "label": "Truck / shipping" },
+        { "value": "heart",        "label": "Heart" },
+        { "value": "pin",          "label": "Location pin" },
+        { "value": "lightning",    "label": "Lightning" },
+        { "value": "chat",         "label": "Chat / support" },
+        { "value": "check",        "label": "Check" },
+        { "value": "check-circle", "label": "Check circle" },
+        { "value": "shield",       "label": "Shield (secure)" },
+        { "value": "sparkle",      "label": "Sparkle" },
+        { "value": "leaf",         "label": "Leaf" },
+        { "value": "gift",         "label": "Gift" },
+        { "value": "star",         "label": "Star" },
+        { "value": "clock",        "label": "Clock" },
+        { "value": "card",         "label": "Credit card" }
+      ],
+      "default": "shield"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_7_image",
+      "label": "Custom icon (overrides dropdown)"
+    },
+    {
+      "type": "text",
+      "id": "item_7_label",
+      "label": "Label"
+    },
+    {
+      "type": "header",
+      "content": "Item 8"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_8_enabled",
+      "label": "Show item 8",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "item_8_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none",         "label": "— No icon —" },
+        { "value": "celebrate",    "label": "Party / celebrate" },
+        { "value": "hourglass",    "label": "Hourglass" },
+        { "value": "bottle",       "label": "Bottle / glue" },
+        { "value": "truck",        "label": "Truck / shipping" },
+        { "value": "heart",        "label": "Heart" },
+        { "value": "pin",          "label": "Location pin" },
+        { "value": "lightning",    "label": "Lightning" },
+        { "value": "chat",         "label": "Chat / support" },
+        { "value": "check",        "label": "Check" },
+        { "value": "check-circle", "label": "Check circle" },
+        { "value": "shield",       "label": "Shield (secure)" },
+        { "value": "sparkle",      "label": "Sparkle" },
+        { "value": "leaf",         "label": "Leaf" },
+        { "value": "gift",         "label": "Gift" },
+        { "value": "star",         "label": "Star" },
+        { "value": "clock",        "label": "Clock" },
+        { "value": "card",         "label": "Credit card" }
+      ],
+      "default": "gift"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_8_image",
+      "label": "Custom icon (overrides dropdown)"
+    },
+    {
+      "type": "text",
+      "id": "item_8_label",
+      "label": "Label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Feature pills"
+    }
+  ]
+}
+{% endschema %}

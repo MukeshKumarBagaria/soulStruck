@@ -1,0 +1,820 @@
+{% comment %}
+  Product Trust Grid
+  - Bordered card grid (3 columns desktop / 2 mobile by default)
+  - Up to 8 cards per block, each with icon + label
+  - Black icons & text by default; full color/layout customization
+{% endcomment %}
+
+{%- liquid
+  assign bid = block.id | replace: '_', '' | downcase
+  assign max_items = 8
+-%}
+
+{% style %}
+  .ptg-{{ bid }} {
+    --ptg-icon-color: {{ block.settings.icon_color }};
+    --ptg-label-color: {{ block.settings.label_color }};
+    --ptg-card-bg: {{ block.settings.card_bg }};
+    --ptg-card-border: {{ block.settings.card_border_color }};
+    --ptg-card-border-hover: {{ block.settings.card_border_hover }};
+    --ptg-icon-size: {{ block.settings.icon_size }}px;
+    --ptg-label-size: {{ block.settings.label_size }}px;
+    --ptg-grid-gap: {{ block.settings.grid_gap }}px;
+    --ptg-card-radius: {{ block.settings.card_radius }}px;
+    --ptg-card-padding: {{ block.settings.card_padding }}px;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: {{ block.settings.padding_top }}px 0 {{ block.settings.padding_bottom }}px;
+  }
+
+  .ptg-{{ bid }} *,
+  .ptg-{{ bid }} *::before,
+  .ptg-{{ bid }} *::after { box-sizing: border-box; }
+
+  .ptg-{{ bid }}__grid {
+    display: grid;
+    grid-template-columns: repeat({{ block.settings.columns_mobile }}, minmax(0, 1fr));
+    gap: var(--ptg-grid-gap);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  @media screen and (min-width: 700px) {
+    .ptg-{{ bid }}__grid {
+      grid-template-columns: repeat({{ block.settings.columns_desktop }}, minmax(0, 1fr));
+    }
+  }
+
+  .ptg-{{ bid }}__card {
+    background: var(--ptg-card-bg);
+    border: 1px solid var(--ptg-card-border);
+    border-radius: var(--ptg-card-radius);
+    padding: var(--ptg-card-padding);
+    display: flex;
+    flex-direction: column;
+    align-items: {{ block.settings.alignment }};
+    justify-content: center;
+    text-align: {% if block.settings.alignment == 'center' %}center{% elsif block.settings.alignment == 'flex-end' %}right{% else %}left{% endif %};
+    gap: 12px;
+    min-height: {{ block.settings.card_min_height }}px;
+    transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  @media (hover: hover) {
+    .ptg-{{ bid }}__card[href]:hover {
+      border-color: var(--ptg-card-border-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+    }
+  }
+
+  .ptg-{{ bid }}__icon {
+    flex-shrink: 0;
+    width: var(--ptg-icon-size);
+    height: var(--ptg-icon-size);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ptg-icon-color);
+  }
+
+  .ptg-{{ bid }}__icon svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: {{ block.settings.icon_stroke }};
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    display: block;
+  }
+
+  .ptg-{{ bid }}__icon-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .ptg-{{ bid }}__label {
+    font-size: var(--ptg-label-size);
+    font-weight: {{ block.settings.label_weight }};
+    color: var(--ptg-label-color);
+    line-height: 1.4;
+    letter-spacing: -0.005em;
+    text-transform: {{ block.settings.label_transform }};
+    margin: 0;
+  }
+
+  @media screen and (max-width: 600px) {
+    .ptg-{{ bid }} {
+      --ptg-card-padding: {{ block.settings.card_padding | times: 0.8 | round }}px;
+      --ptg-label-size: {{ block.settings.label_size | minus: 1 }}px;
+      --ptg-icon-size: {{ block.settings.icon_size | times: 0.9 | round }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="ptg-{{ bid }}" {{ block.shopify_attributes }}>
+  <ul class="ptg-{{ bid }}__grid">
+    {% for i in (1..max_items) %}
+      {%- liquid
+        assign enabled_key = 'item_' | append: i | append: '_enabled'
+        assign icon_key = 'item_' | append: i | append: '_icon'
+        assign image_key = 'item_' | append: i | append: '_image'
+        assign label_key = 'item_' | append: i | append: '_label'
+        assign link_key = 'item_' | append: i | append: '_link'
+
+        assign item_enabled = block.settings[enabled_key]
+        assign item_icon = block.settings[icon_key]
+        assign item_image = block.settings[image_key]
+        assign item_label = block.settings[label_key]
+        assign item_link = block.settings[link_key]
+
+        assign card_tag = 'div'
+        if item_link != blank
+          assign card_tag = 'a'
+        endif
+      -%}
+
+      {% if item_enabled and item_label != blank %}
+        <li>
+          <{{ card_tag }} class="ptg-{{ bid }}__card"{% if item_link != blank %} href="{{ item_link }}"{% endif %}>
+            <span class="ptg-{{ bid }}__icon" aria-hidden="true">
+              {% if item_image != blank %}
+                <img class="ptg-{{ bid }}__icon-img" src="{{ item_image | image_url: width: 80 }}" alt="" loading="lazy" width="32" height="32">
+              {% else %}
+                {%- case item_icon -%}
+                  {%- when 'truck' -%}
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+                  {%- when 'heart' -%}
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                  {%- when 'pin' -%}
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 7-8 12-8 12s-8-5-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  {%- when 'lightning' -%}
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                  {%- when 'chat' -%}
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 10h.01"/><path d="M12 10h.01"/><path d="M16 10h.01"/></svg>
+                  {%- when 'check' -%}
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                  {%- when 'check-circle' -%}
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                  {%- when 'shield' -%}
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                  {%- when 'card' -%}
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                  {%- when 'lock' -%}
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  {%- when 'clock' -%}
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  {%- when 'gift' -%}
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                  {%- when 'sparkle' -%}
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                  {%- when 'leaf' -%}
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                  {%- when 'star' -%}
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  {%- when 'globe' -%}
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                  {%- when 'package' -%}
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 9.4 7.55 4.24"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                  {%- when 'support' -%}
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg>
+                  {%- when 'none' -%}
+                {%- endcase -%}
+              {% endif %}
+            </span>
+            <p class="ptg-{{ bid }}__label">{{ item_label }}</p>
+          </{{ card_tag }}>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</div>
+
+{% schema %}
+{
+  "name": "Trust grid",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns (desktop)",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "label": "Columns (mobile)",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Grid gap",
+      "min": 4,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Card content alignment",
+      "options": [
+        { "value": "flex-start", "label": "Left" },
+        { "value": "center",     "label": "Center" },
+        { "value": "flex-end",   "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Card style"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card radius",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "label": "Card padding",
+      "min": 8,
+      "max": 36,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "card_min_height",
+      "label": "Card min height",
+      "min": 60,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 110
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_border_color",
+      "label": "Card border",
+      "default": "#ececec"
+    },
+    {
+      "type": "color",
+      "id": "card_border_hover",
+      "label": "Card border on hover (linked cards)",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "Icon"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon size",
+      "min": 16,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "icon_stroke",
+      "label": "Icon stroke width",
+      "min": 1,
+      "max": 3,
+      "step": 0.25,
+      "default": 1.6
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon color",
+      "default": "#0f0f0f"
+    },
+    {
+      "type": "header",
+      "content": "Label"
+    },
+    {
+      "type": "range",
+      "id": "label_size",
+      "label": "Label size",
+      "min": 11,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "select",
+      "id": "label_weight",
+      "label": "Label weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "select",
+      "id": "label_transform",
+      "label": "Label style",
+      "options": [
+        { "value": "none",       "label": "Normal" },
+        { "value": "lowercase",  "label": "lowercase" },
+        { "value": "uppercase",  "label": "UPPERCASE" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "lowercase"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Label color",
+      "default": "#0f0f0f"
+    },
+    {
+      "type": "header",
+      "content": "Item 1"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_1_enabled",
+      "label": "Show item 1",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "item_1_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none",         "label": "— No icon —" },
+        { "value": "truck",        "label": "Truck / shipping" },
+        { "value": "heart",        "label": "Heart" },
+        { "value": "pin",          "label": "Location pin" },
+        { "value": "lightning",    "label": "Lightning" },
+        { "value": "chat",         "label": "Chat" },
+        { "value": "check",        "label": "Check" },
+        { "value": "check-circle", "label": "Check circle" },
+        { "value": "shield",       "label": "Shield" },
+        { "value": "card",         "label": "Credit card" },
+        { "value": "lock",         "label": "Lock" },
+        { "value": "clock",        "label": "Clock" },
+        { "value": "gift",         "label": "Gift" },
+        { "value": "sparkle",      "label": "Sparkle" },
+        { "value": "leaf",         "label": "Leaf" },
+        { "value": "star",         "label": "Star" },
+        { "value": "globe",        "label": "Globe" },
+        { "value": "package",      "label": "Package" },
+        { "value": "support",      "label": "Support / WhatsApp" }
+      ],
+      "default": "truck"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_1_image",
+      "label": "Custom icon (overrides dropdown)"
+    },
+    {
+      "type": "text",
+      "id": "item_1_label",
+      "label": "Label",
+      "default": "ships in 24-48 hours"
+    },
+    {
+      "type": "url",
+      "id": "item_1_link",
+      "label": "Link (optional)"
+    },
+    {
+      "type": "header",
+      "content": "Item 2"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_2_enabled",
+      "label": "Show item 2",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "item_2_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none",         "label": "— No icon —" },
+        { "value": "truck",        "label": "Truck / shipping" },
+        { "value": "heart",        "label": "Heart" },
+        { "value": "pin",          "label": "Location pin" },
+        { "value": "lightning",    "label": "Lightning" },
+        { "value": "chat",         "label": "Chat" },
+        { "value": "check",        "label": "Check" },
+        { "value": "check-circle", "label": "Check circle" },
+        { "value": "shield",       "label": "Shield" },
+        { "value": "card",         "label": "Credit card" },
+        { "value": "lock",         "label": "Lock" },
+        { "value": "clock",        "label": "Clock" },
+        { "value": "gift",         "label": "Gift" },
+        { "value": "sparkle",      "label": "Sparkle" },
+        { "value": "leaf",         "label": "Leaf" },
+        { "value": "star",         "label": "Star" },
+        { "value": "globe",        "label": "Globe" },
+        { "value": "package",      "label": "Package" },
+        { "value": "support",      "label": "Support / WhatsApp" }
+      ],
+      "default": "heart"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_2_image",
+      "label": "Custom icon (overrides dropdown)"
+    },
+    {
+      "type": "text",
+      "id": "item_2_label",
+      "label": "Label",
+      "default": "20,000+ girlies"
+    },
+    {
+      "type": "url",
+      "id": "item_2_link",
+      "label": "Link (optional)"
+    },
+    {
+      "type": "header",
+      "content": "Item 3"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_3_enabled",
+      "label": "Show item 3",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "item_3_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none",         "label": "— No icon —" },
+        { "value": "truck",        "label": "Truck / shipping" },
+        { "value": "heart",        "label": "Heart" },
+        { "value": "pin",          "label": "Location pin" },
+        { "value": "lightning",    "label": "Lightning" },
+        { "value": "chat",         "label": "Chat" },
+        { "value": "check",        "label": "Check" },
+        { "value": "check-circle", "label": "Check circle" },
+        { "value": "shield",       "label": "Shield" },
+        { "value": "card",         "label": "Credit card" },
+        { "value": "lock",         "label": "Lock" },
+        { "value": "clock",        "label": "Clock" },
+        { "value": "gift",         "label": "Gift" },
+        { "value": "sparkle",      "label": "Sparkle" },
+        { "value": "leaf",         "label": "Leaf" },
+        { "value": "star",         "label": "Star" },
+        { "value": "globe",        "label": "Globe" },
+        { "value": "package",      "label": "Package" },
+        { "value": "support",      "label": "Support / WhatsApp" }
+      ],
+      "default": "pin"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_3_image",
+      "label": "Custom icon (overrides dropdown)"
+    },
+    {
+      "type": "text",
+      "id": "item_3_label",
+      "label": "Label",
+      "default": "delivery across india"
+    },
+    {
+      "type": "url",
+      "id": "item_3_link",
+      "label": "Link (optional)"
+    },
+    {
+      "type": "header",
+      "content": "Item 4"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_4_enabled",
+      "label": "Show item 4",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "item_4_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none",         "label": "— No icon —" },
+        { "value": "truck",        "label": "Truck / shipping" },
+        { "value": "heart",        "label": "Heart" },
+        { "value": "pin",          "label": "Location pin" },
+        { "value": "lightning",    "label": "Lightning" },
+        { "value": "chat",         "label": "Chat" },
+        { "value": "check",        "label": "Check" },
+        { "value": "check-circle", "label": "Check circle" },
+        { "value": "shield",       "label": "Shield" },
+        { "value": "card",         "label": "Credit card" },
+        { "value": "lock",         "label": "Lock" },
+        { "value": "clock",        "label": "Clock" },
+        { "value": "gift",         "label": "Gift" },
+        { "value": "sparkle",      "label": "Sparkle" },
+        { "value": "leaf",         "label": "Leaf" },
+        { "value": "star",         "label": "Star" },
+        { "value": "globe",        "label": "Globe" },
+        { "value": "package",      "label": "Package" },
+        { "value": "support",      "label": "Support / WhatsApp" }
+      ],
+      "default": "lightning"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_4_image",
+      "label": "Custom icon (overrides dropdown)"
+    },
+    {
+      "type": "text",
+      "id": "item_4_label",
+      "label": "Label",
+      "default": "fast checkout"
+    },
+    {
+      "type": "url",
+      "id": "item_4_link",
+      "label": "Link (optional)"
+    },
+    {
+      "type": "header",
+      "content": "Item 5"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_5_enabled",
+      "label": "Show item 5",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "item_5_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none",         "label": "— No icon —" },
+        { "value": "truck",        "label": "Truck / shipping" },
+        { "value": "heart",        "label": "Heart" },
+        { "value": "pin",          "label": "Location pin" },
+        { "value": "lightning",    "label": "Lightning" },
+        { "value": "chat",         "label": "Chat" },
+        { "value": "check",        "label": "Check" },
+        { "value": "check-circle", "label": "Check circle" },
+        { "value": "shield",       "label": "Shield" },
+        { "value": "card",         "label": "Credit card" },
+        { "value": "lock",         "label": "Lock" },
+        { "value": "clock",        "label": "Clock" },
+        { "value": "gift",         "label": "Gift" },
+        { "value": "sparkle",      "label": "Sparkle" },
+        { "value": "leaf",         "label": "Leaf" },
+        { "value": "star",         "label": "Star" },
+        { "value": "globe",        "label": "Globe" },
+        { "value": "package",      "label": "Package" },
+        { "value": "support",      "label": "Support / WhatsApp" }
+      ],
+      "default": "chat"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_5_image",
+      "label": "Custom icon (overrides dropdown)"
+    },
+    {
+      "type": "text",
+      "id": "item_5_label",
+      "label": "Label",
+      "default": "24 / 7 support"
+    },
+    {
+      "type": "url",
+      "id": "item_5_link",
+      "label": "Link (optional)"
+    },
+    {
+      "type": "header",
+      "content": "Item 6"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_6_enabled",
+      "label": "Show item 6",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "item_6_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none",         "label": "— No icon —" },
+        { "value": "truck",        "label": "Truck / shipping" },
+        { "value": "heart",        "label": "Heart" },
+        { "value": "pin",          "label": "Location pin" },
+        { "value": "lightning",    "label": "Lightning" },
+        { "value": "chat",         "label": "Chat" },
+        { "value": "check",        "label": "Check" },
+        { "value": "check-circle", "label": "Check circle" },
+        { "value": "shield",       "label": "Shield" },
+        { "value": "card",         "label": "Credit card" },
+        { "value": "lock",         "label": "Lock" },
+        { "value": "clock",        "label": "Clock" },
+        { "value": "gift",         "label": "Gift" },
+        { "value": "sparkle",      "label": "Sparkle" },
+        { "value": "leaf",         "label": "Leaf" },
+        { "value": "star",         "label": "Star" },
+        { "value": "globe",        "label": "Globe" },
+        { "value": "package",      "label": "Package" },
+        { "value": "support",      "label": "Support / WhatsApp" }
+      ],
+      "default": "check"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_6_image",
+      "label": "Custom icon (overrides dropdown)"
+    },
+    {
+      "type": "text",
+      "id": "item_6_label",
+      "label": "Label",
+      "default": "safe payments"
+    },
+    {
+      "type": "url",
+      "id": "item_6_link",
+      "label": "Link (optional)"
+    },
+    {
+      "type": "header",
+      "content": "Item 7"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_7_enabled",
+      "label": "Show item 7",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "item_7_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none",         "label": "— No icon —" },
+        { "value": "truck",        "label": "Truck / shipping" },
+        { "value": "heart",        "label": "Heart" },
+        { "value": "pin",          "label": "Location pin" },
+        { "value": "lightning",    "label": "Lightning" },
+        { "value": "chat",         "label": "Chat" },
+        { "value": "check",        "label": "Check" },
+        { "value": "check-circle", "label": "Check circle" },
+        { "value": "shield",       "label": "Shield" },
+        { "value": "card",         "label": "Credit card" },
+        { "value": "lock",         "label": "Lock" },
+        { "value": "clock",        "label": "Clock" },
+        { "value": "gift",         "label": "Gift" },
+        { "value": "sparkle",      "label": "Sparkle" },
+        { "value": "leaf",         "label": "Leaf" },
+        { "value": "star",         "label": "Star" },
+        { "value": "globe",        "label": "Globe" },
+        { "value": "package",      "label": "Package" },
+        { "value": "support",      "label": "Support / WhatsApp" }
+      ],
+      "default": "shield"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_7_image",
+      "label": "Custom icon (overrides dropdown)"
+    },
+    {
+      "type": "text",
+      "id": "item_7_label",
+      "label": "Label"
+    },
+    {
+      "type": "url",
+      "id": "item_7_link",
+      "label": "Link (optional)"
+    },
+    {
+      "type": "header",
+      "content": "Item 8"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_8_enabled",
+      "label": "Show item 8",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "item_8_icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none",         "label": "— No icon —" },
+        { "value": "truck",        "label": "Truck / shipping" },
+        { "value": "heart",        "label": "Heart" },
+        { "value": "pin",          "label": "Location pin" },
+        { "value": "lightning",    "label": "Lightning" },
+        { "value": "chat",         "label": "Chat" },
+        { "value": "check",        "label": "Check" },
+        { "value": "check-circle", "label": "Check circle" },
+        { "value": "shield",       "label": "Shield" },
+        { "value": "card",         "label": "Credit card" },
+        { "value": "lock",         "label": "Lock" },
+        { "value": "clock",        "label": "Clock" },
+        { "value": "gift",         "label": "Gift" },
+        { "value": "sparkle",      "label": "Sparkle" },
+        { "value": "leaf",         "label": "Leaf" },
+        { "value": "star",         "label": "Star" },
+        { "value": "globe",        "label": "Globe" },
+        { "value": "package",      "label": "Package" },
+        { "value": "support",      "label": "Support / WhatsApp" }
+      ],
+      "default": "gift"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_8_image",
+      "label": "Custom icon (overrides dropdown)"
+    },
+    {
+      "type": "text",
+      "id": "item_8_label",
+      "label": "Label"
+    },
+    {
+      "type": "url",
+      "id": "item_8_link",
+      "label": "Link (optional)"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trust grid"
+    }
+  ]
+}
+{% endschema %}
