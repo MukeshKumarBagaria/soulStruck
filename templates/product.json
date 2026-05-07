@@ -258,39 +258,6 @@
               },
               "block_order": []
             },
-            "ai_gen_block_07892b6_J8fDmJ": {
-              "type": "ai_gen_block_07892b6",
-              "settings": {
-                "title": "Complete your purchase",
-                "description": "Add these products to your order",
-                "show_total": true,
-                "total_label": "Total",
-                "addon_product_1": "ash-mode",
-                "addon_product_2": "aqua-goddess-1",
-                "addon_product_3": "barbie",
-                "addon_product_4": "",
-                "addon_product_5": "",
-                "addon_product_6": "",
-                "desktop_width_percent": 100,
-                "container_padding": 20,
-                "border_radius": 8,
-                "image_size": 60,
-                "image_border_radius": 4,
-                "item_border_radius": 8,
-                "title_size": 20,
-                "description_size": 14,
-                "background_color": "#f5f5f5",
-                "text_color": "#000000",
-                "item_background_color": "#ffffff",
-                "item_border_color": "#e6e6e6",
-                "item_hover_background_color": "#fafafa",
-                "item_hover_border_color": "#cccccc",
-                "item_selected_background_color": "#f0f0f0",
-                "item_selected_border_color": "#000000",
-                "checkbox_color": "#000000"
-              },
-              "blocks": {}
-            },
             "complementary_products": {
               "type": "product-recommendations",
               "settings": {
@@ -472,7 +439,6 @@
             "description_block",
             "variant_picker",
             "buy_buttons",
-            "ai_gen_block_07892b6_J8fDmJ",
             "complementary_products",
             "accordion_group"
           ]
