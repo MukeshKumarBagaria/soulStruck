@@ -255,7 +255,7 @@
   function init() {
     initOfferBanner();
     initStarRating();
-    initReadMore();
+    // initReadMore() disabled — accordion content now shows in full when opened.
     initTrustBadges();
     initAddonButtons();
     initScrollAnimations();
