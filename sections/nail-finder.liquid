@@ -98,6 +98,18 @@
     stroke-linejoin: round;
   }
 
+  .ssnf-{{ sid }}__length-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .ssnf-{{ sid }}__length:hover .ssnf-{{ sid }}__length-img {
+    transform: scale(1.05);
+  }
+
   .ssnf-{{ sid }}__length-label {
     display: inline-flex;
     align-items: center;
@@ -315,14 +327,25 @@
           assign labels = 'x-short,short,medium,long,x-long' | split: ','
           assign coll_keys = 'length_xshort_collection,length_short_collection,length_medium_collection,length_long_collection,length_xlong_collection' | split: ','
           assign url_keys = 'length_xshort_url,length_short_url,length_medium_url,length_long_url,length_xlong_url' | split: ','
+          assign image_keys = 'length_xshort_image,length_short_image,length_medium_image,length_long_image,length_xlong_image' | split: ','
         -%}
 
         {% for label in labels %}
           {%- liquid
             assign coll_key = coll_keys[forloop.index0]
             assign url_key = url_keys[forloop.index0]
+            assign image_key = image_keys[forloop.index0]
             assign chosen_collection = section.settings[coll_key]
             assign manual_url = section.settings[url_key]
+            assign custom_image = section.settings[image_key]
+
+            # Image fallback: manual upload → collection image → first product image → none
+            if custom_image == blank and chosen_collection != blank
+              assign custom_image = chosen_collection.image
+              if custom_image == blank and chosen_collection.products.first
+                assign custom_image = chosen_collection.products.first.featured_image
+              endif
+            endif
 
             if manual_url != blank
               assign target_url = manual_url
@@ -333,7 +356,17 @@
             endif
           -%}
           <a class="ssnf-{{ sid }}__length" href="{{ target_url }}" aria-label="{{ label | escape }} nails">
-            <span class="ssnf-{{ sid }}__length-icon" aria-hidden="true">
+            <span class="ssnf-{{ sid }}__length-icon{% if custom_image != blank %} ssnf-{{ sid }}__length-icon--image{% endif %}" aria-hidden="true">
+              {% if custom_image != blank %}
+                <img class="ssnf-{{ sid }}__length-img"
+                     src="{{ custom_image | image_url: width: 260 }}"
+                     srcset="{{ custom_image | image_url: width: 130 }} 130w, {{ custom_image | image_url: width: 260 }} 260w, {{ custom_image | image_url: width: 400 }} 400w"
+                     sizes="(min-width: 600px) 130px, 96px"
+                     alt=""
+                     loading="lazy"
+                     width="130"
+                     height="130">
+              {% else %}
               {%- case forloop.index -%}
                 {%- when 1 -%}
                   {%- comment -%} x-short — short rounded dome {%- endcomment -%}
@@ -366,6 +399,7 @@
                     <line x1="14" y1="120" x2="46" y2="120"/>
                   </svg>
               {%- endcase -%}
+              {% endif %}
             </span>
             <span class="ssnf-{{ sid }}__length-label">
               {{ label }}
@@ -460,12 +494,17 @@
     },
     {
       "type": "paragraph",
-      "content": "Pick a collection for each length. The link auto-resolves to the collection page. Use the URL override only if you need to point somewhere else (a blog, page, external link)."
+      "content": "Pick a collection for each length. The link auto-resolves to the collection page. Upload an image to replace the SVG nail icon — leave blank to fall back to the collection image, then to the SVG."
     },
     {
       "type": "collection",
       "id": "length_xshort_collection",
       "label": "x-short collection"
+    },
+    {
+      "type": "image_picker",
+      "id": "length_xshort_image",
+      "label": "x-short image"
     },
     {
       "type": "url",
@@ -478,6 +517,11 @@
       "label": "short collection"
     },
     {
+      "type": "image_picker",
+      "id": "length_short_image",
+      "label": "short image"
+    },
+    {
       "type": "url",
       "id": "length_short_url",
       "label": "short URL override"
@@ -486,6 +530,11 @@
       "type": "collection",
       "id": "length_medium_collection",
       "label": "medium collection"
+    },
+    {
+      "type": "image_picker",
+      "id": "length_medium_image",
+      "label": "medium image"
     },
     {
       "type": "url",
@@ -498,6 +547,11 @@
       "label": "long collection"
     },
     {
+      "type": "image_picker",
+      "id": "length_long_image",
+      "label": "long image"
+    },
+    {
       "type": "url",
       "id": "length_long_url",
       "label": "long URL override"
@@ -506,6 +560,11 @@
       "type": "collection",
       "id": "length_xlong_collection",
       "label": "x-long collection"
+    },
+    {
+      "type": "image_picker",
+      "id": "length_xlong_image",
+      "label": "x-long image"
     },
     {
       "type": "url",
