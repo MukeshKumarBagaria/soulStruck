@@ -38,14 +38,26 @@
 
   .ai-image-text-image-{{ ai_gen_id }} {
     width: 100%;
-    height: {{ block.settings.image_height }}vh;
+    {% if block.settings.image_aspect_ratio == 'auto' %}
+      height: {{ block.settings.image_height }}vh;
+    {% else %}
+      aspect-ratio: {{ block.settings.image_aspect_ratio }};
+      height: auto;
+      max-height: {{ block.settings.image_height }}vh;
+    {% endif %}
     object-fit: cover;
     display: block;
   }
 
   .ai-image-text-placeholder-{{ ai_gen_id }} {
     width: 100%;
-    height: {{ block.settings.image_height }}vh;
+    {% if block.settings.image_aspect_ratio == 'auto' %}
+      height: {{ block.settings.image_height }}vh;
+    {% else %}
+      aspect-ratio: {{ block.settings.image_aspect_ratio }};
+      height: auto;
+      max-height: {{ block.settings.image_height }}vh;
+    {% endif %}
     background-color: #f4f4f4;
     display: flex;
     align-items: center;
@@ -110,12 +122,17 @@
       width: 100%;
     }
 
-    .ai-image-text-image-{{ ai_gen_id }} {
-      height: {{ block.settings.mobile_image_height }}vh;
-    }
-
+    .ai-image-text-image-{{ ai_gen_id }},
     .ai-image-text-placeholder-{{ ai_gen_id }} {
-      height: {{ block.settings.mobile_image_height }}vh;
+      {% if block.settings.mobile_image_aspect_ratio == 'auto' %}
+        height: {{ block.settings.mobile_image_height }}vh;
+        aspect-ratio: auto;
+        max-height: none;
+      {% else %}
+        aspect-ratio: {{ block.settings.mobile_image_aspect_ratio }};
+        height: auto;
+        max-height: {{ block.settings.mobile_image_height }}vh;
+      {% endif %}
     }
 
     .ai-image-text-title-{{ ai_gen_id }} {
@@ -239,24 +256,58 @@
       "label": "Image"
     },
     {
+      "type": "select",
+      "id": "image_aspect_ratio",
+      "label": "Desktop image shape",
+      "info": "Controls the image's aspect ratio. Set to Auto to use the height slider below instead.",
+      "options": [
+        { "value": "auto",  "label": "Auto (use height slider)" },
+        { "value": "1/1",   "label": "Square (1:1)" },
+        { "value": "4/3",   "label": "Landscape (4:3)" },
+        { "value": "16/9",  "label": "Widescreen (16:9)" },
+        { "value": "4/5",   "label": "Portrait (4:5)" },
+        { "value": "3/4",   "label": "Tall portrait (3:4)" },
+        { "value": "2/3",   "label": "Vertical (2:3)" },
+        { "value": "9/16",  "label": "Story / Reel (9:16)" }
+      ],
+      "default": "3/4"
+    },
+    {
       "type": "range",
       "id": "image_height",
-      "label": "Desktop image height",
+      "label": "Desktop image height (or max-height)",
+      "info": "Used directly when shape is Auto, or as a max cap for other shapes.",
+      "min": 20,
+      "max": 130,
+      "step": 5,
+      "unit": "vh",
+      "default": 80
+    },
+    {
+      "type": "select",
+      "id": "mobile_image_aspect_ratio",
+      "label": "Mobile image shape",
+      "options": [
+        { "value": "auto",  "label": "Auto (use height slider)" },
+        { "value": "1/1",   "label": "Square (1:1)" },
+        { "value": "4/3",   "label": "Landscape (4:3)" },
+        { "value": "16/9",  "label": "Widescreen (16:9)" },
+        { "value": "4/5",   "label": "Portrait (4:5)" },
+        { "value": "3/4",   "label": "Tall portrait (3:4)" },
+        { "value": "2/3",   "label": "Vertical (2:3)" },
+        { "value": "9/16",  "label": "Story / Reel (9:16)" }
+      ],
+      "default": "4/5"
+    },
+    {
+      "type": "range",
+      "id": "mobile_image_height",
+      "label": "Mobile image height (or max-height)",
       "min": 20,
       "max": 100,
       "step": 5,
       "unit": "vh",
       "default": 60
-    },
-    {
-      "type": "range",
-      "id": "mobile_image_height",
-      "label": "Mobile image height",
-      "min": 20,
-      "max": 80,
-      "step": 5,
-      "unit": "vh",
-      "default": 40
     },
     {
       "type": "range",
