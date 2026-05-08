@@ -44,7 +44,7 @@
     margin: 0 0 clamp(20px, 3vw, 36px);
     text-align: center;
     color: var(--ssnf-text);
-    text-transform: lowercase;
+    text-transform: {{ section.settings.heading_transform }};
   }
 
   .ssnf-{{ sid }}__lengths {
@@ -490,7 +490,19 @@
       "type": "text",
       "id": "length_heading",
       "label": "Heading",
-      "default": "find nails in every length"
+      "default": "Find Nails in Every Length"
+    },
+    {
+      "type": "select",
+      "id": "heading_transform",
+      "label": "Heading style",
+      "options": [
+        { "value": "none",       "label": "As typed (normal)" },
+        { "value": "capitalize", "label": "Capitalize Each Word" },
+        { "value": "uppercase",  "label": "ALL CAPS" },
+        { "value": "lowercase",  "label": "all lowercase" }
+      ],
+      "default": "none"
     },
     {
       "type": "paragraph",
