@@ -572,7 +572,7 @@
       "name": "Nail Finder",
       "settings": {
         "show_lengths": true,
-        "length_heading": "find nails in every length",
+        "length_heading": "Find Nails in Every Length",
         "length_xshort_collection": "3d-nails",
         "length_xshort_image": "shopify://shop_images/x-short.webp",
         "length_xshort_url": "",
@@ -1259,7 +1259,9 @@
             "image_width": 50,
             "gap": 40,
             "mobile_gap": 20,
+            "image_aspect_ratio": "3/4",
             "image_height": 60,
+            "mobile_image_aspect_ratio": "4/5",
             "mobile_image_height": 40,
             "image_border_radius": 0,
             "title": "Image with text",
