@@ -1,0 +1,447 @@
+{% comment %}
+  Product Mini Banner
+  - Compact promotional pill: bold message on the left + payment/feature logos on the right
+  - Up to 6 logo slots (each with image + optional alt + optional link)
+  - Gradient background (or solid), full color/spacing customization
+{% endcomment %}
+
+{%- liquid
+  assign bid = block.id | replace: '_', '' | downcase
+  assign max_logos = 6
+-%}
+
+{% style %}
+  .pmb-{{ bid }} {
+    --pmb-bg-from: {{ block.settings.bg_from }};
+    --pmb-bg-to: {{ block.settings.bg_to }};
+    --pmb-text: {{ block.settings.text_color }};
+    --pmb-radius: {{ block.settings.border_radius }}px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding: {{ block.settings.padding_v }}px {{ block.settings.padding_h }}px;
+    {% if block.settings.use_gradient %}
+      background: linear-gradient(90deg, var(--pmb-bg-from), var(--pmb-bg-to));
+    {% else %}
+      background: var(--pmb-bg-from);
+    {% endif %}
+    color: var(--pmb-text);
+    border-radius: var(--pmb-radius);
+    margin: {{ block.settings.margin_top }}px 0 {{ block.settings.margin_bottom }}px;
+    box-sizing: border-box;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .pmb-{{ bid }} *,
+  .pmb-{{ bid }} *::before,
+  .pmb-{{ bid }} *::after { box-sizing: border-box; }
+
+  /* Subtle shimmer */
+  {% if block.settings.shimmer %}
+    .pmb-{{ bid }}::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -25%;
+      width: 30%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transform: skewX(-20deg);
+      pointer-events: none;
+      animation: pmb-shine-{{ bid }} 4.5s ease-in-out infinite;
+    }
+    @keyframes pmb-shine-{{ bid }} {
+      0%, 100% { transform: skewX(-20deg) translateX(0); opacity: 0; }
+      35%      { opacity: 1; }
+      80%      { transform: skewX(-20deg) translateX(450%); opacity: 0; }
+    }
+  {% endif %}
+
+  .pmb-{{ bid }}__text {
+    position: relative;
+    z-index: 1;
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: clamp(13px, 2vw, {{ block.settings.text_size }}px);
+    font-weight: {{ block.settings.text_weight }};
+    letter-spacing: {{ block.settings.text_spacing }}em;
+    line-height: 1.3;
+    color: var(--pmb-text);
+    text-transform: {{ block.settings.text_transform }};
+  }
+
+  .pmb-{{ bid }}__text strong {
+    font-weight: 800;
+  }
+
+  .pmb-{{ bid }}__text a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .pmb-{{ bid }}__logos {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: {{ block.settings.logo_gap }}px;
+    flex-shrink: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .pmb-{{ bid }}__logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: {{ block.settings.logo_height }}px;
+    line-height: 0;
+  }
+
+  .pmb-{{ bid }}__logo--circle {
+    background: #ffffff;
+    border-radius: 50%;
+    width: {{ block.settings.logo_height | plus: 6 }}px;
+    height: {{ block.settings.logo_height | plus: 6 }}px;
+    padding: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .pmb-{{ bid }}__logo img {
+    height: 100%;
+    width: auto;
+    max-width: 80px;
+    object-fit: contain;
+    display: block;
+  }
+
+  .pmb-{{ bid }}__logo--circle img {
+    border-radius: 50%;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  .pmb-{{ bid }}__logo a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    transition: transform 0.25s ease;
+  }
+
+  .pmb-{{ bid }}__logo a:hover {
+    transform: translateY(-2px);
+  }
+
+  @media screen and (max-width: 600px) {
+    .pmb-{{ bid }} {
+      gap: 10px;
+      padding: {{ block.settings.padding_v | times: 0.85 | round }}px {{ block.settings.padding_h | times: 0.7 | round }}px;
+    }
+    .pmb-{{ bid }}__text {
+      font-size: clamp(11px, 3.4vw, 13px);
+      letter-spacing: 0.01em;
+    }
+    .pmb-{{ bid }}__logos {
+      gap: {{ block.settings.logo_gap | times: 0.7 | round }}px;
+    }
+    .pmb-{{ bid }}__logo {
+      height: {{ block.settings.logo_height | times: 0.85 | round }}px;
+    }
+    .pmb-{{ bid }}__logo--circle {
+      width: {{ block.settings.logo_height | times: 0.85 | plus: 4 | round }}px;
+      height: {{ block.settings.logo_height | times: 0.85 | plus: 4 | round }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="pmb-{{ bid }}" {{ block.shopify_attributes }}>
+  {% if block.settings.text != blank %}
+    <div class="pmb-{{ bid }}__text">{{ block.settings.text }}</div>
+  {% endif %}
+
+  <ul class="pmb-{{ bid }}__logos" aria-label="Featured logos">
+    {% for i in (1..max_logos) %}
+      {%- liquid
+        assign image_key = 'logo_' | append: i | append: '_image'
+        assign alt_key   = 'logo_' | append: i | append: '_alt'
+        assign link_key  = 'logo_' | append: i | append: '_link'
+        assign style_key = 'logo_' | append: i | append: '_style'
+
+        assign logo_image = block.settings[image_key]
+        assign logo_alt   = block.settings[alt_key] | default: ''
+        assign logo_link  = block.settings[link_key]
+        assign logo_style = block.settings[style_key] | default: 'plain'
+      -%}
+
+      {% if logo_image != blank %}
+        <li class="pmb-{{ bid }}__logo pmb-{{ bid }}__logo--{{ logo_style }}">
+          {% if logo_link != blank %}
+            <a href="{{ logo_link }}" target="_blank" rel="noopener" aria-label="{{ logo_alt | escape }}">
+              <img src="{{ logo_image | image_url: width: 200 }}"
+                   alt="{{ logo_alt | escape }}"
+                   loading="lazy"
+                   width="80"
+                   height="{{ block.settings.logo_height }}">
+            </a>
+          {% else %}
+            <img src="{{ logo_image | image_url: width: 200 }}"
+                 alt="{{ logo_alt | escape }}"
+                 loading="lazy"
+                 width="80"
+                 height="{{ block.settings.logo_height }}">
+          {% endif %}
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</div>
+
+{% schema %}
+{
+  "name": "Mini banner",
+  "tag": null,
+  "settings": [
+    { "type": "header", "content": "Message" },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Banner text",
+      "info": "Use <strong> for bold accent words.",
+      "default": "<p>5% OFF ON <strong>PREPAID ORDERS</strong></p>"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Text size (desktop max)",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "select",
+      "id": "text_weight",
+      "label": "Text weight",
+      "options": [
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra-bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "range",
+      "id": "text_spacing",
+      "label": "Letter spacing",
+      "min": -0.02,
+      "max": 0.1,
+      "step": 0.01,
+      "unit": "em",
+      "default": 0.02
+    },
+    {
+      "type": "select",
+      "id": "text_transform",
+      "label": "Text style",
+      "options": [
+        { "value": "none",       "label": "Normal" },
+        { "value": "uppercase",  "label": "UPPERCASE" },
+        { "value": "lowercase",  "label": "lowercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "uppercase"
+    },
+
+    { "type": "header", "content": "Background" },
+    {
+      "type": "checkbox",
+      "id": "use_gradient",
+      "label": "Use gradient background",
+      "default": true
+    },
+    { "type": "color", "id": "bg_from",    "label": "Background — from",       "default": "#FF4D7E" },
+    { "type": "color", "id": "bg_to",      "label": "Background — to",         "default": "#7C3AED" },
+    { "type": "color", "id": "text_color", "label": "Text color",              "default": "#ffffff" },
+    {
+      "type": "checkbox",
+      "id": "shimmer",
+      "label": "Animated shimmer sweep",
+      "default": true
+    },
+
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_v",
+      "label": "Padding vertical",
+      "min": 4,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_h",
+      "label": "Padding horizontal",
+      "min": 8,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 6
+    },
+
+    { "type": "header", "content": "Logos" },
+    {
+      "type": "range",
+      "id": "logo_height",
+      "label": "Logo height",
+      "min": 16,
+      "max": 56,
+      "step": 2,
+      "unit": "px",
+      "default": 26
+    },
+    {
+      "type": "range",
+      "id": "logo_gap",
+      "label": "Gap between logos",
+      "min": 4,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+
+    { "type": "header", "content": "Logo 1" },
+    { "type": "image_picker", "id": "logo_1_image", "label": "Image" },
+    { "type": "text",         "id": "logo_1_alt",   "label": "Alt text",   "default": "Paytm" },
+    {
+      "type": "select",
+      "id": "logo_1_style",
+      "label": "Style",
+      "options": [
+        { "value": "plain",  "label": "Plain (full color image)" },
+        { "value": "circle", "label": "White circle background" }
+      ],
+      "default": "plain"
+    },
+    { "type": "url",          "id": "logo_1_link",  "label": "Link (optional)" },
+
+    { "type": "header", "content": "Logo 2" },
+    { "type": "image_picker", "id": "logo_2_image", "label": "Image" },
+    { "type": "text",         "id": "logo_2_alt",   "label": "Alt text",   "default": "PhonePe" },
+    {
+      "type": "select",
+      "id": "logo_2_style",
+      "label": "Style",
+      "options": [
+        { "value": "plain",  "label": "Plain" },
+        { "value": "circle", "label": "White circle background" }
+      ],
+      "default": "circle"
+    },
+    { "type": "url",          "id": "logo_2_link",  "label": "Link (optional)" },
+
+    { "type": "header", "content": "Logo 3" },
+    { "type": "image_picker", "id": "logo_3_image", "label": "Image" },
+    { "type": "text",         "id": "logo_3_alt",   "label": "Alt text",   "default": "Google Pay" },
+    {
+      "type": "select",
+      "id": "logo_3_style",
+      "label": "Style",
+      "options": [
+        { "value": "plain",  "label": "Plain" },
+        { "value": "circle", "label": "White circle background" }
+      ],
+      "default": "plain"
+    },
+    { "type": "url",          "id": "logo_3_link",  "label": "Link (optional)" },
+
+    { "type": "header", "content": "Logo 4" },
+    { "type": "image_picker", "id": "logo_4_image", "label": "Image" },
+    { "type": "text",         "id": "logo_4_alt",   "label": "Alt text" },
+    {
+      "type": "select",
+      "id": "logo_4_style",
+      "label": "Style",
+      "options": [
+        { "value": "plain",  "label": "Plain" },
+        { "value": "circle", "label": "White circle background" }
+      ],
+      "default": "plain"
+    },
+    { "type": "url",          "id": "logo_4_link",  "label": "Link (optional)" },
+
+    { "type": "header", "content": "Logo 5" },
+    { "type": "image_picker", "id": "logo_5_image", "label": "Image" },
+    { "type": "text",         "id": "logo_5_alt",   "label": "Alt text" },
+    {
+      "type": "select",
+      "id": "logo_5_style",
+      "label": "Style",
+      "options": [
+        { "value": "plain",  "label": "Plain" },
+        { "value": "circle", "label": "White circle background" }
+      ],
+      "default": "plain"
+    },
+    { "type": "url",          "id": "logo_5_link",  "label": "Link (optional)" },
+
+    { "type": "header", "content": "Logo 6" },
+    { "type": "image_picker", "id": "logo_6_image", "label": "Image" },
+    { "type": "text",         "id": "logo_6_alt",   "label": "Alt text" },
+    {
+      "type": "select",
+      "id": "logo_6_style",
+      "label": "Style",
+      "options": [
+        { "value": "plain",  "label": "Plain" },
+        { "value": "circle", "label": "White circle background" }
+      ],
+      "default": "plain"
+    },
+    { "type": "url",          "id": "logo_6_link",  "label": "Link (optional)" }
+  ],
+  "presets": [ { "name": "Mini banner" } ]
+}
+{% endschema %}
