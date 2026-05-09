@@ -469,6 +469,58 @@
                 "accordion_ingredients",
                 "accordion_howtouse"
               ]
+            },
+            "ss_feature_pills": {
+              "type": "product-feature-pills",
+              "settings": {
+                "item_1_enabled": true,
+                "item_1_icon": "celebrate",
+                "item_1_label": "lasts 2-3 weeks",
+                "item_2_enabled": true,
+                "item_2_icon": "hourglass",
+                "item_2_label": "apply in < 10min without uv",
+                "item_3_enabled": true,
+                "item_3_icon": "bottle",
+                "item_3_label": "strong + non-toxic glue"
+              }
+            },
+            "ss_trust_grid": {
+              "type": "product-trust-grid",
+              "settings": {
+                "columns_desktop": 3,
+                "columns_mobile": 2,
+                "item_1_enabled": true,
+                "item_1_icon": "truck",
+                "item_1_label": "ships in 24-48 hours",
+                "item_2_enabled": true,
+                "item_2_icon": "heart",
+                "item_2_label": "20,000+ girlies",
+                "item_3_enabled": true,
+                "item_3_icon": "pin",
+                "item_3_label": "delivery across india",
+                "item_4_enabled": true,
+                "item_4_icon": "lightning",
+                "item_4_label": "fast checkout",
+                "item_5_enabled": true,
+                "item_5_icon": "chat",
+                "item_5_label": "24 / 7 support",
+                "item_6_enabled": true,
+                "item_6_icon": "check",
+                "item_6_label": "safe payments"
+              }
+            },
+            "ss_countdown": {
+              "type": "product-countdown-timer",
+              "settings": {
+                "timer_mode": "rolling",
+                "rolling_hours": 24,
+                "eyebrow": "Limited deal",
+                "heading": "Hurry — sale ends in"
+              }
+            },
+            "ss_mini_banner": {
+              "type": "product-mini-banner",
+              "settings": {}
             }
           },
           "block_order": [
@@ -481,6 +533,10 @@
             "description_block",
             "variant_picker",
             "buy_buttons",
+            "ss_feature_pills",
+            "ss_trust_grid",
+            "ss_countdown",
+            "ss_mini_banner",
             "complementary_products",
             "accordion_group"
           ]
