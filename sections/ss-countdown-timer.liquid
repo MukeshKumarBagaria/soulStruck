@@ -1,0 +1,443 @@
+{% comment %}
+  Product Countdown Timer
+  - Modern FOMO timer with days / hours / minutes / seconds
+  - Two modes: fixed end date OR rolling-N-hours per visitor
+  - Optional progress bar, stock-left counter, pulse on seconds
+  - Hides itself or shows "ended" state when timer reaches 0
+{% endcomment %}
+
+{%- liquid
+  assign bid = section.id | replace: '_', '' | downcase
+-%}
+
+{% style %}
+  .pct-{{ bid }} {
+    --pct-bg-from: {{ section.settings.bg_from }};
+    --pct-bg-to: {{ section.settings.bg_to }};
+    --pct-text: {{ section.settings.text_color }};
+    --pct-accent: {{ section.settings.accent_color }};
+    --pct-digit-bg: {{ section.settings.digit_bg }};
+    --pct-digit-text: {{ section.settings.digit_text }};
+    --pct-radius: {{ section.settings.border_radius }}px;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    background: linear-gradient(135deg, var(--pct-bg-from), var(--pct-bg-to));
+    border-radius: var(--pct-radius);
+    padding: {{ section.settings.padding_v }}px {{ section.settings.padding_h }}px;
+    color: var(--pct-text);
+    margin: {{ section.settings.margin_top }}px 0 {{ section.settings.margin_bottom }}px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .pct-{{ bid }} *,
+  .pct-{{ bid }} *::before,
+  .pct-{{ bid }} *::after { box-sizing: border-box; }
+
+  .pct-{{ bid }}.is-ended {
+    opacity: 0.85;
+  }
+
+  {% if section.settings.hide_when_ended %}
+    .pct-{{ bid }}.is-ended { display: none; }
+  {% endif %}
+
+  /* Decorative shimmer */
+  .pct-{{ bid }}::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -10%;
+    width: 60%;
+    height: 200%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+    transform: skewX(-20deg);
+    pointer-events: none;
+    animation: pct-shine-{{ bid }} 6s ease-in-out infinite;
+  }
+
+  @keyframes pct-shine-{{ bid }} {
+    0%, 100% { transform: skewX(-20deg) translateX(-30%); }
+    50%      { transform: skewX(-20deg) translateX(220%); }
+  }
+
+  .pct-{{ bid }}__inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .pct-{{ bid }}__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--pct-accent);
+    line-height: 1;
+  }
+
+  .pct-{{ bid }}__eyebrow::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--pct-accent);
+    box-shadow: 0 0 0 0 var(--pct-accent);
+    animation: pct-pulse-dot-{{ bid }} 1.6s ease-out infinite;
+  }
+
+  @keyframes pct-pulse-dot-{{ bid }} {
+    0%   { box-shadow: 0 0 0 0 currentColor; opacity: 1; }
+    70%  { box-shadow: 0 0 0 10px transparent; opacity: 0.6; }
+    100% { box-shadow: 0 0 0 0 transparent; opacity: 1; }
+  }
+
+  .pct-{{ bid }}__heading {
+    font-size: clamp(15px, 2.5vw, 18px);
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0;
+    color: var(--pct-text);
+    letter-spacing: -0.01em;
+  }
+
+  .pct-{{ bid }}__heading strong {
+    color: var(--pct-accent);
+  }
+
+  .pct-{{ bid }}__digits {
+    display: inline-flex;
+    align-items: stretch;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .pct-{{ bid }}__unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 56px;
+  }
+
+  .pct-{{ bid }}__num {
+    font-size: clamp(20px, 4vw, 28px);
+    font-weight: 800;
+    color: var(--pct-digit-text);
+    background: var(--pct-digit-bg);
+    border-radius: 10px;
+    padding: 10px 12px;
+    min-width: 56px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .pct-{{ bid }}__unit--seconds .pct-{{ bid }}__num {
+    animation: pct-pulse-{{ bid }} 1s ease-in-out infinite;
+  }
+
+  @keyframes pct-pulse-{{ bid }} {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.04); }
+  }
+
+  .pct-{{ bid }}__label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--pct-text);
+    opacity: 0.75;
+    line-height: 1;
+  }
+
+  .pct-{{ bid }}__sep {
+    align-self: center;
+    font-size: clamp(20px, 4vw, 28px);
+    font-weight: 800;
+    color: var(--pct-text);
+    opacity: 0.4;
+    transform: translateY(-12px);
+  }
+
+  /* Stock counter */
+  .pct-{{ bid }}__stock {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--pct-text);
+    opacity: 0.9;
+  }
+
+  .pct-{{ bid }}__stock-bar {
+    width: 120px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .pct-{{ bid }}__stock-fill {
+    height: 100%;
+    width: {{ section.settings.stock_percent }}%;
+    background: var(--pct-accent);
+    border-radius: 999px;
+    box-shadow: 0 0 12px var(--pct-accent);
+  }
+
+  .pct-{{ bid }}__ended-msg {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--pct-text);
+    margin: 0;
+    display: none;
+  }
+
+  .pct-{{ bid }}.is-ended .pct-{{ bid }}__digits,
+  .pct-{{ bid }}.is-ended .pct-{{ bid }}__stock {
+    display: none;
+  }
+  .pct-{{ bid }}.is-ended .pct-{{ bid }}__ended-msg {
+    display: block;
+  }
+
+  @media screen and (max-width: 600px) {
+    .pct-{{ bid }} {
+      padding: {{ section.settings.padding_v | times: 0.8 | round }}px {{ section.settings.padding_h | times: 0.7 | round }}px;
+    }
+    .pct-{{ bid }}__digits { gap: 5px; }
+    .pct-{{ bid }}__unit { min-width: 50px; }
+    .pct-{{ bid }}__num {
+      padding: 8px 10px;
+      min-width: 50px;
+      border-radius: 8px;
+    }
+    .pct-{{ bid }}__sep { transform: translateY(-9px); }
+    .pct-{{ bid }}__stock-bar { width: 90px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pct-{{ bid }}::before,
+    .pct-{{ bid }}__eyebrow::before,
+    .pct-{{ bid }}__unit--seconds .pct-{{ bid }}__num { animation: none; }
+  }
+{% endstyle %}
+
+<div class="pct-{{ bid }}"
+     data-pct
+     data-mode="{{ section.settings.timer_mode }}"
+     data-end-date="{{ section.settings.end_date | escape }}"
+     data-rolling-hours="{{ section.settings.rolling_hours }}"
+     {{ section.shopify_attributes }}>
+  <div class="pct-{{ bid }}__inner">
+
+    {% if section.settings.eyebrow != blank %}
+      <span class="pct-{{ bid }}__eyebrow">{{ section.settings.eyebrow }}</span>
+    {% endif %}
+
+    {% if section.settings.heading != blank %}
+      <h3 class="pct-{{ bid }}__heading">{{ section.settings.heading }}</h3>
+    {% endif %}
+
+    <div class="pct-{{ bid }}__digits" role="timer" aria-live="polite">
+      <div class="pct-{{ bid }}__unit pct-{{ bid }}__unit--days">
+        <span class="pct-{{ bid }}__num" data-days>00</span>
+        <span class="pct-{{ bid }}__label">{{ section.settings.label_days }}</span>
+      </div>
+      <span class="pct-{{ bid }}__sep" aria-hidden="true">:</span>
+      <div class="pct-{{ bid }}__unit pct-{{ bid }}__unit--hours">
+        <span class="pct-{{ bid }}__num" data-hours>00</span>
+        <span class="pct-{{ bid }}__label">{{ section.settings.label_hours }}</span>
+      </div>
+      <span class="pct-{{ bid }}__sep" aria-hidden="true">:</span>
+      <div class="pct-{{ bid }}__unit pct-{{ bid }}__unit--minutes">
+        <span class="pct-{{ bid }}__num" data-minutes>00</span>
+        <span class="pct-{{ bid }}__label">{{ section.settings.label_minutes }}</span>
+      </div>
+      <span class="pct-{{ bid }}__sep" aria-hidden="true">:</span>
+      <div class="pct-{{ bid }}__unit pct-{{ bid }}__unit--seconds">
+        <span class="pct-{{ bid }}__num" data-seconds>00</span>
+        <span class="pct-{{ bid }}__label">{{ section.settings.label_seconds }}</span>
+      </div>
+    </div>
+
+    {% if section.settings.show_stock %}
+      <div class="pct-{{ bid }}__stock">
+        {% if section.settings.stock_text != blank %}
+          <span>{{ section.settings.stock_text }}</span>
+        {% endif %}
+        <span class="pct-{{ bid }}__stock-bar" aria-hidden="true">
+          <span class="pct-{{ bid }}__stock-fill"></span>
+        </span>
+      </div>
+    {% endif %}
+
+    {% if section.settings.ended_message != blank %}
+      <p class="pct-{{ bid }}__ended-msg">{{ section.settings.ended_message }}</p>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  (function () {
+    var root = document.querySelector('.pct-{{ bid }}');
+    if (!root || root.dataset.pctInit === '1') return;
+    root.dataset.pctInit = '1';
+
+    var mode = root.getAttribute('data-mode');
+    var endAttr = root.getAttribute('data-end-date');
+    var rolling = parseInt(root.getAttribute('data-rolling-hours'), 10) || 24;
+
+    var endTs;
+    if (mode === 'fixed' && endAttr) {
+      var d = new Date(endAttr.replace(' ', 'T'));
+      if (!isNaN(d.getTime())) endTs = d.getTime();
+    }
+
+    if (!endTs) {
+      // Rolling mode (also fallback if fixed date is invalid):
+      // Persist a per-visitor end time in localStorage so the countdown resumes on revisit.
+      var storeKey = 'pct-end-{{ bid }}';
+      try {
+        var saved = parseInt(localStorage.getItem(storeKey), 10);
+        if (saved && saved > Date.now()) {
+          endTs = saved;
+        } else {
+          endTs = Date.now() + rolling * 3600 * 1000;
+          localStorage.setItem(storeKey, String(endTs));
+        }
+      } catch (e) {
+        endTs = Date.now() + rolling * 3600 * 1000;
+      }
+    }
+
+    var elDays = root.querySelector('[data-days]');
+    var elHours = root.querySelector('[data-hours]');
+    var elMins = root.querySelector('[data-minutes]');
+    var elSecs = root.querySelector('[data-seconds]');
+
+    function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+    function tick() {
+      var diff = endTs - Date.now();
+      if (diff <= 0) {
+        elDays.textContent = '00';
+        elHours.textContent = '00';
+        elMins.textContent = '00';
+        elSecs.textContent = '00';
+        root.classList.add('is-ended');
+        clearInterval(timer);
+        return;
+      }
+      var s = Math.floor(diff / 1000);
+      var d = Math.floor(s / 86400);
+      var h = Math.floor((s % 86400) / 3600);
+      var m = Math.floor((s % 3600) / 60);
+      var sec = s % 60;
+      elDays.textContent  = pad(d);
+      elHours.textContent = pad(h);
+      elMins.textContent  = pad(m);
+      elSecs.textContent  = pad(sec);
+    }
+
+    tick();
+    var timer = setInterval(tick, 1000);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "SS Countdown timer", "tag": "section", "class": "section-timer",
+  "settings": [
+    { "type": "header", "content": "Mode" },
+    {
+      "type": "select",
+      "id": "timer_mode",
+      "label": "Timer mode",
+      "options": [
+        { "value": "fixed",   "label": "Fixed end date (everyone sees the same countdown)" },
+        { "value": "rolling", "label": "Rolling per visitor (resets per shopper, evergreen FOMO)" }
+      ],
+      "default": "rolling"
+    },
+    {
+      "type": "text",
+      "id": "end_date",
+      "label": "End date & time (fixed mode)",
+      "info": "Format: YYYY-MM-DD HH:MM (24-hour). Example: 2026-12-31 23:59",
+      "default": "2026-12-31 23:59"
+    },
+    {
+      "type": "range",
+      "id": "rolling_hours",
+      "label": "Rolling duration",
+      "info": "How long the timer runs from the visitor's first view.",
+      "min": 1,
+      "max": 168,
+      "step": 1,
+      "unit": "h",
+      "default": 24
+    },
+    { "type": "header", "content": "Text" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Limited deal" },
+    { "type": "text", "id": "heading", "label": "Heading", "info": "Wrap a word in <strong> tags to colour it with the accent.", "default": "Hurry — sale ends in" },
+    { "type": "text", "id": "label_days",    "label": "Days label",    "default": "Days" },
+    { "type": "text", "id": "label_hours",   "label": "Hours label",   "default": "Hrs" },
+    { "type": "text", "id": "label_minutes", "label": "Minutes label", "default": "Mins" },
+    { "type": "text", "id": "label_seconds", "label": "Seconds label", "default": "Secs" },
+    { "type": "text", "id": "ended_message", "label": "Message when ended", "default": "This deal has ended" },
+    {
+      "type": "checkbox",
+      "id": "hide_when_ended",
+      "label": "Hide block completely when timer ends",
+      "default": false
+    },
+    { "type": "header", "content": "Stock counter (optional)" },
+    {
+      "type": "checkbox",
+      "id": "show_stock",
+      "label": "Show stock-left bar",
+      "default": false
+    },
+    { "type": "text", "id": "stock_text", "label": "Stock text", "default": "Selling fast" },
+    {
+      "type": "range",
+      "id": "stock_percent",
+      "label": "Stock bar fill",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 25
+    },
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "bg_from",     "label": "Background gradient — from", "default": "#1a1a2e" },
+    { "type": "color", "id": "bg_to",       "label": "Background gradient — to",   "default": "#2d1b3d" },
+    { "type": "color", "id": "text_color",  "label": "Text",          "default": "#ffffff" },
+    { "type": "color", "id": "accent_color","label": "Accent (eyebrow + dot)",  "default": "#ff4d6d" },
+    { "type": "color", "id": "digit_bg",    "label": "Digit background",        "default": "#ffffff" },
+    { "type": "color", "id": "digit_text",  "label": "Digit text",              "default": "#1a1a2e" },
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "border_radius", "label": "Corner radius", "min": 0,  "max": 32, "step": 2,  "unit": "px", "default": 14 },
+    { "type": "range", "id": "padding_v",     "label": "Padding vertical",   "min": 8,  "max": 48, "step": 2,  "unit": "px", "default": 18 },
+    { "type": "range", "id": "padding_h",     "label": "Padding horizontal", "min": 8,  "max": 48, "step": 2,  "unit": "px", "default": 16 },
+    { "type": "range", "id": "margin_top",    "label": "Margin top",    "min": 0, "max": 60, "step": 2, "unit": "px", "default": 8 },
+    { "type": "range", "id": "margin_bottom", "label": "Margin bottom", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 8 }
+  ],
+  "disabled_on": {"groups": ["header","footer"]},
+  "presets": [ { "name": "Countdown timer" } ]
+}
+{% endschema %}
