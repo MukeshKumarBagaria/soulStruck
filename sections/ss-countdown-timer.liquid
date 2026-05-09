@@ -368,8 +368,8 @@
       "id": "timer_mode",
       "label": "Timer mode",
       "options": [
-        { "value": "fixed",   "label": "Fixed end date (everyone sees the same countdown)" },
-        { "value": "rolling", "label": "Rolling per visitor (resets per shopper, evergreen FOMO)" }
+        { "value": "fixed",   "label": "Fixed end date (same for everyone)" },
+        { "value": "rolling", "label": "Rolling per visitor (evergreen FOMO)" }
       ],
       "default": "rolling"
     },
@@ -385,9 +385,9 @@
       "id": "rolling_hours",
       "label": "Rolling duration",
       "info": "How long the timer runs from the visitor's first view.",
-      "min": 1,
+      "min": 2,
       "max": 168,
-      "step": 1,
+      "step": 2,
       "unit": "h",
       "default": 24
     },
