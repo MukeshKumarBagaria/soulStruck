@@ -368,6 +368,26 @@
                 "reco_header"
               ]
             },
+            "ai_gen_block_04bb985_hJqUXz": {
+              "type": "ai_gen_block_04bb985",
+              "settings": {
+                "feature_1_title": "lasts 2–3 weeks",
+                "feature_2_title": "apply in < 10Min without UV",
+                "feature_3_title": "strong + non-toxic glue",
+                "desktop_width_percent": 100,
+                "section_padding": 10,
+                "item_padding": 4,
+                "desktop_gap": 15,
+                "mobile_gap": 10,
+                "icon_text_gap": 8,
+                "icon_size": 18,
+                "icon_color": "#FFB6C1",
+                "title_size": 13,
+                "title_weight": "500",
+                "title_color": "#2C2C2C"
+              },
+              "blocks": {}
+            },
             "ai_gen_block_daf0daf_9AUCwq": {
               "type": "ai_gen_block_daf0daf",
               "settings": {
@@ -523,6 +543,7 @@
             "variant_picker",
             "buy_buttons",
             "complementary_products",
+            "ai_gen_block_04bb985_hJqUXz",
             "ai_gen_block_daf0daf_9AUCwq",
             "accordion_group"
           ]
