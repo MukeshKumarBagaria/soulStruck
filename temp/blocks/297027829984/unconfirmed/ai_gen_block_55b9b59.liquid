@@ -1,6 +1,335 @@
+{% doc %}
+  @prompt
+    Create a compact image-based promotional banner block for a Shopify product page that appears directly above the “Add to Cart” or “Buy Now” button. The section should function as a small image picker/upload block inside the Shopify theme customizer, allowing the store owner to upload a custom promotional banner image.
+    
+    The banner style should match premium modern ecommerce brands — sleek, minimal, clean, and highly polished.
+    
+    Design Requirements:
+    
+    Slim horizontal banner layout
+    Small compact height similar to a label strip
+    Full-width responsive container
+    Smooth rounded corners (10px–14px)
+    Clean spacing above and below the banner
+    Luxury beauty/fashion ecommerce aesthetic
+    Soft subtle shadow for depth
+    Mobile-first responsive design
+    Image should perfectly fit without distortion
+    Maintain sharp quality and clean edges
+    
+    Image Behavior:
+    
+    Theme editor should include an image picker/upload option
+    Uploaded image should automatically scale responsively
+    Support desktop + mobile optimized banner images
+    Optional clickable link support for offers/pages
+    Optional hover zoom or smooth transition effect
+    
+    Technical Requirements:
+    
+    Shopify Liquid section/block
+    Image picker in schema settings
+    Lazy-loaded optimized image rendering
+    Fast-loading lightweight implementation
+    Responsive sizing controls
+    Optional max-width customization
+    Support transparent PNG banners
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-promo-banner-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    margin: {{ block.settings.spacing_top }}px 0 {{ block.settings.spacing_bottom }}px;
+  }
+
+  .ai-promo-banner-container-{{ ai_gen_id }} {
+    position: relative;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: {{ block.settings.border_radius }}px;
+    {% if block.settings.enable_shadow %}
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    {% endif %}
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  {% if block.settings.enable_hover_effect %}
+    .ai-promo-banner-container-{{ ai_gen_id }}:hover {
+      transform: translateY(-2px);
+      {% if block.settings.enable_shadow %}
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      {% endif %}
+    }
+  {% endif %}
+
+  .ai-promo-banner-link-{{ ai_gen_id }} {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: {{ block.settings.banner_height }}px;
+    text-decoration: none;
+    overflow: hidden;
+  }
+
+  .ai-promo-banner-image-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    {% if block.settings.enable_hover_zoom %}
+      transition: transform 0.5s ease;
+    {% endif %}
+  }
+
+  {% if block.settings.enable_hover_zoom %}
+    .ai-promo-banner-link-{{ ai_gen_id }}:hover .ai-promo-banner-image-{{ ai_gen_id }} {
+      transform: scale(1.05);
+    }
+  {% endif %}
+
+  .ai-promo-banner-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .ai-promo-banner-placeholder-{{ ai_gen_id }} svg {
+    width: 60px;
+    height: 60px;
+    opacity: 0.3;
+  }
+
+  .ai-promo-banner-empty-state-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 16px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 6px;
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-promo-banner-container-{{ ai_gen_id }} {
+      width: 100%;
+    }
+
+    .ai-promo-banner-link-{{ ai_gen_id }} {
+      height: {{ block.settings.banner_height_mobile }}px;
+    }
+  }
+{% endstyle %}
+
+<promo-banner-{{ ai_gen_id }} class="ai-promo-banner-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-promo-banner-container-{{ ai_gen_id }}">
+    {% if block.settings.banner_link != blank %}
+      <a href="{{ block.settings.banner_link }}" class="ai-promo-banner-link-{{ ai_gen_id }}">
+        {% if block.settings.banner_image %}
+          <img
+            src="{{ block.settings.banner_image | image_url: width: 2000 }}"
+            srcset="
+              {{ block.settings.banner_image | image_url: width: 600 }} 600w,
+              {{ block.settings.banner_image | image_url: width: 1200 }} 1200w,
+              {{ block.settings.banner_image | image_url: width: 2000 }} 2000w
+            "
+            sizes="(max-width: 749px) 100vw, {{ block.settings.desktop_width_percent }}vw"
+            alt="{{ block.settings.banner_image.alt | escape }}"
+            loading="lazy"
+            width="{{ block.settings.banner_image.width }}"
+            height="{{ block.settings.banner_image.height }}"
+            class="ai-promo-banner-image-{{ ai_gen_id }}"
+          >
+        {% else %}
+          <div class="ai-promo-banner-placeholder-{{ ai_gen_id }}">
+            {{ 'image' | placeholder_svg_tag }}
+            <div class="ai-promo-banner-empty-state-{{ ai_gen_id }}">
+              Upload a promotional banner image
+            </div>
+          </div>
+        {% endif %}
+      </a>
+    {% else %}
+      <div class="ai-promo-banner-link-{{ ai_gen_id }}">
+        {% if block.settings.banner_image %}
+          <img
+            src="{{ block.settings.banner_image | image_url: width: 2000 }}"
+            srcset="
+              {{ block.settings.banner_image | image_url: width: 600 }} 600w,
+              {{ block.settings.banner_image | image_url: width: 1200 }} 1200w,
+              {{ block.settings.banner_image | image_url: width: 2000 }} 2000w
+            "
+            sizes="(max-width: 749px) 100vw, {{ block.settings.desktop_width_percent }}vw"
+            alt="{{ block.settings.banner_image.alt | escape }}"
+            loading="lazy"
+            width="{{ block.settings.banner_image.width }}"
+            height="{{ block.settings.banner_image.height }}"
+            class="ai-promo-banner-image-{{ ai_gen_id }}"
+          >
+        {% else %}
+          <div class="ai-promo-banner-placeholder-{{ ai_gen_id }}">
+            {{ 'image' | placeholder_svg_tag }}
+            <div class="ai-promo-banner-empty-state-{{ ai_gen_id }}">
+              Upload a promotional banner image
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</promo-banner-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class PromoBanner{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.style.display = 'block';
+      }
+    }
+
+    customElements.define('promo-banner-{{ ai_gen_id }}', PromoBanner{{ ai_gen_id }});
+  })();
+</script>
+
 {% schema %}
- {
-   "name": "AI_Block",
-   "tag": "shopify-ai-generated-block"
- }
+{
+  "name": "Promo banner",
+  "tag": null,
+  "class": "promo-banner-block",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Banner image"
+    },
+    {
+      "type": "image_picker",
+      "id": "banner_image",
+      "label": "Image",
+      "info": "Recommended: 1200 x 120px for slim banner"
+    },
+    {
+      "type": "url",
+      "id": "banner_link",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "banner_height",
+      "label": "Desktop height",
+      "min": 40,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "banner_height_mobile",
+      "label": "Mobile height",
+      "min": 40,
+      "max": 150,
+      "step": 10,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "spacing_top",
+      "label": "Top spacing",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "spacing_bottom",
+      "label": "Bottom spacing",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_shadow",
+      "label": "Enable shadow",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Effects"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_hover_effect",
+      "label": "Enable hover lift",
+      "default": true,
+      "info": "Banner lifts slightly on hover"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_hover_zoom",
+      "label": "Enable hover zoom",
+      "default": false,
+      "info": "Image zooms slightly on hover"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Promo banner"
+    }
+  ]
+}
 {% endschema %}
