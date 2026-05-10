@@ -422,10 +422,10 @@
                 "mobile_gap": 10,
                 "icon_text_gap": 8,
                 "icon_size": 18,
-                "icon_color": "#FFB6C1",
+                "icon_color": "#ffb6c1",
                 "title_size": 13,
                 "title_weight": "500",
-                "title_color": "#2C2C2C"
+                "title_color": "#2c2c2c"
               },
               "blocks": {}
             },
@@ -435,7 +435,7 @@
                 "banner_image": "shopify://shop_images/promo.avif",
                 "banner_link": "",
                 "desktop_width_percent": 100,
-                "banner_height": 80,
+                "banner_height": 40,
                 "banner_height_mobile": 60,
                 "spacing_top": 20,
                 "spacing_bottom": 20,
