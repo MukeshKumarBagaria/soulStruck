@@ -573,6 +573,7 @@
       "settings": {
         "show_lengths": true,
         "length_heading": "Find Nails in Every Length",
+        "heading_transform": "none",
         "length_xshort_collection": "3d-nails",
         "length_xshort_image": "shopify://shop_images/x-short.webp",
         "length_xshort_url": "",
@@ -1174,119 +1175,8 @@
         "padding-block-end": 0
       }
     },
-    "video_product_cards_MPWggi": {
-      "type": "video-product-cards",
-      "blocks": {
-        "product_Em3Y4J": {
-          "type": "product",
-          "settings": {
-            "product": "ash-mode",
-            "video": "shopify://files/videos/CopyofSTEP!ClipYourLONGNAILS(1080x1080px).mp4",
-            "tag_label": "",
-            "tag_color": "",
-            "fallback_rating": 0
-          }
-        },
-        "product_b4kzD9": {
-          "type": "product",
-          "settings": {
-            "product": "",
-            "tag_label": "",
-            "tag_color": "",
-            "fallback_rating": 0
-          }
-        },
-        "product_c9Eya8": {
-          "type": "product",
-          "settings": {
-            "product": "",
-            "tag_label": "",
-            "tag_color": "",
-            "fallback_rating": 0
-          }
-        },
-        "product_iPqFmk": {
-          "type": "product",
-          "settings": {
-            "product": "",
-            "tag_label": "",
-            "tag_color": "",
-            "fallback_rating": 0
-          }
-        }
-      },
-      "block_order": [
-        "product_Em3Y4J",
-        "product_b4kzD9",
-        "product_c9Eya8",
-        "product_iPqFmk"
-      ],
-      "name": "Video product cards",
-      "settings": {
-        "eyebrow": "Watch & shop",
-        "heading": "Discover the collection",
-        "subheading": "See the products in motion. Tap any card to shop the look.",
-        "text_align": "center",
-        "columns_desktop": 4,
-        "max_width": 1320,
-        "card_radius": 18,
-        "padding_top": 72,
-        "padding_bottom": 80,
-        "show_discount_badge": true,
-        "show_wishlist": true,
-        "show_quickview": false,
-        "show_vendor": true,
-        "show_rating": true,
-        "show_add_to_cart": true,
-        "add_to_cart_label": "Add to bag",
-        "color_pink": "#e06285",
-        "color_purple": "#a08ccb",
-        "color_gold": "#c9a961",
-        "bg_color": "#ffffff",
-        "card_bg": "#ffffff",
-        "text_color": "#1a1a1a",
-        "muted_color": "#888888"
-      }
-    },
     "17780998164fe8bc96": {
       "type": "_blocks",
-      "blocks": {
-        "ai_gen_block_f20637f_GGYTMk": {
-          "type": "ai_gen_block_f20637f",
-          "settings": {
-            "image_position": "left",
-            "desktop_width_percent": 100,
-            "image_width": 50,
-            "gap": 40,
-            "mobile_gap": 20,
-            "image_aspect_ratio": "3/4",
-            "image_height": 60,
-            "mobile_image_aspect_ratio": "4/5",
-            "mobile_image_height": 40,
-            "image_border_radius": 0,
-            "title": "Image with text",
-            "description": "<p>Pair text with an image to focus on your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>",
-            "content_gap": 15,
-            "title_size": 32,
-            "mobile_title_size": 24,
-            "title_color": "#000000",
-            "description_size": 16,
-            "mobile_description_size": 14,
-            "description_color": "#000000",
-            "background_color": "#ffffff",
-            "border_radius": 0,
-            "padding_top": 40,
-            "padding_bottom": 40,
-            "padding_horizontal": 40,
-            "mobile_padding_vertical": 30,
-            "mobile_padding_horizontal": 20
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "ai_gen_block_f20637f_GGYTMk"
-      ],
       "settings": {
         "content_direction": "column",
         "vertical_on_mobile": true,
@@ -1329,7 +1219,6 @@
     "17765982920983bbc2",
     "1776615002243e8093",
     "17766087610ab8ede2",
-    "video_product_cards_MPWggi",
     "17780998164fe8bc96"
   ]
 }
