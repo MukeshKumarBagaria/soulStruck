@@ -429,6 +429,23 @@
               },
               "blocks": {}
             },
+            "ai_gen_block_55b9b59_ztJGEb": {
+              "type": "ai_gen_block_55b9b59",
+              "settings": {
+                "banner_image": "shopify://shop_images/promo.avif",
+                "banner_link": "",
+                "desktop_width_percent": 100,
+                "banner_height": 80,
+                "banner_height_mobile": 60,
+                "spacing_top": 20,
+                "spacing_bottom": 20,
+                "border_radius": 12,
+                "enable_shadow": true,
+                "enable_hover_effect": true,
+                "enable_hover_zoom": false
+              },
+              "blocks": {}
+            },
             "accordion_group": {
               "type": "accordion",
               "settings": {
@@ -545,6 +562,7 @@
             "buy_buttons",
             "complementary_products",
             "ai_gen_block_04bb985_hJqUXz",
+            "ai_gen_block_55b9b59_ztJGEb",
             "accordion_group"
           ]
         }
