@@ -66,14 +66,14 @@
     }
   {% endif %}
 
-  .ai-promo-banner-link-{{ ai_gen_id }} {
-    display: block;
-    position: relative;
-    width: 100%;
-    height: {{ block.settings.banner_height }}px;
-    text-decoration: none;
-    overflow: hidden;
-  }
+ .ai-promo-banner-link-{{ ai_gen_id }} {
+  display: block;
+  position: relative;
+  width: 100%;
+  text-decoration: none;
+  overflow: hidden;
+  aspect-ratio: 6 / 1;
+}
 
   .ai-promo-banner-image-{{ ai_gen_id }} {
     width: 100%;
