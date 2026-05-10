@@ -104,12 +104,17 @@
       {% if block == 'media' and product_has_media %}
         {{ media }}
       {% elsif block == 'product-details' %}
-        {{ product_details }}
+        <div class="product-info-column-wrap">
+          {{ product_details }}
+          {% if additional_blocks != blank %}
+            <div class="product-info-extra-blocks">
+              {{ additional_blocks }}
+            </div>
+          {% endif %}
+        </div>
       {% endif %}
     {% endfor %}
   </div>
-
-  {{ additional_blocks }}
 </div>
 
 {% stylesheet %}
@@ -122,6 +127,24 @@
     display: grid;
     grid-template-columns: subgrid;
     grid-column: 1 / -1;
+  }
+
+  /* Wrapper that keeps product-details and extra blocks in the same column cell */
+  .product-info-column-wrap {
+    display: contents;
+  }
+
+  /* Extra blocks injected below product details in the right column */
+  .product-info-extra-blocks {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    order: 2;
+  }
+
+  .product-info-extra-blocks > * {
+    margin-top: 0;
+    margin-bottom: 0;
   }
 
   /* Default column positions */
