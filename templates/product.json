@@ -143,7 +143,7 @@
               "type": "text",
               "name": "Offer Banner",
               "settings": {
-                "text": "<p><strong>BUY ANY 2 @699 | BUY ANY 3 @1049</strong></p>",
+                "text": "<p><strong>Buy2 @1099, Buy3 @1599, Buy4 @1999</strong></p>",
                 "width": "fit-content",
                 "max_width": "normal",
                 "alignment": "left",
@@ -333,7 +333,7 @@
                 "card_background": "#ffffff",
                 "card_border_color": "#e6e6e6",
                 "card_hover_border": "#000000",
-                "shadow_color": "#00000010",
+                "shadow_color": "#0000000f",
                 "button_background": "#000000",
                 "button_text_color": "#ffffff",
                 "button_border": "#000000",
