@@ -889,7 +889,7 @@
           "type": "tab",
           "settings": {
             "tab_label": "apply with tabs",
-            "heading": "Gentle Adhesive Tabs (stays ~1 week)",
+            "heading": "Gentle Adhesive Tabs (stays ~2-4 days)",
             "description": "Perfect for sensitive nails or short-term wear.",
             "bullet1_icon": "leaf",
             "bullet1_text": "damage-free removal",
@@ -897,9 +897,13 @@
             "bullet2_text": "reusable nails",
             "bullet3_icon": "clock",
             "bullet3_text": "ready in 10 minutes",
+            "step1_image": "shopify://shop_images/app-guide-adhesive-tab-1.png",
             "step1_label": "prep",
+            "step2_image": "shopify://shop_images/app-guide-adhesive-tab-2.png",
             "step2_label": "pick",
+            "step3_image": "shopify://shop_images/app-guide-adhesive-tab-3.png",
             "step3_label": "apply tab",
+            "step4_image": "shopify://shop_images/app-guide-adhesive-tab-4.png",
             "step4_label": "press"
           }
         },
