@@ -544,6 +544,7 @@
           "settings": {
             "collection": "",
             "label": "shapes",
+            "avatar": "shopify://shop_images/shape.webp",
             "link": ""
           }
         },
@@ -552,6 +553,7 @@
           "settings": {
             "collection": "",
             "label": "occasions",
+            "avatar": "shopify://shop_images/occasion.webp",
             "link": ""
           }
         },
@@ -560,6 +562,7 @@
           "settings": {
             "collection": "",
             "label": "effect",
+            "avatar": "shopify://shop_images/effect.webp",
             "link": ""
           }
         }
