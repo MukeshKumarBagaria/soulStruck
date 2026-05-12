@@ -701,17 +701,17 @@
             "label_weight": "500",
             "label_spacing": 12,
             "image_1": "shopify://shop_images/included-1.png",
-            "label_1": "sample1",
+            "label_1": "24 Nails",
             "image_2": "shopify://shop_images/included-2.png",
-            "label_2": "sample2",
+            "label_2": "Alcohol Pad",
             "image_3": "shopify://shop_images/included-3.png",
-            "label_3": "sample3",
+            "label_3": "Nail Filer",
             "image_4": "shopify://shop_images/included-4.png",
-            "label_4": "sample4",
+            "label_4": "Cuticle Stick",
             "image_5": "shopify://shop_images/included-5.png",
-            "label_5": "sample5",
+            "label_5": "Adhesive Tab",
             "image_6": "shopify://shop_images/included-6.png",
-            "label_6": "sample6"
+            "label_6": "Liquid Glue"
           },
           "blocks": {}
         }
