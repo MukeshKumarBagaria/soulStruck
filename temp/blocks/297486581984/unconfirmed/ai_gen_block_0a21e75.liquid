@@ -1,6 +1,573 @@
+{% doc %}
+  @prompt
+    Create a premium Shopify section inspired by Instagram Reels / TikTok product story sliders. The section should display up to 10 vertical autoplay product videos in horizontally scrollable cards. Each card must contain a muted looping vertical video with elegant rounded corners and a luxury modern aesthetic. Clicking anywhere on a card should redirect users to its assigned product page.
+    
+    The section should include:
+    
+    Horizontally scrollable layout
+    Vertical 9:16 videos
+    Autoplay enabled
+    Muted videos only
+    Infinite loop playback
+    No controls visible
+    Mobile-first responsive design
+    Smooth scrolling experience
+    Hidden scrollbar
+    Premium beauty/fashion/ecommerce feel
+    Optional overlay text at the bottom of each card
+    Fully clickable card
+    Shopify theme editor compatible
+    Support for up to 10 video blocks
+    Separate product URL/link for each video card
+    Elegant hover effect on desktop
+    Object-fit cover videos
+    Optimized loading performance
+    Rounded corners with subtle shadow
+    Clean spacing similar to luxury skincare/nail/fashion brands
+    
+    Each block should contain:
+    
+    Video upload picker
+    Product link picker
+    Optional overlay text
+    
+    The section settings should include:
+    
+    Heading text
+    Card width control
+    Border radius control
+    Optional autoplay toggle
+    Optional overlay enable/disable
+    
+    Design inspiration:
+    Luxury beauty ecommerce brands, Instagram story reels, TikTok product showcase sections, modern Gen-Z fashion websites.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-product-reels-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    padding: 40px 0;
+  }
+
+  .ai-product-reels-container-{{ ai_gen_id }} {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .ai-product-reels-heading-{{ ai_gen_id }} {
+    text-align: center;
+    margin-bottom: 32px;
+    font-size: 32px;
+    font-weight: 700;
+    color: #000000;
+  }
+
+  .ai-product-reels-scroll-wrapper-{{ ai_gen_id }} {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ai-product-reels-scroll-{{ ai_gen_id }} {
+    display: flex;
+    gap: {{ block.settings.card_gap }}px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 8px 0;
+  }
+
+  .ai-product-reels-scroll-{{ ai_gen_id }}::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ai-product-reels-card-{{ ai_gen_id }} {
+    position: relative;
+    flex-shrink: 0;
+    width: {{ block.settings.card_width }}px;
+    aspect-ratio: 9 / 16;
+    border-radius: {{ block.settings.border_radius }}px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    background-color: #f5f5f5;
+  }
+
+  .ai-product-reels-card-{{ ai_gen_id }}:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  .ai-product-reels-video-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .ai-product-reels-overlay-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 24px 16px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+    pointer-events: none;
+  }
+
+  .ai-product-reels-link-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+  }
+
+  .ai-product-reels-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+    color: #999;
+    font-size: 14px;
+    text-align: center;
+    padding: 20px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-product-reels-card-{{ ai_gen_id }} {
+      width: {{ block.settings.card_width_mobile }}px;
+    }
+
+    .ai-product-reels-heading-{{ ai_gen_id }} {
+      font-size: 24px;
+      margin-bottom: 24px;
+    }
+
+    .ai-product-reels-scroll-{{ ai_gen_id }} {
+      gap: {{ block.settings.card_gap_mobile }}px;
+    }
+  }
+{% endstyle %}
+
+<product-reels-{{ ai_gen_id }} class="ai-product-reels-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-product-reels-container-{{ ai_gen_id }}">
+    {% if block.settings.heading != blank %}
+      <h2 class="ai-product-reels-heading-{{ ai_gen_id }}">{{ block.settings.heading }}</h2>
+    {% endif %}
+
+    <div class="ai-product-reels-scroll-wrapper-{{ ai_gen_id }}">
+      <div class="ai-product-reels-scroll-{{ ai_gen_id }}">
+        {% for i in (1..10) %}
+          {% liquid
+            assign video_key = 'video_' | append: i
+            assign link_key = 'product_link_' | append: i
+            assign text_key = 'overlay_text_' | append: i
+            assign video = block.settings[video_key]
+            assign product_link = block.settings[link_key]
+            assign overlay_text = block.settings[text_key]
+          %}
+
+          {% if video != blank %}
+            <div class="ai-product-reels-card-{{ ai_gen_id }}" data-card-index="{{ i }}">
+              <video
+                class="ai-product-reels-video-{{ ai_gen_id }}"
+                {% if block.settings.autoplay %}autoplay{% endif %}
+                muted
+                loop
+                playsinline
+                preload="metadata"
+              >
+                <source src="{{ video }}" type="video/mp4">
+              </video>
+
+              {% if block.settings.show_overlay and overlay_text != blank %}
+                <div class="ai-product-reels-overlay-{{ ai_gen_id }}">
+                  {{ overlay_text }}
+                </div>
+              {% endif %}
+
+              {% if product_link != blank %}
+                <a
+                  href="{{ product_link }}"
+                  class="ai-product-reels-link-{{ ai_gen_id }}"
+                  aria-label="View product"
+                ></a>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</product-reels-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class ProductReels{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.scrollContainer = null;
+        this.videos = [];
+        this.observer = null;
+      }
+
+      connectedCallback() {
+        this.scrollContainer = this.querySelector('.ai-product-reels-scroll-{{ ai_gen_id }}');
+        this.videos = Array.from(this.querySelectorAll('.ai-product-reels-video-{{ ai_gen_id }}'));
+        
+        this.setupIntersectionObserver();
+        this.setupVideoPlayback();
+      }
+
+      setupIntersectionObserver() {
+        const options = {
+          root: this.scrollContainer,
+          threshold: 0.5
+        };
+
+        this.observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            const video = entry.target.querySelector('.ai-product-reels-video-{{ ai_gen_id }}');
+            if (video) {
+              if (entry.isIntersecting) {
+                video.play().catch(() => {});
+              } else {
+                video.pause();
+              }
+            }
+          });
+        }, options);
+
+        const cards = this.querySelectorAll('.ai-product-reels-card-{{ ai_gen_id }}');
+        cards.forEach(card => this.observer.observe(card));
+      }
+
+      setupVideoPlayback() {
+        this.videos.forEach(video => {
+          video.addEventListener('loadedmetadata', () => {
+            video.muted = true;
+          });
+        });
+      }
+
+      disconnectedCallback() {
+        if (this.observer) {
+          this.observer.disconnect();
+        }
+      }
+    }
+
+    customElements.define('product-reels-{{ ai_gen_id }}', ProductReels{{ ai_gen_id }});
+  })();
+</script>
+
 {% schema %}
- {
-   "name": "AI_Block",
-   "tag": "shopify-ai-generated-block"
- }
+{
+  "name": "Product story reels",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop the Look"
+    },
+    {
+      "type": "header",
+      "content": "Card style"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "label": "Card width (desktop)",
+      "min": 200,
+      "max": 400,
+      "step": 10,
+      "unit": "px",
+      "default": 280
+    },
+    {
+      "type": "range",
+      "id": "card_width_mobile",
+      "label": "Card width (mobile)",
+      "min": 150,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "default": 220
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Gap between cards (desktop)",
+      "min": 8,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "card_gap_mobile",
+      "label": "Gap between cards (mobile)",
+      "min": 8,
+      "max": 32,
+      "step": 4,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Video settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay videos",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Overlay"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_overlay",
+      "label": "Show overlay text",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Video 1"
+    },
+    {
+      "type": "video",
+      "id": "video_1",
+      "label": "Video"
+    },
+    {
+      "type": "url",
+      "id": "product_link_1",
+      "label": "Product link"
+    },
+    {
+      "type": "text",
+      "id": "overlay_text_1",
+      "label": "Overlay text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "header",
+      "content": "Video 2"
+    },
+    {
+      "type": "video",
+      "id": "video_2",
+      "label": "Video"
+    },
+    {
+      "type": "url",
+      "id": "product_link_2",
+      "label": "Product link"
+    },
+    {
+      "type": "text",
+      "id": "overlay_text_2",
+      "label": "Overlay text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "header",
+      "content": "Video 3"
+    },
+    {
+      "type": "video",
+      "id": "video_3",
+      "label": "Video"
+    },
+    {
+      "type": "url",
+      "id": "product_link_3",
+      "label": "Product link"
+    },
+    {
+      "type": "text",
+      "id": "overlay_text_3",
+      "label": "Overlay text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "header",
+      "content": "Video 4"
+    },
+    {
+      "type": "video",
+      "id": "video_4",
+      "label": "Video"
+    },
+    {
+      "type": "url",
+      "id": "product_link_4",
+      "label": "Product link"
+    },
+    {
+      "type": "text",
+      "id": "overlay_text_4",
+      "label": "Overlay text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "header",
+      "content": "Video 5"
+    },
+    {
+      "type": "video",
+      "id": "video_5",
+      "label": "Video"
+    },
+    {
+      "type": "url",
+      "id": "product_link_5",
+      "label": "Product link"
+    },
+    {
+      "type": "text",
+      "id": "overlay_text_5",
+      "label": "Overlay text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "header",
+      "content": "Video 6"
+    },
+    {
+      "type": "video",
+      "id": "video_6",
+      "label": "Video"
+    },
+    {
+      "type": "url",
+      "id": "product_link_6",
+      "label": "Product link"
+    },
+    {
+      "type": "text",
+      "id": "overlay_text_6",
+      "label": "Overlay text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "header",
+      "content": "Video 7"
+    },
+    {
+      "type": "video",
+      "id": "video_7",
+      "label": "Video"
+    },
+    {
+      "type": "url",
+      "id": "product_link_7",
+      "label": "Product link"
+    },
+    {
+      "type": "text",
+      "id": "overlay_text_7",
+      "label": "Overlay text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "header",
+      "content": "Video 8"
+    },
+    {
+      "type": "video",
+      "id": "video_8",
+      "label": "Video"
+    },
+    {
+      "type": "url",
+      "id": "product_link_8",
+      "label": "Product link"
+    },
+    {
+      "type": "text",
+      "id": "overlay_text_8",
+      "label": "Overlay text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "header",
+      "content": "Video 9"
+    },
+    {
+      "type": "video",
+      "id": "video_9",
+      "label": "Video"
+    },
+    {
+      "type": "url",
+      "id": "product_link_9",
+      "label": "Product link"
+    },
+    {
+      "type": "text",
+      "id": "overlay_text_9",
+      "label": "Overlay text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "header",
+      "content": "Video 10"
+    },
+    {
+      "type": "video",
+      "id": "video_10",
+      "label": "Video"
+    },
+    {
+      "type": "url",
+      "id": "product_link_10",
+      "label": "Product link"
+    },
+    {
+      "type": "text",
+      "id": "overlay_text_10",
+      "label": "Overlay text",
+      "default": "Shop Now"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product story reels"
+    }
+  ]
+}
 {% endschema %}
