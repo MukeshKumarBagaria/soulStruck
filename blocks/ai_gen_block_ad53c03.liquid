@@ -101,7 +101,7 @@
   {% endif %}
 
   <div class="ai-whats-included__grid-{{ ai_gen_id }}">
-    {% for i in (1..6) %}
+    {% for i in (1..8) %}
       {% liquid
         assign image_key = 'image_' | append: i
         assign label_key = 'label_' | append: i
@@ -246,9 +246,9 @@
       "id": "items_per_row",
       "label": "Items per row on desktop",
       "min": 3,
-      "max": 6,
+      "max": 10,
       "step": 1,
-      "default": 6
+      "default": 8
     },
     {
       "type": "select",
@@ -262,9 +262,13 @@
         {
           "value": "3",
           "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
         }
       ],
-      "default": "3"
+      "default": "4"
     },
     {
       "type": "range",
@@ -442,6 +446,34 @@
     {
       "type": "text",
       "id": "label_6",
+      "label": "Label"
+    },
+    {
+      "type": "header",
+      "content": "Item 7"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_7",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "label_7",
+      "label": "Label"
+    },
+    {
+      "type": "header",
+      "content": "Item 8"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_8",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "label_8",
       "label": "Label"
     }
   ],
