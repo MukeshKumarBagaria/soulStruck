@@ -923,10 +923,14 @@
             "bullet2_text": "Let them sit for 5–10 minutes to loosen the adhesive.",
             "bullet3_icon": "zap",
             "bullet3_text": "Gently lift the nails from the sides using a cuticle pusher.",
+            "step1_image": "shopify://shop_images/4-soak.webp",
             "step1_label": "soak",
+            "step2_image": "shopify://shop_images/5-lift.webp",
             "step2_label": "lift",
+            "step3_image": "shopify://shop_images/3-buff.webp",
             "step3_label": "clean",
-            "step4_label": "store"
+            "step4_image": "shopify://shop_images/1-nourish.webp",
+            "step4_label": "nourish"
           }
         }
       },
