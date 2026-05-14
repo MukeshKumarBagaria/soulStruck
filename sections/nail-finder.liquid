@@ -49,7 +49,7 @@
 
   .ssnf-{{ sid }}__lengths {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: clamp(8px, 2vw, 24px);
     align-items: end;
     margin-bottom: clamp(36px, 5vw, 56px);
@@ -324,10 +324,10 @@
 
       <div class="ssnf-{{ sid }}__lengths">
         {%- liquid
-          assign labels = 'x-short,short,medium,long,x-long' | split: ','
-          assign coll_keys = 'length_xshort_collection,length_short_collection,length_medium_collection,length_long_collection,length_xlong_collection' | split: ','
-          assign url_keys = 'length_xshort_url,length_short_url,length_medium_url,length_long_url,length_xlong_url' | split: ','
-          assign image_keys = 'length_xshort_image,length_short_image,length_medium_image,length_long_image,length_xlong_image' | split: ','
+          assign labels = 'short,medium,long,x-long' | split: ','
+          assign coll_keys = 'length_short_collection,length_medium_collection,length_long_collection,length_xlong_collection' | split: ','
+          assign url_keys = 'length_short_url,length_medium_url,length_long_url,length_xlong_url' | split: ','
+          assign image_keys = 'length_short_image,length_medium_image,length_long_image,length_xlong_image' | split: ','
         -%}
 
         {% for label in labels %}
@@ -369,30 +369,24 @@
               {% else %}
               {%- case forloop.index -%}
                 {%- when 1 -%}
-                  {%- comment -%} x-short — short rounded dome {%- endcomment -%}
-                  <svg viewBox="0 0 60 130" aria-hidden="true">
-                    <path d="M16 100 V 65 Q 30 35 44 65 V 100 Z"/>
-                    <line x1="13" y1="100" x2="47" y2="100"/>
-                  </svg>
-                {%- when 2 -%}
                   {%- comment -%} short — slightly taller dome {%- endcomment -%}
                   <svg viewBox="0 0 60 130" aria-hidden="true">
                     <path d="M16 105 V 55 Q 30 22 44 55 V 105 Z"/>
                     <line x1="13" y1="105" x2="47" y2="105"/>
                   </svg>
-                {%- when 3 -%}
+                {%- when 2 -%}
                   {%- comment -%} medium — squoval (rounded square top) {%- endcomment -%}
                   <svg viewBox="0 0 60 130" aria-hidden="true">
                     <path d="M16 110 V 40 Q 30 12 44 40 V 110 Z"/>
                     <line x1="13" y1="110" x2="47" y2="110"/>
                   </svg>
-                {%- when 4 -%}
+                {%- when 3 -%}
                   {%- comment -%} long — soft taper (two Qs meeting at top center) {%- endcomment -%}
                   <svg viewBox="0 0 60 130" aria-hidden="true">
                     <path d="M16 115 V 30 Q 16 10 30 10 Q 44 10 44 30 V 115 Z"/>
                     <line x1="13" y1="115" x2="47" y2="115"/>
                   </svg>
-                {%- when 5 -%}
+                {%- when 4 -%}
                   {%- comment -%} x-long — almond / pointed peak {%- endcomment -%}
                   <svg viewBox="0 0 60 130" aria-hidden="true">
                     <path d="M17 120 V 25 Q 17 4 30 4 Q 43 4 43 25 V 120 Z"/>
@@ -507,21 +501,6 @@
     {
       "type": "paragraph",
       "content": "Pick a collection for each length. The link auto-resolves to the collection page. Upload an image to replace the SVG nail icon — leave blank to fall back to the collection image, then to the SVG."
-    },
-    {
-      "type": "collection",
-      "id": "length_xshort_collection",
-      "label": "x-short collection"
-    },
-    {
-      "type": "image_picker",
-      "id": "length_xshort_image",
-      "label": "x-short image"
-    },
-    {
-      "type": "url",
-      "id": "length_xshort_url",
-      "label": "x-short URL override"
     },
     {
       "type": "collection",
