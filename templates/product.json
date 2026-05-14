@@ -711,7 +711,11 @@
             "image_5": "shopify://shop_images/included-5.png",
             "label_5": "Adhesive Tab",
             "image_6": "shopify://shop_images/included-6.png",
-            "label_6": "Liquid Glue"
+            "label_6": "Liquid Glue",
+            "image_7": "shopify://shop_images/4-ways-buffer.webp",
+            "label_7": "4 Ways Buffer",
+            "image_8": "shopify://shop_images/Cuticle-Oil.webp",
+            "label_8": "Cuticle Oil"
           },
           "blocks": {}
         }
@@ -1059,7 +1063,6 @@
             "image_width": 50,
             "gap": 40,
             "mobile_gap": 20,
-            "image": "shopify://shop_images/image-with-text-4.webp",
             "image_aspect_ratio": "3/4",
             "image_height": 100,
             "mobile_image_aspect_ratio": "4/5",
