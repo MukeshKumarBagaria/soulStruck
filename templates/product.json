@@ -755,6 +755,23 @@
     "product_recommendations_section": {
       "type": "product-recommendations",
       "blocks": {
+        "ai_gen_block_9c328ff_z9TP49": {
+          "type": "ai_gen_block_9c328ff",
+          "settings": {
+            "title": "You might also like",
+            "heading_tag": "h2",
+            "font_family": "heading",
+            "font_size": 32,
+            "font_size_mobile": 24,
+            "text_alignment": "center",
+            "text_transform": "none",
+            "text_color": "#a85b6c",
+            "padding_top": 40,
+            "padding_bottom": 40,
+            "desktop_width_percent": 100
+          },
+          "blocks": {}
+        },
         "static-product-card": {
           "type": "_product-card",
           "name": "Product Card",
@@ -844,6 +861,9 @@
           ]
         }
       },
+      "block_order": [
+        "ai_gen_block_9c328ff_z9TP49"
+      ],
       "name": "Product Recommendations",
       "settings": {
         "product": "{{ closest.product }}",
@@ -943,7 +963,7 @@
       "settings": {
         "heading": "how to",
         "bg_color": "#ffffff",
-        "text_color": "#1a1a1a",
+        "text_color": "#a85b6c",
         "tab_active_color": "#1a1a1a",
         "tab_inactive_color": "#999999",
         "border_color": "#e0e0e0",
