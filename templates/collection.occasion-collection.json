@@ -65,33 +65,6 @@
             "custom_url": "",
             "hover_text": ""
           }
-        },
-        "circle_hQTizD": {
-          "type": "circle",
-          "settings": {
-            "collection": "",
-            "custom_label": "glossy",
-            "custom_url": "",
-            "hover_text": ""
-          }
-        },
-        "circle_HKC3K3": {
-          "type": "circle",
-          "settings": {
-            "collection": "",
-            "custom_label": "3D design",
-            "custom_url": "",
-            "hover_text": ""
-          }
-        },
-        "circle_kPXTGb": {
-          "type": "circle",
-          "settings": {
-            "collection": "",
-            "custom_label": "summer",
-            "custom_url": "",
-            "hover_text": ""
-          }
         }
       },
       "block_order": [
@@ -100,10 +73,7 @@
         "circle_Aptf38",
         "circle_xQEyD9",
         "circle_eHBdPH",
-        "circle_wcTKhV",
-        "circle_hQTizD",
-        "circle_HKC3K3",
-        "circle_kPXTGb"
+        "circle_wcTKhV"
       ],
       "name": "SS Collection Circles",
       "settings": {
