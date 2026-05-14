@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main": {
@@ -56,7 +65,10 @@
           "blocks": {}
         }
       },
-      "block_order": ["title", "content"],
+      "block_order": [
+        "title",
+        "content"
+      ],
       "settings": {
         "content_direction": "column",
         "gap": 32,
@@ -68,39 +80,53 @@
     "form": {
       "type": "section",
       "blocks": {
-        "contact_form_UwiCkQ": {
-          "type": "contact-form",
+        "ai_gen_block_452422b_8hm68k": {
+          "type": "ai_gen_block_452422b",
           "settings": {
-            "width": "custom",
-            "custom_width": 50,
-            "width_mobile": "custom",
-            "custom_width_mobile": 100,
-            "inherit_color_scheme": true,
-            "color_scheme": "",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
+            "heading": "Please Do Get In Touch!",
+            "subheading": "Questions, compliments, or just wanna say hey?",
+            "description": "Slide in! Drop us a message — we love nail talk !",
+            "email": "support@soulstruck.in",
+            "whatsapp": "+91 9997174366",
+            "form_title": "Send us a message",
+            "button_text": "Send message",
+            "success_message": "Thanks for reaching out! We'll get back to you soon.",
+            "desktop_width_percent": 100,
+            "section_padding": 60,
+            "gap": 40,
+            "form_padding": 40,
+            "info_padding": 40,
+            "border_radius": 12,
+            "heading_size": 42,
+            "subheading_size": 18,
+            "description_size": 16,
+            "form_title_size": 28,
+            "form_background": "#ffffff",
+            "info_background": "#f5f5f5",
+            "heading_color": "#000000",
+            "text_color": "#333333",
+            "icon_color": "#000000",
+            "link_color": "#000000",
+            "link_hover_color": "#333333",
+            "input_background": "#ffffff",
+            "input_border_color": "#e0e0e0",
+            "input_focus_border": "#000000",
+            "input_border_radius": 8,
+            "button_background": "#000000",
+            "button_text_color": "#ffffff",
+            "button_hover_background": "#333333",
+            "button_border_radius": 8,
+            "success_background": "#d4edda",
+            "success_text": "#155724",
+            "error_background": "#f8d7da",
+            "error_text": "#721c24"
           },
-          "blocks": {
-            "submit-button": {
-              "type": "contact-form-submit-button",
-              "static": true,
-              "settings": {
-                "label": "Submit",
-                "style_class": "button",
-                "width": "fit-content",
-                "custom_width": 100,
-                "width_mobile": "fit-content",
-                "custom_width_mobile": 100
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": []
+          "blocks": {}
         }
       },
-      "block_order": ["contact_form_UwiCkQ"],
+      "block_order": [
+        "ai_gen_block_452422b_8hm68k"
+      ],
       "name": "t:names.contact_form",
       "settings": {
         "content_direction": "column",
@@ -108,7 +134,7 @@
         "horizontal_alignment": "flex-start",
         "vertical_alignment": "center",
         "align_baseline": false,
-        "horizontal_alignment_flex_direction_column": "center",
+        "horizontal_alignment_flex_direction_column": "flex-start",
         "vertical_alignment_flex_direction_column": "center",
         "gap": 32,
         "section_width": "page-width",
@@ -131,5 +157,8 @@
       }
     }
   },
-  "order": ["main", "form"]
+  "order": [
+    "main",
+    "form"
+  ]
 }
