@@ -1,6 +1,660 @@
+{% doc %}
+  @prompt
+    create an beauitful contact page with the info -Please Do Get In Touch!
+    Questions, compliments, or just wanna say hey?
+    Slide in! Drop us a message — we love nail talk ! 
+    
+    Email: support@soulstruck.in
+    Whatsapp: +91 9997174366
+    
+    
+    
+    and make sure it have an form  shopify native contact form also in the left with the fields name , email , phone and message
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-contact-section-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: {{ block.settings.section_padding }}px 20px;
+  }
+
+  .ai-contact-container-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: {{ block.settings.gap }}px;
+    align-items: start;
+  }
+
+  .ai-contact-form-wrapper-{{ ai_gen_id }} {
+    background-color: {{ block.settings.form_background }};
+    padding: {{ block.settings.form_padding }}px;
+    border-radius: {{ block.settings.border_radius }}px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .ai-contact-form-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.form_title_size }}px;
+    color: {{ block.settings.text_color }};
+    margin: 0 0 24px 0;
+    font-weight: 600;
+  }
+
+  .ai-contact-form-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .ai-contact-field-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .ai-contact-label-{{ ai_gen_id }} {
+    font-size: 14px;
+    color: {{ block.settings.text_color }};
+    font-weight: 500;
+  }
+
+  .ai-contact-input-{{ ai_gen_id }},
+  .ai-contact-textarea-{{ ai_gen_id }} {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid {{ block.settings.input_border_color }};
+    border-radius: {{ block.settings.input_border_radius }}px;
+    font-size: 14px;
+    color: {{ block.settings.text_color }};
+    background-color: {{ block.settings.input_background }};
+    transition: border-color 0.3s ease;
+  }
+
+  .ai-contact-input-{{ ai_gen_id }}:focus,
+  .ai-contact-textarea-{{ ai_gen_id }}:focus {
+    outline: none;
+    border-color: {{ block.settings.input_focus_border }};
+  }
+
+  .ai-contact-textarea-{{ ai_gen_id }} {
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  .ai-contact-submit-{{ ai_gen_id }} {
+    padding: 14px 32px;
+    background-color: {{ block.settings.button_background }};
+    color: {{ block.settings.button_text_color }};
+    border: none;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .ai-contact-submit-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_background }};
+  }
+
+  .ai-contact-info-wrapper-{{ ai_gen_id }} {
+    background-color: {{ block.settings.info_background }};
+    padding: {{ block.settings.info_padding }}px;
+    border-radius: {{ block.settings.border_radius }}px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .ai-contact-heading-{{ ai_gen_id }} {
+    font-size: {{ block.settings.heading_size }}px;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 12px 0;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .ai-contact-subheading-{{ ai_gen_id }} {
+    font-size: {{ block.settings.subheading_size }}px;
+    color: {{ block.settings.text_color }};
+    margin: 0 0 8px 0;
+    line-height: 1.5;
+  }
+
+  .ai-contact-description-{{ ai_gen_id }} {
+    font-size: {{ block.settings.description_size }}px;
+    color: {{ block.settings.text_color }};
+    margin: 0 0 32px 0;
+    line-height: 1.6;
+  }
+
+  .ai-contact-details-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .ai-contact-detail-item-{{ ai_gen_id }} {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .ai-contact-icon-{{ ai_gen_id }} {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    color: {{ block.settings.icon_color }};
+  }
+
+  .ai-contact-detail-content-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .ai-contact-detail-label-{{ ai_gen_id }} {
+    font-size: 12px;
+    color: {{ block.settings.text_color }};
+    opacity: 0.7;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+
+  .ai-contact-detail-value-{{ ai_gen_id }} {
+    font-size: 16px;
+    color: {{ block.settings.text_color }};
+    font-weight: 500;
+  }
+
+  .ai-contact-detail-link-{{ ai_gen_id }} {
+    color: {{ block.settings.link_color }};
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .ai-contact-detail-link-{{ ai_gen_id }}:hover {
+    color: {{ block.settings.link_hover_color }};
+    text-decoration: underline;
+  }
+
+  .ai-contact-success-{{ ai_gen_id }} {
+    padding: 12px 16px;
+    background-color: {{ block.settings.success_background }};
+    color: {{ block.settings.success_text }};
+    border-radius: {{ block.settings.input_border_radius }}px;
+    margin-bottom: 16px;
+    font-size: 14px;
+  }
+
+  .ai-contact-error-{{ ai_gen_id }} {
+    padding: 12px 16px;
+    background-color: {{ block.settings.error_background }};
+    color: {{ block.settings.error_text }};
+    border-radius: {{ block.settings.input_border_radius }}px;
+    margin-bottom: 16px;
+    font-size: 14px;
+  }
+
+  @media screen and (max-width: 768px) {
+    .ai-contact-container-{{ ai_gen_id }} {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
+    .ai-contact-section-{{ ai_gen_id }} {
+      padding: {{ block.settings.section_padding | times: 0.6 }}px 16px;
+    }
+
+    .ai-contact-heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.heading_size | times: 0.7 }}px;
+    }
+
+    .ai-contact-form-title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.form_title_size | times: 0.8 }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-contact-section-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-contact-container-{{ ai_gen_id }}">
+    <div class="ai-contact-form-wrapper-{{ ai_gen_id }}">
+      <h2 class="ai-contact-form-title-{{ ai_gen_id }}">{{ block.settings.form_title }}</h2>
+      
+      {%- form 'contact' -%}
+        {%- if form.posted_successfully? -%}
+          <div class="ai-contact-success-{{ ai_gen_id }}">
+            {{ block.settings.success_message }}
+          </div>
+        {%- endif -%}
+
+        {%- if form.errors -%}
+          <div class="ai-contact-error-{{ ai_gen_id }}">
+            {{ form.errors.messages | first }}
+          </div>
+        {%- endif -%}
+
+        <div class="ai-contact-form-{{ ai_gen_id }}">
+          <div class="ai-contact-field-{{ ai_gen_id }}">
+            <label for="contact-name-{{ ai_gen_id }}" class="ai-contact-label-{{ ai_gen_id }}">
+              Name <span style="color: {{ block.settings.error_text }};">*</span>
+            </label>
+            <input
+              type="text"
+              id="contact-name-{{ ai_gen_id }}"
+              name="contact[name]"
+              class="ai-contact-input-{{ ai_gen_id }}"
+              value="{{ form.name }}"
+              required
+              aria-required="true"
+            >
+          </div>
+
+          <div class="ai-contact-field-{{ ai_gen_id }}">
+            <label for="contact-email-{{ ai_gen_id }}" class="ai-contact-label-{{ ai_gen_id }}">
+              Email <span style="color: {{ block.settings.error_text }};">*</span>
+            </label>
+            <input
+              type="email"
+              id="contact-email-{{ ai_gen_id }}"
+              name="contact[email]"
+              class="ai-contact-input-{{ ai_gen_id }}"
+              value="{{ form.email }}"
+              autocomplete="email"
+              required
+              aria-required="true"
+            >
+          </div>
+
+          <div class="ai-contact-field-{{ ai_gen_id }}">
+            <label for="contact-phone-{{ ai_gen_id }}" class="ai-contact-label-{{ ai_gen_id }}">
+              Phone
+            </label>
+            <input
+              type="tel"
+              id="contact-phone-{{ ai_gen_id }}"
+              name="contact[phone]"
+              class="ai-contact-input-{{ ai_gen_id }}"
+              value="{{ form.phone }}"
+              autocomplete="tel"
+            >
+          </div>
+
+          <div class="ai-contact-field-{{ ai_gen_id }}">
+            <label for="contact-message-{{ ai_gen_id }}" class="ai-contact-label-{{ ai_gen_id }}">
+              Message <span style="color: {{ block.settings.error_text }};">*</span>
+            </label>
+            <textarea
+              id="contact-message-{{ ai_gen_id }}"
+              name="contact[body]"
+              class="ai-contact-textarea-{{ ai_gen_id }}"
+              required
+              aria-required="true"
+            >{{ form.body }}</textarea>
+          </div>
+
+          <button type="submit" class="ai-contact-submit-{{ ai_gen_id }}">
+            {{ block.settings.button_text }}
+          </button>
+        </div>
+      {%- endform -%}
+    </div>
+
+    <div class="ai-contact-info-wrapper-{{ ai_gen_id }}">
+      <div>
+        <h1 class="ai-contact-heading-{{ ai_gen_id }}">{{ block.settings.heading }}</h1>
+        <p class="ai-contact-subheading-{{ ai_gen_id }}">{{ block.settings.subheading }}</p>
+        <p class="ai-contact-description-{{ ai_gen_id }}">{{ block.settings.description }}</p>
+      </div>
+
+      <div class="ai-contact-details-{{ ai_gen_id }}">
+        {% if block.settings.email != blank %}
+          <div class="ai-contact-detail-item-{{ ai_gen_id }}">
+            <svg class="ai-contact-icon-{{ ai_gen_id }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <div class="ai-contact-detail-content-{{ ai_gen_id }}">
+              <span class="ai-contact-detail-label-{{ ai_gen_id }}">Email</span>
+              <a href="mailto:{{ block.settings.email }}" class="ai-contact-detail-value-{{ ai_gen_id }} ai-contact-detail-link-{{ ai_gen_id }}">
+                {{ block.settings.email }}
+              </a>
+            </div>
+          </div>
+        {% endif %}
+
+        {% if block.settings.whatsapp != blank %}
+          <div class="ai-contact-detail-item-{{ ai_gen_id }}">
+            <svg class="ai-contact-icon-{{ ai_gen_id }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            </svg>
+            <div class="ai-contact-detail-content-{{ ai_gen_id }}">
+              <span class="ai-contact-detail-label-{{ ai_gen_id }}">WhatsApp</span>
+              <a href="https://wa.me/{{ block.settings.whatsapp | replace: '+', '' | replace: ' ', '' }}" class="ai-contact-detail-value-{{ ai_gen_id }} ai-contact-detail-link-{{ ai_gen_id }}" target="_blank" rel="noopener">
+                {{ block.settings.whatsapp }}
+              </a>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
 {% schema %}
- {
-   "name": "AI_Block",
-   "tag": "shopify-ai-generated-block"
- }
+{
+  "name": "Contact page",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Contact information"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Please Do Get In Touch!"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Questions, compliments, or just wanna say hey?"
+    },
+    {
+      "type": "text",
+      "id": "description",
+      "label": "Description",
+      "default": "Slide in! Drop us a message — we love nail talk !"
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "Email address",
+      "default": "support@soulstruck.in"
+    },
+    {
+      "type": "text",
+      "id": "whatsapp",
+      "label": "WhatsApp number",
+      "default": "+91 9997174366"
+    },
+    {
+      "type": "header",
+      "content": "Contact form"
+    },
+    {
+      "type": "text",
+      "id": "form_title",
+      "label": "Form title",
+      "default": "Send us a message"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Send message"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success message",
+      "default": "Thanks for reaching out! We'll get back to you soon."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Section padding",
+      "min": 20,
+      "max": 100,
+      "step": 10,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between columns",
+      "min": 20,
+      "max": 80,
+      "step": 10,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "form_padding",
+      "label": "Form padding",
+      "min": 20,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "info_padding",
+      "label": "Info section padding",
+      "min": 20,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 24,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 42
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "label": "Subheading size",
+      "min": 14,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "description_size",
+      "label": "Description size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "form_title_size",
+      "label": "Form title size",
+      "min": 18,
+      "max": 36,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "form_background",
+      "label": "Form background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "info_background",
+      "label": "Info background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "link_color",
+      "label": "Link color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "link_hover_color",
+      "label": "Link hover color",
+      "default": "#333333"
+    },
+    {
+      "type": "header",
+      "content": "Form inputs"
+    },
+    {
+      "type": "color",
+      "id": "input_background",
+      "label": "Input background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "input_border_color",
+      "label": "Input border",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "color",
+      "id": "input_focus_border",
+      "label": "Input focus border",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "input_border_radius",
+      "label": "Input border radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Button background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_background",
+      "label": "Button hover background",
+      "default": "#333333"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "label": "Button border radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Messages"
+    },
+    {
+      "type": "color",
+      "id": "success_background",
+      "label": "Success background",
+      "default": "#d4edda"
+    },
+    {
+      "type": "color",
+      "id": "success_text",
+      "label": "Success text",
+      "default": "#155724"
+    },
+    {
+      "type": "color",
+      "id": "error_background",
+      "label": "Error background",
+      "default": "#f8d7da"
+    },
+    {
+      "type": "color",
+      "id": "error_text",
+      "label": "Error text",
+      "default": "#721c24"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Contact page"
+    }
+  ]
+}
 {% endschema %}
