@@ -9,95 +9,6 @@
  */
 {
   "sections": {
-    "section": {
-      "type": "section",
-      "blocks": {
-        "text_tqQTNE": {
-          "type": "text",
-          "name": "Title",
-          "settings": {
-            "text": "<h1>{{ closest.collection.title }}</h1>",
-            "width": "fit-content",
-            "max_width": "normal",
-            "alignment": "left",
-            "type_preset": "h2",
-            "font": "var(--font-primary--family)",
-            "font_size": "",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "color": "",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        },
-        "text_twGGkJ": {
-          "type": "text",
-          "name": "Description",
-          "settings": {
-            "text": "{{ closest.collection.description }}",
-            "width": "fit-content",
-            "max_width": "normal",
-            "alignment": "left",
-            "type_preset": "rte",
-            "font": "var(--font-primary--family)",
-            "font_size": "",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "color": "",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "text_tqQTNE",
-        "text_twGGkJ"
-      ],
-      "name": "Collection heading",
-      "settings": {
-        "content_direction": "column",
-        "vertical_on_mobile": true,
-        "horizontal_alignment": "flex-start",
-        "vertical_alignment": "center",
-        "align_baseline": false,
-        "horizontal_alignment_flex_direction_column": "flex-start",
-        "vertical_alignment_flex_direction_column": "center",
-        "gap": 12,
-        "section_width": "page-width",
-        "section_height": "",
-        "section_height_custom": 50,
-        "color_scheme": "scheme-1",
-        "background_media": "none",
-        "video_position": "cover",
-        "background_image_position": "cover",
-        "border": "none",
-        "border_width": 1,
-        "border_opacity": 100,
-        "border_radius": 0,
-        "toggle_overlay": false,
-        "overlay_color": "#00000026",
-        "overlay_style": "solid",
-        "gradient_direction": "to top",
-        "padding-block-start": 48,
-        "padding-block-end": 48
-      }
-    },
     "main": {
       "type": "main-collection",
       "blocks": {
@@ -208,11 +119,14 @@
               "name": "t:names.swatches",
               "settings": {
                 "product_swatches_alignment": "flex-start",
+                "product_swatches_alignment_mobile": "flex-start",
+                "hide_padding": false,
                 "product_swatches_padding_top": 4,
                 "product_swatches_padding_bottom": 0,
                 "product_swatches_padding_left": 0,
                 "product_swatches_padding_right": 0
-              }
+              },
+              "blocks": {}
             }
           },
           "block_order": [
@@ -227,6 +141,8 @@
         "layout_type": "grid",
         "product_card_size": "medium",
         "mobile_product_card_size": "small",
+        "enable_infinite_scroll": true,
+        "products_per_page": 24,
         "product_grid_width": "centered",
         "full_width_on_mobile": true,
         "columns_gap_horizontal": 16,
@@ -237,10 +153,141 @@
         "padding-block-start": 0,
         "padding-block-end": 32
       }
+    },
+    "soulstruck_collection_circles_LNP8Dc": {
+      "type": "soulstruck-collection-circles",
+      "blocks": {
+        "circle_MjFFQJ": {
+          "type": "circle",
+          "settings": {
+            "collection": "",
+            "custom_label": "all",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        },
+        "circle_A4fED9": {
+          "type": "circle",
+          "settings": {
+            "collection": "",
+            "custom_label": "cat eye",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        },
+        "circle_tYa3gy": {
+          "type": "circle",
+          "settings": {
+            "collection": "",
+            "custom_label": "chrome",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        },
+        "circle_pxbnL9": {
+          "type": "circle",
+          "settings": {
+            "collection": "",
+            "custom_label": "french",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        },
+        "circle_mpMWeH": {
+          "type": "circle",
+          "settings": {
+            "collection": "",
+            "custom_label": "ombre",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        },
+        "circle_fP6kBk": {
+          "type": "circle",
+          "settings": {
+            "collection": "",
+            "custom_label": "matte",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        },
+        "circle_idrzWJ": {
+          "type": "circle",
+          "settings": {
+            "collection": "",
+            "custom_label": "glossy",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        },
+        "circle_YUczHc": {
+          "type": "circle",
+          "settings": {
+            "collection": "",
+            "custom_label": "3D design",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        },
+        "circle_zwaRj9": {
+          "type": "circle",
+          "settings": {
+            "collection": "",
+            "custom_label": "summer",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        }
+      },
+      "block_order": [
+        "circle_MjFFQJ",
+        "circle_A4fED9",
+        "circle_tYa3gy",
+        "circle_pxbnL9",
+        "circle_mpMWeH",
+        "circle_fP6kBk",
+        "circle_idrzWJ",
+        "circle_YUczHc",
+        "circle_zwaRj9"
+      ],
+      "name": "SS Collection Circles",
+      "settings": {
+        "heading": "Shop by Effect",
+        "view_all_text": "View all",
+        "view_all_url": "",
+        "show_hover_overlay": true,
+        "show_hover_icon": true,
+        "hover_icon_style": "arrow",
+        "show_hover_text": true,
+        "default_hover_text": "Shop",
+        "show_label_chevron": true,
+        "always_show_arrows": false,
+        "arrow_style": "round",
+        "prev_label": "Scroll left",
+        "next_label": "Scroll right",
+        "bg_color": "#ffffff",
+        "label_color": "#1a1a1a",
+        "label_hover_color": "#1a1a1a",
+        "accent_color": "#FF2D7C",
+        "border_color": "#e8e8e8",
+        "border_hover_color": "#1a1a1a",
+        "hover_overlay_color": "#000000",
+        "hover_overlay_opacity": 40,
+        "hover_text_color": "#ffffff",
+        "arrow_bg_color": "#ffffff",
+        "arrow_icon_color": "#1a1a1a",
+        "circle_size": 108,
+        "border_width": 2,
+        "gap": 20,
+        "label_size": 13,
+        "label_weight": "500",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
     }
   },
   "order": [
-    "section",
+    "soulstruck_collection_circles_LNP8Dc",
     "main"
   ]
 }
