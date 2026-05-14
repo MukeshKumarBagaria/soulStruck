@@ -1,46 +1,6 @@
 {% doc %}
   @prompt
-    Create a premium Shopify section inspired by Instagram Reels / TikTok product story sliders. The section should display up to 10 vertical autoplay product videos in horizontally scrollable cards. Each card must contain a muted looping vertical video with elegant rounded corners and a luxury modern aesthetic. Clicking anywhere on a card should redirect users to its assigned product page.
-    
-    The section should include:
-    
-    Horizontally scrollable layout
-    Vertical 9:16 videos
-    Autoplay enabled
-    Muted videos only
-    Infinite loop playback
-    No controls visible
-    Mobile-first responsive design
-    Smooth scrolling experience
-    Hidden scrollbar
-    Premium beauty/fashion/ecommerce feel
-    Optional overlay text at the bottom of each card
-    Fully clickable card
-    Shopify theme editor compatible
-    Support for up to 10 video blocks
-    Separate product URL/link for each video card
-    Elegant hover effect on desktop
-    Object-fit cover videos
-    Optimized loading performance
-    Rounded corners with subtle shadow
-    Clean spacing similar to luxury skincare/nail/fashion brands
-    
-    Each block should contain:
-    
-    Video upload picker
-    Product link picker
-    Optional overlay text
-    
-    The section settings should include:
-    
-    Heading text
-    Card width control
-    Border radius control
-    Optional autoplay toggle
-    Optional overlay enable/disable
-    
-    Design inspiration:
-    Luxury beauty ecommerce brands, Instagram story reels, TikTok product showcase sections, modern Gen-Z fashion websites.
+    Create a premium Shopify section inspired by Instagram Reels / TikTok product story sliders.
 {% enddoc %}
 {% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
 
@@ -183,6 +143,7 @@
 
           {% if video != blank %}
             <div class="ai-product-reels-card-{{ ai_gen_id }}" data-card-index="{{ i }}">
+
               <video
                 class="ai-product-reels-video-{{ ai_gen_id }}"
                 {% if block.settings.autoplay %}autoplay{% endif %}
@@ -191,7 +152,9 @@
                 playsinline
                 preload="metadata"
               >
-                <source src="{{ video }}" type="video/mp4">
+                {% for source in video.sources %}
+                  <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                {% endfor %}
               </video>
 
               {% if block.settings.show_overlay and overlay_text != blank %}
@@ -207,6 +170,7 @@
                   aria-label="View product"
                 ></a>
               {% endif %}
+
             </div>
           {% endif %}
         {% endfor %}
@@ -228,7 +192,7 @@
       connectedCallback() {
         this.scrollContainer = this.querySelector('.ai-product-reels-scroll-{{ ai_gen_id }}');
         this.videos = Array.from(this.querySelectorAll('.ai-product-reels-video-{{ ai_gen_id }}'));
-        
+
         this.setupIntersectionObserver();
         this.setupVideoPlayback();
       }
@@ -258,8 +222,9 @@
 
       setupVideoPlayback() {
         this.videos.forEach(video => {
+          video.muted = true;
           video.addEventListener('loadedmetadata', () => {
-            video.muted = true;
+            video.play().catch(() => {});
           });
         });
       }
@@ -271,7 +236,9 @@
       }
     }
 
-    customElements.define('product-reels-{{ ai_gen_id }}', ProductReels{{ ai_gen_id }});
+    if (!customElements.get('product-reels-{{ ai_gen_id }}')) {
+      customElements.define('product-reels-{{ ai_gen_id }}', ProductReels{{ ai_gen_id }});
+    }
   })();
 </script>
 
