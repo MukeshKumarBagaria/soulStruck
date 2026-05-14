@@ -55,6 +55,8 @@
     border-radius: {{ block.settings.border_radius }}px;
     box-shadow: {{ block.settings.shadow_horizontal }}px {{ block.settings.shadow_vertical }}px {{ block.settings.shadow_blur }}px {{ block.settings.shadow_color }};
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box;
+    overflow: hidden;
   }
 
   .ai-countdown-timer__container-{{ ai_gen_id }}:hover {
@@ -67,6 +69,7 @@
     align-items: center;
     gap: 8px;
     flex-shrink: 0;
+    flex: 0 0 auto;
   }
 
   .ai-countdown-timer__icon-{{ ai_gen_id }} {
@@ -90,6 +93,7 @@
     align-items: center;
     gap: {{ block.settings.digit_spacing }}px;
     flex-shrink: 0;
+    flex: 0 0 auto;
   }
 
   .ai-countdown-timer__unit-{{ ai_gen_id }} {
@@ -452,31 +456,31 @@
       "type": "checkbox",
       "id": "show_labels",
       "label": "Show unit labels",
-      "default": false
+      "default": true
     },
     {
       "type": "text",
       "id": "label_days",
       "label": "Days label",
-      "default": "d"
+      "default": "DAY"
     },
     {
       "type": "text",
       "id": "label_hours",
       "label": "Hours label",
-      "default": "h"
+      "default": "HOUR"
     },
     {
       "type": "text",
       "id": "label_minutes",
       "label": "Minutes label",
-      "default": "m"
+      "default": "MIN"
     },
     {
       "type": "text",
       "id": "label_seconds",
       "label": "Seconds label",
-      "default": "s"
+      "default": "SEC"
     },
     {
       "type": "header",
@@ -490,7 +494,7 @@
       "max": 24,
       "step": 2,
       "unit": "px",
-      "default": 12
+      "default": 10
     },
     {
       "type": "range",
@@ -500,7 +504,7 @@
       "max": 40,
       "step": 2,
       "unit": "px",
-      "default": 20
+      "default": 16
     },
     {
       "type": "range",
@@ -516,11 +520,11 @@
       "type": "range",
       "id": "digit_spacing",
       "label": "Digit spacing",
-      "min": 4,
+      "min": 2,
       "max": 16,
       "step": 2,
       "unit": "px",
-      "default": 6
+      "default": 4
     },
     {
       "type": "header",
@@ -630,7 +634,7 @@
       "max": 18,
       "step": 1,
       "unit": "px",
-      "default": 13
+      "default": 14
     },
     {
       "type": "range",
@@ -649,7 +653,7 @@
       "max": 32,
       "step": 2,
       "unit": "px",
-      "default": 20
+      "default": 16
     },
     {
       "type": "range",
@@ -668,7 +672,7 @@
       "max": 40,
       "step": 2,
       "unit": "px",
-      "default": 26
+      "default": 22
     },
     {
       "type": "range",
