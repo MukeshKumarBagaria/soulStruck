@@ -9,12 +9,17 @@
     display: block;
     width: 100%;
     padding: 40px 0;
+    /* Prevent this section from ever breaking the page width */
+    max-width: 100vw;
+    overflow: hidden;
+    box-sizing: border-box;
   }
 
   .ai-product-reels-container-{{ ai_gen_id }} {
-    max-width: 1400px;
+    width: 100%;
     margin: 0 auto;
     padding: 0 20px;
+    box-sizing: border-box;
   }
 
   .ai-product-reels-heading-{{ ai_gen_id }} {
@@ -25,13 +30,26 @@
     color: #000000;
   }
 
+  /*
+   * KEY FIX:
+   * The wrapper must NOT have overflow:hidden — that was blocking the inner
+   * horizontal scroll and causing cards to overflow the viewport instead.
+   * We only clip vertical overflow here.
+   */
   .ai-product-reels-scroll-wrapper-{{ ai_gen_id }} {
     position: relative;
-    overflow: hidden;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: visible;
   }
 
+  /*
+   * The actual scrollable row.
+   * flex-wrap: nowrap is critical — without it cards wrap into a grid.
+   */
   .ai-product-reels-scroll-{{ ai_gen_id }} {
     display: flex;
+    flex-wrap: nowrap;
     gap: {{ block.settings.card_gap }}px;
     overflow-x: auto;
     overflow-y: hidden;
@@ -39,7 +57,9 @@
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    padding: 8px 0;
+    padding: 8px 4px 16px 4px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .ai-product-reels-scroll-{{ ai_gen_id }}::-webkit-scrollbar {
@@ -48,7 +68,7 @@
 
   .ai-product-reels-card-{{ ai_gen_id }} {
     position: relative;
-    flex-shrink: 0;
+    flex: 0 0 {{ block.settings.card_width }}px;
     width: {{ block.settings.card_width }}px;
     aspect-ratio: 9 / 16;
     border-radius: {{ block.settings.border_radius }}px;
@@ -61,10 +81,13 @@
 
   .ai-product-reels-card-{{ ai_gen_id }}:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   }
 
   .ai-product-reels-video-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -83,32 +106,18 @@
     font-weight: 500;
     line-height: 1.4;
     pointer-events: none;
+    z-index: 1;
   }
 
   .ai-product-reels-link-{{ ai_gen_id }} {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     z-index: 2;
-  }
-
-  .ai-product-reels-placeholder-{{ ai_gen_id }} {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
-    color: #999;
-    font-size: 14px;
-    text-align: center;
-    padding: 20px;
   }
 
   @media screen and (max-width: 749px) {
     .ai-product-reels-card-{{ ai_gen_id }} {
+      flex: 0 0 {{ block.settings.card_width_mobile }}px;
       width: {{ block.settings.card_width_mobile }}px;
     }
 
@@ -119,6 +128,10 @@
 
     .ai-product-reels-scroll-{{ ai_gen_id }} {
       gap: {{ block.settings.card_gap_mobile }}px;
+    }
+
+    .ai-product-reels-container-{{ ai_gen_id }} {
+      padding: 0 12px;
     }
   }
 {% endstyle %}
@@ -185,43 +198,42 @@
       constructor() {
         super();
         this.scrollContainer = null;
-        this.videos = [];
         this.observer = null;
       }
 
       connectedCallback() {
         this.scrollContainer = this.querySelector('.ai-product-reels-scroll-{{ ai_gen_id }}');
-        this.videos = Array.from(this.querySelectorAll('.ai-product-reels-video-{{ ai_gen_id }}'));
-
         this.setupIntersectionObserver();
         this.setupVideoPlayback();
       }
 
       setupIntersectionObserver() {
+        if (!this.scrollContainer) return;
+
         const options = {
           root: this.scrollContainer,
-          threshold: 0.5
+          threshold: 0.4
         };
 
         this.observer = new IntersectionObserver((entries) => {
           entries.forEach(entry => {
             const video = entry.target.querySelector('.ai-product-reels-video-{{ ai_gen_id }}');
-            if (video) {
-              if (entry.isIntersecting) {
-                video.play().catch(() => {});
-              } else {
-                video.pause();
-              }
+            if (!video) return;
+            if (entry.isIntersecting) {
+              video.play().catch(() => {});
+            } else {
+              video.pause();
             }
           });
         }, options);
 
-        const cards = this.querySelectorAll('.ai-product-reels-card-{{ ai_gen_id }}');
-        cards.forEach(card => this.observer.observe(card));
+        this.querySelectorAll('.ai-product-reels-card-{{ ai_gen_id }}').forEach(card => {
+          this.observer.observe(card);
+        });
       }
 
       setupVideoPlayback() {
-        this.videos.forEach(video => {
+        this.querySelectorAll('.ai-product-reels-video-{{ ai_gen_id }}').forEach(video => {
           video.muted = true;
           video.addEventListener('loadedmetadata', () => {
             video.play().catch(() => {});
@@ -230,9 +242,7 @@
       }
 
       disconnectedCallback() {
-        if (this.observer) {
-          this.observer.disconnect();
-        }
+        if (this.observer) this.observer.disconnect();
       }
     }
 
@@ -278,7 +288,7 @@
       "max": 300,
       "step": 10,
       "unit": "px",
-      "default": 220
+      "default": 200
     },
     {
       "type": "range",
