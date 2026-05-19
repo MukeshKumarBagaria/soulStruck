@@ -626,7 +626,7 @@
         "category_ePWG9b": {
           "type": "category",
           "settings": {
-            "collection": "",
+            "collection": "occasions",
             "label": "occasions",
             "avatar": "shopify://shop_images/occasion.webp",
             "link": ""
