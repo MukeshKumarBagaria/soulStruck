@@ -635,7 +635,7 @@
         "category_4Ybtjr": {
           "type": "category",
           "settings": {
-            "collection": "",
+            "collection": "effect-1",
             "label": "effect",
             "avatar": "shopify://shop_images/effect.webp",
             "link": ""
