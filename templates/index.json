@@ -617,7 +617,7 @@
         "category_jdxTWe": {
           "type": "category",
           "settings": {
-            "collection": "",
+            "collection": "color",
             "label": "color",
             "avatar": "shopify://shop_images/color.webp",
             "link": ""
