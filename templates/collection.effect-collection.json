@@ -21,15 +21,6 @@
             "hover_text": ""
           }
         },
-        "circle_A4fED9": {
-          "type": "circle",
-          "settings": {
-            "collection": "cat-eye",
-            "custom_label": "cat eye",
-            "custom_url": "",
-            "hover_text": ""
-          }
-        },
         "circle_tYa3gy": {
           "type": "circle",
           "settings": {
@@ -96,7 +87,6 @@
       },
       "block_order": [
         "circle_MjFFQJ",
-        "circle_A4fED9",
         "circle_tYa3gy",
         "circle_pxbnL9",
         "circle_mpMWeH",
