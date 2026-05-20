@@ -15,7 +15,7 @@
         "circle_cQNn9Y": {
           "type": "circle",
           "settings": {
-            "collection": "",
+            "collection": "shop-all",
             "custom_label": "all",
             "custom_url": "",
             "hover_text": ""
@@ -106,7 +106,7 @@
           "type": "circle",
           "settings": {
             "collection": "multicolor",
-            "custom_label": "3D design",
+            "custom_label": "MultiColor",
             "custom_url": "",
             "hover_text": ""
           }
@@ -153,7 +153,7 @@
         "bg_color": "#ffffff",
         "label_color": "#1a1a1a",
         "label_hover_color": "#1a1a1a",
-        "accent_color": "#FF2D7C",
+        "accent_color": "#ff2d7c",
         "border_color": "#e8e8e8",
         "border_hover_color": "#1a1a1a",
         "hover_overlay_color": "#000000",
