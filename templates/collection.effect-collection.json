@@ -9,6 +9,137 @@
  */
 {
   "sections": {
+    "soulstruck_collection_circles_LNP8Dc": {
+      "type": "soulstruck-collection-circles",
+      "blocks": {
+        "circle_MjFFQJ": {
+          "type": "circle",
+          "settings": {
+            "collection": "shop-all",
+            "custom_label": "all",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        },
+        "circle_A4fED9": {
+          "type": "circle",
+          "settings": {
+            "collection": "",
+            "custom_label": "cat eye",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        },
+        "circle_tYa3gy": {
+          "type": "circle",
+          "settings": {
+            "collection": "",
+            "custom_label": "chrome",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        },
+        "circle_pxbnL9": {
+          "type": "circle",
+          "settings": {
+            "collection": "",
+            "custom_label": "french",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        },
+        "circle_mpMWeH": {
+          "type": "circle",
+          "settings": {
+            "collection": "",
+            "custom_label": "ombre",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        },
+        "circle_fP6kBk": {
+          "type": "circle",
+          "settings": {
+            "collection": "",
+            "custom_label": "matte",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        },
+        "circle_idrzWJ": {
+          "type": "circle",
+          "settings": {
+            "collection": "",
+            "custom_label": "glossy",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        },
+        "circle_YUczHc": {
+          "type": "circle",
+          "settings": {
+            "collection": "",
+            "custom_label": "3D design",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        },
+        "circle_zwaRj9": {
+          "type": "circle",
+          "settings": {
+            "collection": "",
+            "custom_label": "summer",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        }
+      },
+      "block_order": [
+        "circle_MjFFQJ",
+        "circle_A4fED9",
+        "circle_tYa3gy",
+        "circle_pxbnL9",
+        "circle_mpMWeH",
+        "circle_fP6kBk",
+        "circle_idrzWJ",
+        "circle_YUczHc",
+        "circle_zwaRj9"
+      ],
+      "name": "SS Collection Circles",
+      "settings": {
+        "heading": "Shop by Effect",
+        "view_all_text": "View all",
+        "view_all_url": "",
+        "show_hover_overlay": true,
+        "show_hover_icon": true,
+        "hover_icon_style": "arrow",
+        "show_hover_text": true,
+        "default_hover_text": "Shop",
+        "show_label_chevron": true,
+        "always_show_arrows": false,
+        "arrow_style": "round",
+        "prev_label": "Scroll left",
+        "next_label": "Scroll right",
+        "bg_color": "#ffffff",
+        "label_color": "#1a1a1a",
+        "label_hover_color": "#1a1a1a",
+        "accent_color": "#ff2d7c",
+        "border_color": "#e8e8e8",
+        "border_hover_color": "#1a1a1a",
+        "hover_overlay_color": "#000000",
+        "hover_overlay_opacity": 40,
+        "hover_text_color": "#ffffff",
+        "arrow_bg_color": "#ffffff",
+        "arrow_icon_color": "#1a1a1a",
+        "circle_size": 108,
+        "border_width": 2,
+        "gap": 20,
+        "label_size": 13,
+        "label_weight": "500",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    },
     "main": {
       "type": "main-collection",
       "blocks": {
@@ -152,137 +283,6 @@
         "color_scheme": "scheme-1",
         "padding-block-start": 0,
         "padding-block-end": 32
-      }
-    },
-    "soulstruck_collection_circles_LNP8Dc": {
-      "type": "soulstruck-collection-circles",
-      "blocks": {
-        "circle_MjFFQJ": {
-          "type": "circle",
-          "settings": {
-            "collection": "",
-            "custom_label": "all",
-            "custom_url": "",
-            "hover_text": ""
-          }
-        },
-        "circle_A4fED9": {
-          "type": "circle",
-          "settings": {
-            "collection": "",
-            "custom_label": "cat eye",
-            "custom_url": "",
-            "hover_text": ""
-          }
-        },
-        "circle_tYa3gy": {
-          "type": "circle",
-          "settings": {
-            "collection": "",
-            "custom_label": "chrome",
-            "custom_url": "",
-            "hover_text": ""
-          }
-        },
-        "circle_pxbnL9": {
-          "type": "circle",
-          "settings": {
-            "collection": "",
-            "custom_label": "french",
-            "custom_url": "",
-            "hover_text": ""
-          }
-        },
-        "circle_mpMWeH": {
-          "type": "circle",
-          "settings": {
-            "collection": "",
-            "custom_label": "ombre",
-            "custom_url": "",
-            "hover_text": ""
-          }
-        },
-        "circle_fP6kBk": {
-          "type": "circle",
-          "settings": {
-            "collection": "",
-            "custom_label": "matte",
-            "custom_url": "",
-            "hover_text": ""
-          }
-        },
-        "circle_idrzWJ": {
-          "type": "circle",
-          "settings": {
-            "collection": "",
-            "custom_label": "glossy",
-            "custom_url": "",
-            "hover_text": ""
-          }
-        },
-        "circle_YUczHc": {
-          "type": "circle",
-          "settings": {
-            "collection": "",
-            "custom_label": "3D design",
-            "custom_url": "",
-            "hover_text": ""
-          }
-        },
-        "circle_zwaRj9": {
-          "type": "circle",
-          "settings": {
-            "collection": "",
-            "custom_label": "summer",
-            "custom_url": "",
-            "hover_text": ""
-          }
-        }
-      },
-      "block_order": [
-        "circle_MjFFQJ",
-        "circle_A4fED9",
-        "circle_tYa3gy",
-        "circle_pxbnL9",
-        "circle_mpMWeH",
-        "circle_fP6kBk",
-        "circle_idrzWJ",
-        "circle_YUczHc",
-        "circle_zwaRj9"
-      ],
-      "name": "SS Collection Circles",
-      "settings": {
-        "heading": "Shop by Effect",
-        "view_all_text": "View all",
-        "view_all_url": "",
-        "show_hover_overlay": true,
-        "show_hover_icon": true,
-        "hover_icon_style": "arrow",
-        "show_hover_text": true,
-        "default_hover_text": "Shop",
-        "show_label_chevron": true,
-        "always_show_arrows": false,
-        "arrow_style": "round",
-        "prev_label": "Scroll left",
-        "next_label": "Scroll right",
-        "bg_color": "#ffffff",
-        "label_color": "#1a1a1a",
-        "label_hover_color": "#1a1a1a",
-        "accent_color": "#FF2D7C",
-        "border_color": "#e8e8e8",
-        "border_hover_color": "#1a1a1a",
-        "hover_overlay_color": "#000000",
-        "hover_overlay_opacity": 40,
-        "hover_text_color": "#ffffff",
-        "arrow_bg_color": "#ffffff",
-        "arrow_icon_color": "#1a1a1a",
-        "circle_size": 108,
-        "border_width": 2,
-        "gap": 20,
-        "label_size": 13,
-        "label_weight": "500",
-        "padding_top": 40,
-        "padding_bottom": 40
       }
     }
   },
