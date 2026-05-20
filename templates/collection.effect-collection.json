@@ -24,7 +24,7 @@
         "circle_A4fED9": {
           "type": "circle",
           "settings": {
-            "collection": "",
+            "collection": "cat-eye",
             "custom_label": "cat eye",
             "custom_url": "",
             "hover_text": ""
@@ -33,7 +33,7 @@
         "circle_tYa3gy": {
           "type": "circle",
           "settings": {
-            "collection": "",
+            "collection": "chrome",
             "custom_label": "chrome",
             "custom_url": "",
             "hover_text": ""
@@ -42,7 +42,7 @@
         "circle_pxbnL9": {
           "type": "circle",
           "settings": {
-            "collection": "",
+            "collection": "french-manicure",
             "custom_label": "french",
             "custom_url": "",
             "hover_text": ""
@@ -51,7 +51,7 @@
         "circle_mpMWeH": {
           "type": "circle",
           "settings": {
-            "collection": "",
+            "collection": "ombre",
             "custom_label": "ombre",
             "custom_url": "",
             "hover_text": ""
@@ -60,7 +60,7 @@
         "circle_fP6kBk": {
           "type": "circle",
           "settings": {
-            "collection": "",
+            "collection": "matte",
             "custom_label": "matte",
             "custom_url": "",
             "hover_text": ""
@@ -69,7 +69,7 @@
         "circle_idrzWJ": {
           "type": "circle",
           "settings": {
-            "collection": "",
+            "collection": "glossy",
             "custom_label": "glossy",
             "custom_url": "",
             "hover_text": ""
@@ -78,17 +78,8 @@
         "circle_YUczHc": {
           "type": "circle",
           "settings": {
-            "collection": "",
+            "collection": "3d-nails",
             "custom_label": "3D design",
-            "custom_url": "",
-            "hover_text": ""
-          }
-        },
-        "circle_zwaRj9": {
-          "type": "circle",
-          "settings": {
-            "collection": "",
-            "custom_label": "summer",
             "custom_url": "",
             "hover_text": ""
           }
@@ -102,8 +93,7 @@
         "circle_mpMWeH",
         "circle_fP6kBk",
         "circle_idrzWJ",
-        "circle_YUczHc",
-        "circle_zwaRj9"
+        "circle_YUczHc"
       ],
       "name": "SS Collection Circles",
       "settings": {
