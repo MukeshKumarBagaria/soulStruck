@@ -30,6 +30,15 @@
             "hover_text": ""
           }
         },
+        "circle_QfWkcj": {
+          "type": "circle",
+          "settings": {
+            "collection": "yellow",
+            "custom_label": "",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        },
         "circle_e9RBiK": {
           "type": "circle",
           "settings": {
@@ -124,6 +133,7 @@
       "block_order": [
         "circle_cQNn9Y",
         "circle_KQLiKn",
+        "circle_QfWkcj",
         "circle_e9RBiK",
         "circle_TYMYbp",
         "circle_rPxNEj",
