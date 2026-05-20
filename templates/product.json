@@ -264,7 +264,7 @@
                 "show_labels": true,
                 "label_days": "day",
                 "label_hours": "hour",
-                "label_minutes": "month",
+                "label_minutes": "minute",
                 "label_seconds": "second",
                 "padding_vertical": 14,
                 "padding_horizontal": 12,
