@@ -42,8 +42,8 @@
         "circle_pxbnL9": {
           "type": "circle",
           "settings": {
-            "collection": "french-manicure",
-            "custom_label": "french",
+            "collection": "gemstone",
+            "custom_label": "Gem Stone",
             "custom_url": "",
             "hover_text": ""
           }
@@ -51,8 +51,8 @@
         "circle_mpMWeH": {
           "type": "circle",
           "settings": {
-            "collection": "ombre",
-            "custom_label": "ombre",
+            "collection": "glitter",
+            "custom_label": "Glitter",
             "custom_url": "",
             "hover_text": ""
           }
@@ -62,6 +62,15 @@
           "settings": {
             "collection": "matte",
             "custom_label": "matte",
+            "custom_url": "",
+            "hover_text": ""
+          }
+        },
+        "circle_8xpKia": {
+          "type": "circle",
+          "settings": {
+            "collection": "metallic",
+            "custom_label": "Metallic",
             "custom_url": "",
             "hover_text": ""
           }
@@ -92,6 +101,7 @@
         "circle_pxbnL9",
         "circle_mpMWeH",
         "circle_fP6kBk",
+        "circle_8xpKia",
         "circle_idrzWJ",
         "circle_YUczHc"
       ],
