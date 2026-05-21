@@ -54,7 +54,7 @@
     "button_border_radius_primary": 14,
     "secondary_button_border_width": 1,
     "button_border_radius_secondary": 14,
-    "cart_type": "drawer",
+    "cart_type": "page",
     "cart_price_font": "subheading",
     "show_cart_note": false,
     "show_add_discount_code": true,
@@ -81,7 +81,7 @@
     "blocks": {
       "16033367850703836464": {
         "type": "shopify://apps/shiprocket-smart-cart/blocks/smart-cart-app-block/16d0c0e3-0cd3-4268-8ed1-80bb3f3d659f",
-        "disabled": true,
+        "disabled": false,
         "settings": {}
       }
     },
