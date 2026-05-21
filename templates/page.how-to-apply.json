@@ -12,19 +12,6 @@
     "main": {
       "type": "main-page",
       "blocks": {
-        "ai_gen_block_f807ac8_CQgnB4": {
-          "type": "ai_gen_block_f807ac8",
-          "settings": {
-            "youtube_url": "https://www.youtube.com/watch?v=yekfJ2MsxVM",
-            "video_aspect_ratio": "16-9",
-            "video_height": 450,
-            "video_border_radius": 0,
-            "padding_top": 0,
-            "padding_bottom": 0,
-            "background_color": "#ffffff"
-          },
-          "blocks": {}
-        },
         "page-content": {
           "type": "page-content",
           "settings": {},
@@ -32,7 +19,6 @@
         }
       },
       "block_order": [
-        "ai_gen_block_f807ac8_CQgnB4",
         "page-content"
       ],
       "settings": {
