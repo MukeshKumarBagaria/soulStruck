@@ -1,0 +1,598 @@
+{% comment %}
+  SoulStruck Reviews
+  - Editorial header: eyebrow + serif heading with italic accents + stats row
+  - Large pull quote with highlighted phrase
+  - Infinite horizontal marquee of customer review cards
+  - Fully customizable
+{% endcomment %}
+
+{%- liquid
+  assign sid = section.id
+
+  case section.settings.heading_font
+    when 'cormorant'
+      assign heading_font_family = "'Cormorant Garamond', 'Playfair Display', Georgia, serif"
+    when 'playfair'
+      assign heading_font_family = "'Playfair Display', Georgia, serif"
+    when 'garamond'
+      assign heading_font_family = "'EB Garamond', Georgia, serif"
+    when 'georgia'
+      assign heading_font_family = "Georgia, 'Times New Roman', serif"
+    when 'theme-heading'
+      assign heading_font_family = 'var(--font-heading--family, inherit)'
+    else
+      assign heading_font_family = "'Cormorant Garamond', 'Playfair Display', Georgia, serif"
+  endcase
+-%}
+
+{% style %}
+  .ssr-{{ sid }} {
+    --ssr-bg: {{ section.settings.bg_color }};
+    --ssr-heading: {{ section.settings.heading_color }};
+    --ssr-body: {{ section.settings.body_color }};
+    --ssr-muted: {{ section.settings.muted_color }};
+    --ssr-accent: {{ section.settings.accent_color }};
+    --ssr-accent-soft: {{ section.settings.accent_soft_color }};
+    --ssr-star: {{ section.settings.star_color }};
+    --ssr-border: {{ section.settings.border_color }};
+    --ssr-avatar-bg: {{ section.settings.avatar_bg }};
+    --ssr-avatar-text: {{ section.settings.avatar_text }};
+    --ssr-marquee-speed: {{ section.settings.marquee_speed }}s;
+    background: var(--ssr-bg);
+    color: var(--ssr-body);
+    padding: clamp(40px, 6vw, {{ section.settings.padding_top }}px) 0 clamp(40px, 6vw, {{ section.settings.padding_bottom }}px);
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ssr-{{ sid }} *,
+  .ssr-{{ sid }} *::before,
+  .ssr-{{ sid }} *::after { box-sizing: border-box; }
+
+  .ssr-{{ sid }}__container {
+    max-width: {{ section.settings.max_width }}px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* ── Top row: heading + stats ─────────────────────── */
+  .ssr-{{ sid }}__top {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 28px;
+    align-items: start;
+    margin-bottom: clamp(28px, 4vw, 44px);
+  }
+
+  .ssr-{{ sid }}__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ssr-accent);
+    margin: 0 0 14px;
+    line-height: 1;
+  }
+
+  .ssr-{{ sid }}__eyebrow::before {
+    content: '';
+    width: 24px;
+    height: 1.5px;
+    background: var(--ssr-accent);
+    display: inline-block;
+  }
+
+  .ssr-{{ sid }}__heading {
+    font-family: {{ heading_font_family }};
+    font-size: clamp(28px, 5vw, {{ section.settings.heading_size }}px);
+    font-weight: 500;
+    color: var(--ssr-heading);
+    margin: 0;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+  }
+
+  .ssr-{{ sid }}__heading em,
+  .ssr-{{ sid }}__heading i {
+    font-style: italic;
+    color: var(--ssr-accent);
+    font-weight: 400;
+  }
+
+  /* Stats */
+  .ssr-{{ sid }}__stats {
+    display: flex;
+    gap: clamp(20px, 4vw, 44px);
+    flex-wrap: wrap;
+    align-items: baseline;
+  }
+
+  .ssr-{{ sid }}__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .ssr-{{ sid }}__stat-value {
+    font-family: {{ heading_font_family }};
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 500;
+    color: var(--ssr-accent);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .ssr-{{ sid }}__stat-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ssr-muted);
+    line-height: 1;
+  }
+
+  /* ── Pull quote ───────────────────────────────────── */
+  .ssr-{{ sid }}__quote-wrap {
+    position: relative;
+    padding-bottom: clamp(32px, 5vw, 48px);
+    margin-bottom: clamp(28px, 4vw, 40px);
+    border-bottom: 1px solid var(--ssr-border);
+  }
+
+  .ssr-{{ sid }}__quote-mark {
+    font-family: {{ heading_font_family }};
+    font-size: clamp(48px, 8vw, 88px);
+    font-style: italic;
+    color: var(--ssr-accent);
+    line-height: 0.6;
+    display: inline-block;
+    margin-bottom: -8px;
+    user-select: none;
+  }
+
+  .ssr-{{ sid }}__quote {
+    font-family: {{ heading_font_family }};
+    font-size: clamp(22px, 3.6vw, 36px);
+    font-weight: 500;
+    font-style: italic;
+    color: var(--ssr-heading);
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    margin: 4px 0 18px;
+    max-width: 980px;
+  }
+
+  .ssr-{{ sid }}__quote em,
+  .ssr-{{ sid }}__quote i { font-style: italic; color: var(--ssr-heading); }
+
+  .ssr-{{ sid }}__quote strong,
+  .ssr-{{ sid }}__quote mark {
+    font-weight: 500;
+    background: var(--ssr-accent-soft);
+    color: inherit;
+    padding: 0 6px;
+    border-radius: 3px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+
+  .ssr-{{ sid }}__quote-attr {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    line-height: 1;
+  }
+
+  .ssr-{{ sid }}__quote-attr::before {
+    content: '';
+    width: 24px;
+    height: 1.5px;
+    background: var(--ssr-muted);
+    display: inline-block;
+  }
+
+  .ssr-{{ sid }}__quote-author {
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ssr-heading);
+    font-size: 11px;
+  }
+
+  .ssr-{{ sid }}__quote-meta {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ssr-muted);
+  }
+
+  /* ── Marquee of review cards ──────────────────────── */
+  .ssr-{{ sid }}__marquee {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+  }
+
+  .ssr-{{ sid }}__track {
+    display: flex;
+    width: max-content;
+    gap: {{ section.settings.card_gap }}px;
+    will-change: transform;
+    animation: ssr-scroll-{{ sid }} var(--ssr-marquee-speed) linear infinite;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+  }
+
+  @media (hover: hover) {
+    .ssr-{{ sid }}__marquee:hover .ssr-{{ sid }}__track { animation-play-state: paused; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ssr-{{ sid }}__track { animation: none; flex-wrap: wrap; }
+  }
+
+  @keyframes ssr-scroll-{{ sid }} {
+    0%   { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-50%, 0, 0); }
+  }
+
+  /* Card */
+  .ssr-{{ sid }}__card {
+    flex-shrink: 0;
+    width: clamp(280px, 30vw, {{ section.settings.card_width }}px);
+    padding: 4px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .ssr-{{ sid }}__card-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: space-between;
+  }
+
+  .ssr-{{ sid }}__author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .ssr-{{ sid }}__avatar {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--ssr-avatar-bg);
+    color: var(--ssr-avatar-text);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: -0.01em;
+    overflow: hidden;
+  }
+
+  .ssr-{{ sid }}__avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+  .ssr-{{ sid }}__author-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    line-height: 1.2;
+  }
+
+  .ssr-{{ sid }}__author-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ssr-heading);
+  }
+
+  .ssr-{{ sid }}__author-meta {
+    font-size: 12px;
+    color: var(--ssr-muted);
+  }
+
+  .ssr-{{ sid }}__stars {
+    display: inline-flex;
+    gap: 2px;
+    flex-shrink: 0;
+    color: var(--ssr-star);
+  }
+
+  .ssr-{{ sid }}__stars svg { width: 13px; height: 13px; fill: currentColor; }
+
+  .ssr-{{ sid }}__card-body {
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--ssr-body);
+    margin: 0;
+  }
+
+  .ssr-{{ sid }}__card-foot {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ssr-accent);
+    line-height: 1;
+    padding-top: 8px;
+    border-top: 1px solid var(--ssr-border);
+  }
+
+  .ssr-{{ sid }}__card-foot::before {
+    content: '';
+    width: 18px;
+    height: 1.5px;
+    background: var(--ssr-accent);
+    display: inline-block;
+  }
+
+  /* ── Tablet ───────────────────────────────────────── */
+  @media screen and (min-width: 700px) {
+    .ssr-{{ sid }}__container { padding: 0 28px; }
+    .ssr-{{ sid }}__top { grid-template-columns: 1.4fr 1fr; gap: 32px; }
+    .ssr-{{ sid }}__stats { justify-content: flex-end; }
+  }
+
+  /* ── Desktop ──────────────────────────────────────── */
+  @media screen and (min-width: 990px) {
+    .ssr-{{ sid }}__container { padding: 0 36px; }
+    .ssr-{{ sid }}__top { grid-template-columns: 1.6fr 1fr; gap: 48px; }
+  }
+{% endstyle %}
+
+<div class="ssr-{{ sid }}" {{ block.shopify_attributes }}>
+  <div class="ssr-{{ sid }}__container">
+
+    {%- comment -%} ── Top row: heading + stats ── {%- endcomment -%}
+    <div class="ssr-{{ sid }}__top">
+      <div>
+        {% if section.settings.eyebrow != blank %}
+          <span class="ssr-{{ sid }}__eyebrow">{{ section.settings.eyebrow }}</span>
+        {% endif %}
+        {% if section.settings.heading != blank %}
+          <h2 class="ssr-{{ sid }}__heading">{{ section.settings.heading }}</h2>
+        {% endif %}
+      </div>
+
+      {% if section.settings.show_stats %}
+        <div class="ssr-{{ sid }}__stats">
+          {% if section.settings.stat_1_value != blank %}
+            <div class="ssr-{{ sid }}__stat">
+              <span class="ssr-{{ sid }}__stat-value">{{ section.settings.stat_1_value }}</span>
+              <span class="ssr-{{ sid }}__stat-label">{{ section.settings.stat_1_label }}</span>
+            </div>
+          {% endif %}
+          {% if section.settings.stat_2_value != blank %}
+            <div class="ssr-{{ sid }}__stat">
+              <span class="ssr-{{ sid }}__stat-value">{{ section.settings.stat_2_value }}</span>
+              <span class="ssr-{{ sid }}__stat-label">{{ section.settings.stat_2_label }}</span>
+            </div>
+          {% endif %}
+          {% if section.settings.stat_3_value != blank %}
+            <div class="ssr-{{ sid }}__stat">
+              <span class="ssr-{{ sid }}__stat-value">{{ section.settings.stat_3_value }}</span>
+              <span class="ssr-{{ sid }}__stat-label">{{ section.settings.stat_3_label }}</span>
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+
+    {%- comment -%} ── Pull quote ── {%- endcomment -%}
+    {% if section.settings.quote != blank %}
+      <div class="ssr-{{ sid }}__quote-wrap">
+        <span class="ssr-{{ sid }}__quote-mark" aria-hidden="true">&ldquo;</span>
+        <div class="ssr-{{ sid }}__quote">{{ section.settings.quote }}</div>
+        {% if section.settings.quote_author != blank or section.settings.quote_meta != blank %}
+          <div class="ssr-{{ sid }}__quote-attr">
+            {% if section.settings.quote_author != blank %}
+              <span class="ssr-{{ sid }}__quote-author">{{ section.settings.quote_author }}</span>
+            {% endif %}
+            {% if section.settings.quote_meta != blank %}
+              <span class="ssr-{{ sid }}__quote-meta">{{ section.settings.quote_meta }}</span>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {%- comment -%} ── Marquee of review cards ── {%- endcomment -%}
+    {% if section.blocks.size > 0 %}
+      <div class="ssr-{{ sid }}__marquee" aria-label="Customer reviews">
+        <div class="ssr-{{ sid }}__track">
+          {% for pass in (1..2) %}
+            {% for block in section.blocks %}
+              {%- liquid
+                assign rating = block.settings.rating | default: 5
+                if rating > 5
+                  assign rating = 5
+                endif
+                assign initial = block.settings.author | strip | slice: 0, 1 | upcase
+              -%}
+              <article class="ssr-{{ sid }}__card"
+                {% if pass == 2 %}aria-hidden="true"{% endif %}
+                {{ block.shopify_attributes }}>
+                <div class="ssr-{{ sid }}__card-head">
+                  <div class="ssr-{{ sid }}__author">
+                    <span class="ssr-{{ sid }}__avatar" aria-hidden="true">
+                      {% if block.settings.avatar != blank %}
+                        <img src="{{ block.settings.avatar | image_url: width: 80 }}" alt="" loading="lazy" width="40" height="40">
+                      {% else %}
+                        {{ initial | default: 'A' }}
+                      {% endif %}
+                    </span>
+                    <span class="ssr-{{ sid }}__author-info">
+                      {% if block.settings.author != blank %}
+                        <span class="ssr-{{ sid }}__author-name">{{ block.settings.author }}</span>
+                      {% endif %}
+                      {% if block.settings.meta != blank %}
+                        <span class="ssr-{{ sid }}__author-meta">{{ block.settings.meta }}</span>
+                      {% endif %}
+                    </span>
+                  </div>
+                  <span class="ssr-{{ sid }}__stars" aria-label="Rated {{ rating }} out of 5">
+                    {% for i in (1..5) %}
+                      {% if i <= rating %}
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+                      {% else %}
+                        <svg viewBox="0 0 24 24" aria-hidden="true" style="opacity:0.18"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+                      {% endif %}
+                    {% endfor %}
+                  </span>
+                </div>
+
+                {% if block.settings.review != blank %}
+                  <p class="ssr-{{ sid }}__card-body">{{ block.settings.review | escape }}</p>
+                {% endif %}
+
+                {% if block.settings.tag != blank %}
+                  <span class="ssr-{{ sid }}__card-foot">{{ block.settings.tag }}</span>
+                {% endif %}
+              </article>
+            {% endfor %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Reviews carousel",
+  "tag": "section",
+  "class": "section-reviews",
+  "disabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    { "type": "header", "content": "Top heading" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Love from you" },
+    {
+      "type": "richtext",
+      "id": "heading",
+      "label": "Heading",
+      "info": "Wrap a word in italics to render it in the accent color.",
+      "default": "<p>Loved by <em>thousands.</em><br>Worn by <em>many more.</em></p>"
+    },
+    {
+      "type": "select",
+      "id": "heading_font",
+      "label": "Heading font",
+      "options": [
+        { "value": "cormorant",     "label": "Cormorant / Playfair (serif)" },
+        { "value": "playfair",      "label": "Playfair Display" },
+        { "value": "garamond",      "label": "EB Garamond" },
+        { "value": "georgia",       "label": "Georgia (system serif)" },
+        { "value": "theme-heading", "label": "Theme heading font" }
+      ],
+      "default": "cormorant"
+    },
+    { "type": "range", "id": "heading_size", "label": "Heading size (desktop)", "min": 24, "max": 64, "step": 2, "unit": "px", "default": 44 },
+
+    { "type": "header", "content": "Stats" },
+    { "type": "checkbox", "id": "show_stats", "label": "Show stats row", "default": true },
+    { "type": "text", "id": "stat_1_value", "label": "Stat 1 value", "default": "4.9" },
+    { "type": "text", "id": "stat_1_label", "label": "Stat 1 label", "default": "Avg. rating" },
+    { "type": "text", "id": "stat_2_value", "label": "Stat 2 value", "default": "2,400+" },
+    { "type": "text", "id": "stat_2_label", "label": "Stat 2 label", "default": "Verified reviews" },
+    { "type": "text", "id": "stat_3_value", "label": "Stat 3 value", "default": "96%" },
+    { "type": "text", "id": "stat_3_label", "label": "Stat 3 label", "default": "Would reorder" },
+
+    { "type": "header", "content": "Pull quote" },
+    {
+      "type": "richtext",
+      "id": "quote",
+      "label": "Quote",
+      "info": "Wrap a phrase in <strong> tags to give it a highlighted background.",
+      "default": "<p>Salon-finish at home — <strong>got tons of compliments</strong>, and the quality truly feels professional.</p>"
+    },
+    { "type": "text", "id": "quote_author", "label": "Author name", "default": "Preksha" },
+    { "type": "text", "id": "quote_meta", "label": "Author meta", "default": "Delhi · French Tips · Classic" },
+
+    { "type": "header", "content": "Marquee" },
+    { "type": "range", "id": "marquee_speed", "label": "Scroll speed", "info": "Higher = slower", "min": 20, "max": 120, "step": 5, "unit": "s", "default": 50 },
+    { "type": "range", "id": "card_width", "label": "Card max width (desktop)", "min": 280, "max": 520, "step": 10, "unit": "px", "default": 360 },
+    { "type": "range", "id": "card_gap", "label": "Gap between cards", "min": 16, "max": 80, "step": 4, "unit": "px", "default": 40 },
+
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "max_width", "label": "Max content width", "min": 800, "max": 1600, "step": 20, "unit": "px", "default": 1180 },
+    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 160, "step": 4, "unit": "px", "default": 72 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 160, "step": 4, "unit": "px", "default": 72 },
+
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "bg_color",          "label": "Section background",          "default": "#fbf3ec" },
+    { "type": "color", "id": "heading_color",     "label": "Heading",                     "default": "#1a1414" },
+    { "type": "color", "id": "body_color",        "label": "Body text",                   "default": "#5a4948" },
+    { "type": "color", "id": "muted_color",       "label": "Muted text / meta",           "default": "#9a8a86" },
+    { "type": "color", "id": "accent_color",      "label": "Accent (eyebrow, italic)",    "default": "#ea806f" },
+    { "type": "color", "id": "accent_soft_color", "label": "Quote highlight background",  "default": "#f5d4cb" },
+    { "type": "color", "id": "star_color",        "label": "Star color",                  "default": "#e8b948" },
+    { "type": "color", "id": "border_color",      "label": "Border / divider",            "default": "#e6cfc6" },
+    { "type": "color", "id": "avatar_bg",         "label": "Avatar background",           "default": "#ea806f" },
+    { "type": "color", "id": "avatar_text",       "label": "Avatar text",                 "default": "#ffffff" }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        { "type": "text", "id": "author", "label": "Author name", "default": "Jessica" },
+        { "type": "text", "id": "meta", "label": "Location · Date", "default": "Mumbai · Mar 2026" },
+        {
+          "type": "image_picker",
+          "id": "avatar",
+          "label": "Avatar image (optional)",
+          "info": "Leave blank to use first letter of the author's name."
+        },
+        { "type": "range", "id": "rating", "label": "Star rating", "min": 1, "max": 5, "step": 1, "default": 5 },
+        {
+          "type": "textarea",
+          "id": "review",
+          "label": "Review text",
+          "default": "Love how reusable these are. I have worn the same set multiple times and they still look brand new. Great quality and totally worth it."
+        },
+        {
+          "type": "text",
+          "id": "tag",
+          "label": "Product tag",
+          "info": "Eg. THE ALMOND SET · BLUSH",
+          "default": "The almond set · Blush"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 20,
+  "presets": [
+    {
+      "name": "Reviews carousel",
+      "category": "Storytelling",
+      "blocks": [
+        { "type": "review", "settings": { "author": "Jessica", "meta": "Mumbai · Mar 2026", "rating": 5, "tag": "The almond set · Blush" } },
+        { "type": "review", "settings": { "author": "Raya",    "meta": "Bengaluru · Apr 2026", "rating": 5, "tag": "Coffin glam · Nude" } },
+        { "type": "review", "settings": { "author": "Aarohi",  "meta": "Pune · May 2026", "rating": 5, "tag": "Stiletto · Cherry" } },
+        { "type": "review", "settings": { "author": "Meera",   "meta": "Delhi · May 2026", "rating": 5, "tag": "French tips · Classic" } },
+        { "type": "review", "settings": { "author": "Tanvi",   "meta": "Chandigarh · Apr 2026", "rating": 5, "tag": "Almond · Glossy" } },
+        { "type": "review", "settings": { "author": "Sara",    "meta": "Hyderabad · Mar 2026", "rating": 5, "tag": "Coffin · Mauve" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
