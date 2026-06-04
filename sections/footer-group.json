@@ -86,16 +86,16 @@
         "card_radius": 14,
         "padding_top": 72,
         "padding_bottom": 80,
-        "bg_color": "#f2e4dd",
-        "heading_color": "#1a1414",
-        "body_color": "#5a4948",
-        "accent_color": "#a85b6c",
-        "decoration_color": "#e8c9c0",
-        "border_color": "#e6cfc6",
+        "bg_color": "#f7eae6",
+        "heading_color": "#2b1b17",
+        "body_color": "#6b4f49",
+        "accent_color": "#cd8276",
+        "decoration_color": "#efd6d0",
+        "border_color": "#efd9d3",
         "light_card_bg": "#ffffff",
-        "dark_card_bg": "#6e323e",
-        "dark_card_text": "#f5e8e3",
-        "icon_tint": "#f5e1da"
+        "dark_card_bg": "#7e3e33",
+        "dark_card_text": "#fbefea",
+        "icon_tint": "#f6e4df"
       }
     },
     "soulstruck_footer_modern_YwP3NY": {
