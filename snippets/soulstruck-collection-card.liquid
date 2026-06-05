@@ -1,0 +1,114 @@
+{%- doc -%}
+  SoulStruck collection product card.
+
+  A custom card design used on collection pages (rendered from product-card.liquid
+  when request.page_type == 'collection'). Shows an image with hover image-swap,
+  a sale / sold-out badge, title, price, and an always-visible "Add to cart" +
+  "Buy now" action row.
+
+  - "Add to cart" reuses the theme's native AJAX add-to-cart (product-form-component
+    + add-to-cart-button) so it opens / updates the cart drawer.
+  - "Buy now" is a cart permalink that adds the item and goes straight to checkout.
+  - The wrapping <product-card> element handles click-to-product navigation; its
+    handler ignores <button>s and lets <a> clicks navigate natively.
+
+  @param {object} product - The product object
+{%- enddoc -%}
+
+{%- liquid
+  assign variant = product.selected_or_first_available_variant
+  assign main_image = product.featured_image
+  assign alt_image = product.images[1]
+  assign available = product.available
+
+  assign on_sale = false
+  if product.compare_at_price > product.price
+    assign on_sale = true
+  endif
+
+  assign save_pct = 0
+  if on_sale and product.compare_at_price > 0
+    assign save_pct = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round
+  endif
+
+  assign form_id = 'ss-cc-form-' | append: product.id
+-%}
+
+<div class="ss-cc">
+  <div class="ss-cc__media-wrap">
+    {%- if main_image -%}
+      <img
+        class="ss-cc__img ss-cc__img--main"
+        src="{{ main_image | image_url: width: 600 }}"
+        srcset="{{ main_image | image_url: width: 300 }} 300w, {{ main_image | image_url: width: 600 }} 600w, {{ main_image | image_url: width: 900 }} 900w"
+        sizes="(max-width: 749px) 50vw, 25vw"
+        alt="{{ main_image.alt | default: product.title | escape }}"
+        width="600"
+        height="{{ 600 | divided_by: main_image.aspect_ratio | round }}"
+        loading="lazy"
+      >
+      {%- if alt_image -%}
+        <img
+          class="ss-cc__img ss-cc__img--alt"
+          src="{{ alt_image | image_url: width: 600 }}"
+          srcset="{{ alt_image | image_url: width: 300 }} 300w, {{ alt_image | image_url: width: 600 }} 600w, {{ alt_image | image_url: width: 900 }} 900w"
+          sizes="(max-width: 749px) 50vw, 25vw"
+          alt=""
+          width="600"
+          height="{{ 600 | divided_by: alt_image.aspect_ratio | round }}"
+          loading="lazy"
+        >
+      {%- endif -%}
+    {%- else -%}
+      <span class="ss-cc__placeholder" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </span>
+    {%- endif -%}
+
+    <div class="ss-cc__badges">
+      {%- if available == false -%}
+        <span class="ss-cc__badge ss-cc__badge--out">Sold out</span>
+      {%- elsif save_pct > 0 -%}
+        <span class="ss-cc__badge ss-cc__badge--sale">{{ save_pct }}% off</span>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <div class="ss-cc__info">
+    <h3 class="ss-cc__title">{{ product.title }}</h3>
+    <div class="ss-cc__price">
+      <span class="ss-cc__price-now{% if on_sale %} ss-cc__price-now--sale{% endif %}">
+        {{- product.price | money -}}
+      </span>
+      {%- if on_sale -%}
+        <span class="ss-cc__price-was">{{ product.compare_at_price | money }}</span>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <div class="ss-cc__actions">
+    {%- if available and variant -%}
+      <product-form-component
+        class="ss-cc__form"
+        data-product-id="{{ product.id }}"
+        data-product-url="{{ product.url }}"
+        on:submit="/handleSubmit"
+      >
+        <div class="visually-hidden" aria-live="assertive" role="status" aria-atomic="true" ref="liveRegion"></div>
+        {%- form 'product', product, id: form_id, data-type: 'add-to-cart-form' -%}
+          <input type="hidden" name="id" ref="variantId" value="{{ variant.id }}">
+          {%- render 'add-to-cart-button',
+            class: 'ss-cc__btn ss-cc__btn--add',
+            can_add_to_cart: true,
+            product: product,
+            add_to_cart_text: 'Add to cart'
+          -%}
+        {%- endform -%}
+      </product-form-component>
+
+      <a class="ss-cc__btn ss-cc__btn--buy" href="{{ routes.cart_url }}/{{ variant.id }}:1">Buy now</a>
+    {%- else -%}
+      <button class="ss-cc__btn ss-cc__btn--add" type="button" disabled>Sold out</button>
+    {%- endif -%}
+  </div>
+</div>
