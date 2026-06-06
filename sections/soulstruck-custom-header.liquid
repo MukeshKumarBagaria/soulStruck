@@ -279,6 +279,7 @@
             aria-haspopup="dialog"
             data-cart-type="{{ settings.cart_type }}"
           >
+            <a href="/cart">
             <cart-icon
               class="header-actions__cart-icon{% unless cart == empty %} header-actions__cart-icon--has-cart{% endunless %}"
             >
@@ -287,6 +288,7 @@
               </span>
               {%- render 'cart-bubble', limit: 100, live_region: true -%}
             </cart-icon>
+            </a>
           </button>
         {%- endif -%}
 
