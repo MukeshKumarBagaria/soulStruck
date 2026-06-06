@@ -5,6 +5,7 @@
 ></script>
 
 {% capture cart_icon %}
+  <a href="/cart">
   <cart-icon
     class="header-actions__cart-icon{% if display_style == 'text' %} header-actions__cart-icon--text{% endif %}{% unless cart == empty %} header-actions__cart-icon--has-cart{% endunless %}"
     data-testid="cart-icon"
@@ -22,6 +23,7 @@
 
     {% render 'cart-bubble', limit: 100, live_region: true %}
   </cart-icon>
+</a>
 {% endcapture %}
 
 {% capture account_icon %}
