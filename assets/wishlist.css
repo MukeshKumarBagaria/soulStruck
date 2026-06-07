@@ -86,7 +86,7 @@ product-card {
 .wishlist-btn--card {
   position: absolute;
   top: 10px;
-  inset-inline-start: 10px;
+  inset-inline-end: 10px;
   z-index: 3;
   width: 36px;
   height: 36px;
@@ -113,6 +113,14 @@ product-card {
 .wishlist-btn--card .wishlist-btn__icon {
   width: 19px;
   height: 19px;
+}
+
+/* Native theme cards allow a top-right sale badge. When present, flip the
+   heart to the top-left so they never overlap. Custom collection cards keep
+   their badge top-left, so the heart stays in the top-right corner there. */
+product-card:has(.product-badges--top-right) .wishlist-btn--card {
+  inset-inline-end: auto;
+  inset-inline-start: 10px;
 }
 
 /* ---- PDP / quick-add variant: inline pill button ---- */
