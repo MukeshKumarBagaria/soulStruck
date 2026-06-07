@@ -39,6 +39,8 @@
   {{ block.shopify_attributes }}
 >
   {%- if product != blank -%}
+    {%- comment -%} Wishlist heart (custom feature) — shows on PDP & quick-add modal {%- endcomment -%}
+    {% render 'wishlist-button', product: product, context: 'pdp' %}
     {%- assign product_form_id = 'BuyButtons-ProductForm-' | append: section.id -%}
     <product-form-component
       data-section-id="{{ section.id }}"

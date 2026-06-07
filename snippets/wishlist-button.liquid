@@ -1,0 +1,40 @@
+{%- comment -%}
+  Wishlist heart button (reusable, additive).
+
+  @param {object} product - The product object (required).
+  @param {string} [context] - 'card' (default) or 'pdp'.
+
+  Renders a button with both an outline and a filled heart; wishlist.js
+  toggles the `is-active` class and ARIA state from localStorage. Safe to
+  render anywhere a product is available — it never affects existing markup.
+{%- endcomment -%}
+
+{%- liquid
+  assign wl_context = context | default: 'card'
+-%}
+
+{%- if product != blank and product != nil and product.handle != blank -%}
+  <button
+    type="button"
+    class="wishlist-btn wishlist-btn--{{ wl_context }}"
+    data-wishlist-toggle
+    data-wishlist-handle="{{ product.handle }}"
+    data-wishlist-id="{{ product.id }}"
+    data-label-add="Add to wishlist"
+    data-label-remove="In wishlist"
+    aria-pressed="false"
+    aria-label="Add to wishlist"
+    title="Add to wishlist"
+  >
+    <span class="wishlist-btn__icon wishlist-btn__icon--outline" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    </span>
+    <span class="wishlist-btn__icon wishlist-btn__icon--fill" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    </span>
+    {%- if wl_context == 'pdp' -%}
+      <span class="wishlist-btn__label wishlist-btn__label--add">Add to Wishlist</span>
+      <span class="wishlist-btn__label wishlist-btn__label--remove">In Wishlist</span>
+    {%- endif -%}
+  </button>
+{%- endif -%}

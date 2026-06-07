@@ -87,6 +87,10 @@
       {{ product.title }}
     </span>
   </a>
+  {%- comment -%} Wishlist heart (custom feature) {%- endcomment -%}
+  {%- unless onboarding -%}
+    {% render 'wishlist-button', product: product, context: 'card' %}
+  {%- endunless -%}
   {%- if is_collection_card -%}
     {% render 'soulstruck-collection-card', product: product %}
   {%- else -%}

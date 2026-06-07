@@ -1,0 +1,25 @@
+{%- comment -%}
+  Outputs the logged-in customer's saved wishlist (if any) as JSON so that
+  wishlist.js can MERGE it into localStorage on load (read-only).
+
+  Reading a customer metafield in Liquid is supported. WRITING it back is not
+  possible from the theme — that requires the Admin API via a custom app /
+  App Proxy. Until such a metafield is populated by an app, this safely
+  outputs an empty list and the feature runs purely on localStorage.
+
+  Expected metafield (optional): customer.metafields.custom.wishlist
+  defined as a "list of product references".
+{%- endcomment -%}
+
+{%- liquid
+  assign wl = customer.metafields.custom.wishlist.value
+-%}
+<script id="wishlist-customer-data" type="application/json">
+{"loggedIn": {% if customer %}true{% else %}false{% endif %}, "items": [
+{%- if wl.first -%}
+  {%- for wl_product in wl -%}
+    {"handle": {{ wl_product.handle | json }}, "id": "{{ wl_product.id }}"}{%- unless forloop.last -%},{%- endunless -%}
+  {%- endfor -%}
+{%- endif -%}
+]}
+</script>

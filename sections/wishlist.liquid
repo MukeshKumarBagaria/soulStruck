@@ -1,0 +1,107 @@
+{%- comment -%}
+  Wishlist page section. Assign the "page.wishlist" template to a Page (handle
+  "wishlist") to expose it at /pages/wishlist. The grid is populated client-side
+  by wishlist.js from the visitor's saved items (localStorage), so it works for
+  guests and logged-in customers alike, with no page reload.
+{%- endcomment -%}
+
+<div class="wl-section section color-{{ section.settings.color_scheme }}">
+  <div class="wl-section__inner page-width">
+    {%- if section.settings.heading != blank -%}
+      <h1 class="wl-section__heading">{{ section.settings.heading | escape }}</h1>
+    {%- endif -%}
+
+    <div
+      id="wishlist-app"
+      data-money-format="{{ shop.money_format | escape }}"
+      data-t-add="{{ section.settings.add_to_cart_text | escape }}"
+      data-t-options="{{ section.settings.options_text | escape }}"
+      data-t-soldout="{{ section.settings.sold_out_text | escape }}"
+      data-t-instock="{{ section.settings.in_stock_text | escape }}"
+    >
+      <p class="wl-loading" data-wishlist-loading>{{ section.settings.loading_text | escape }}</p>
+
+      <div class="wl-grid" data-wishlist-grid></div>
+
+      <div class="wl-empty" data-wishlist-empty hidden>
+        <p>{{ section.settings.empty_text | escape }}</p>
+        <a class="wl-empty__link button" href="{{ routes.all_products_collection_url }}">
+          {{ section.settings.empty_button_text | escape }}
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Wishlist",
+  "tag": "section",
+  "class": "section-wishlist",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "My Wishlist"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Labels"
+    },
+    {
+      "type": "text",
+      "id": "loading_text",
+      "label": "Loading text",
+      "default": "Loading your wishlist…"
+    },
+    {
+      "type": "text",
+      "id": "empty_text",
+      "label": "Empty state text",
+      "default": "Your wishlist is empty. Tap the heart on any product to save it here."
+    },
+    {
+      "type": "text",
+      "id": "empty_button_text",
+      "label": "Empty state button label",
+      "default": "Continue shopping"
+    },
+    {
+      "type": "text",
+      "id": "add_to_cart_text",
+      "label": "Add to cart label",
+      "default": "Add to cart"
+    },
+    {
+      "type": "text",
+      "id": "options_text",
+      "label": "Select options label",
+      "default": "Select options"
+    },
+    {
+      "type": "text",
+      "id": "in_stock_text",
+      "label": "In stock label",
+      "default": "In stock"
+    },
+    {
+      "type": "text",
+      "id": "sold_out_text",
+      "label": "Sold out label",
+      "default": "Sold out"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Wishlist"
+    }
+  ]
+}
+{% endschema %}
