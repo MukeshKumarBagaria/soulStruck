@@ -572,6 +572,47 @@
   .ni-ch__search-icon-btn { color: var(--ni-ch-fg, #1a1a1a); }
 }
 
+/* ── Mobile spacing fix ────────────────────────────────────────
+   Stops the centered logo from colliding with the search icon / side
+   icons on narrow screens, and makes the search expand as a full-width
+   overlay instead of overflowing on top of the logo. */
+@media screen and (max-width: 749px) {
+  .ni-ch__bar {
+    position: relative;          /* anchor for the expanded search overlay */
+    padding: 0 12px;
+    gap: 6px;
+  }
+
+  /* Tighter left cluster */
+  .ni-ch__left { gap: 8px; }
+
+  /* Smaller, tighter side icons so all three fit with room to spare */
+  .ni-ch__icon-btn { width: 36px; height: 36px; }
+  .ni-ch__right { gap: 2px; }
+
+  /* Keep the logo from crowding the search / icons */
+  .ni-ch__center { padding: 0 6px; }
+  .ni-ch__logo-img { max-width: 112px !important; }
+  .ni-ch__logo-text { font-size: 1.2rem; }
+
+  /* Expanded search floats as a full-width bar over the header
+     (covering logo + icons) rather than pushing into the logo. */
+  .ni-ch__search-form.ni-ch__search-form--expanded {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    right: 12px;
+    transform: translateY(-50%);
+    width: auto;
+    height: 38px;
+    padding: 0 12px;
+    border-radius: 8px;
+    background: var(--ni-ch-search-bg, #fff);
+    box-shadow: 0 0 0 1px var(--ni-ch-fg, #1a1a1a);
+    z-index: 30;
+  }
+}
+
 /* ── Center: Logo ─────────────────────────────────────────────── */
 .ni-ch__center {
   display: flex;
