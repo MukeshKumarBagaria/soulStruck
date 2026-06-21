@@ -478,7 +478,7 @@
           "type": "tab",
           "settings": {
             "tab_name": "trending",
-            "collection": "casual",
+            "collection": "loved-by-influencers",
             "badge_label": ""
           }
         },
