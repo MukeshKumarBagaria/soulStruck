@@ -225,6 +225,32 @@
               },
               "blocks": {}
             },
+            "description_block": {
+              "type": "product-description",
+              "name": "Product Description",
+              "settings": {
+                "text": "{{ closest.product.description }}",
+                "width": "100%",
+                "max_width": "normal",
+                "alignment": "left",
+                "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "color": "var(--color-foreground)",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
             "buy_buttons": {
               "type": "buy-buttons",
               "settings": {
@@ -259,32 +285,6 @@
                 }
               },
               "block_order": []
-            },
-            "description_block": {
-              "type": "product-description",
-              "name": "Product Description",
-              "settings": {
-                "text": "{{ closest.product.description }}",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "rte",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "color": "var(--color-foreground)",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
             },
             "ai_gen_block_55b9b59_ztJGEb": {
               "type": "ai_gen_block_55b9b59",
@@ -556,8 +556,8 @@
             "rating_block",
             "price_block",
             "divider_1",
-            "buy_buttons",
             "description_block",
+            "buy_buttons",
             "ai_gen_block_55b9b59_ztJGEb",
             "accordion_group",
             "variant_picker",
