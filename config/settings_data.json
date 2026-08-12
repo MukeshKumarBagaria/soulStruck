@@ -647,12 +647,7 @@
   },
   "platform_customizations": {
     "custom_css": [
-      "/* ========================================= SOUL STRUCK - PINK VARIANT BUTTONS ========================================= *//* Normal buttons */.variant-picker .variant-option--buttons .variant-option__button-label {background: #ffffff !important; background-color: #ffffff !important; border: 1px solid #E85D8F !important; border-color: #E85D8F !important; color: #E85D8F !important;}",
-      "/* ACTIVE / SELECTED BUTTON */.variant-picker .variant-option--buttons .variant-option__button-label:has(> input[type=\"radio\"]:checked) {background: #E85D8F !important; background-color: #E85D8F !important; border: 1px solid #E85D8F !important; border-color: #E85D8F !important; color: #ffffff !important;}",
-      "/* Active button text */.variant-picker .variant-option--buttons .variant-option__button-label:has(> input[type=\"radio\"]:checked) .variant-option__button-label__text {color: #ffffff !important;}",
-      "/* Hover - unselected */.variant-picker .variant-option--buttons .variant-option__button-label:hover {background: #FAD1DF !important; background-color: #FAD1DF !important; border-color: #E85D8F !important; color: #D13F72 !important;}",
-      "/* Hover - selected button should remain pink */.variant-picker .variant-option--buttons .variant-option__button-label:has(> input[type=\"radio\"]:checked):hover {background: #E85D8F !important; background-color: #E85D8F !important; border-color: #E85D8F !important; color: #ffffff !important;}",
-      "/* Selected + hover text */.variant-picker .variant-option--buttons .variant-option__button-label:has(> input[type=\"radio\"]:checked):hover .variant-option__button-label__text {color: #ffffff !important;}"
+      "/* ========================================== SOUL STRUCK - HORIZON VARIANT COLORS ========================================== */.variant-picker {--color-variant-background: #ffffff; --color-variant-border: #E85D8F; --color-variant-text: #E85D8F; --color-variant-hover-background: #FAD1DF; --color-variant-hover-text: #D13F72; --color-variant-hover-border: #E85D8F; /* SELECTED */ --color-selected-variant-background: #E85D8F; --color-selected-variant-border: #E85D8F; --color-selected-variant-text: #ffffff; /* SELECTED + HOVER */ --color-selected-variant-hover-background: #E85D8F; --color-selected-variant-hover-text: #ffffff; --color-selected-variant-hover-border: #E85D8F;}"
     ]
   }
 }
