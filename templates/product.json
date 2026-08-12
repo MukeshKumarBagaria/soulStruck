@@ -225,19 +225,6 @@
               },
               "blocks": {}
             },
-            "variant_picker": {
-              "type": "variant-picker",
-              "settings": {
-                "variant_style": "buttons",
-                "show_swatches": true,
-                "alignment": "left",
-                "padding-block-start": 4,
-                "padding-block-end": 4,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
             "description_block": {
               "type": "product-description",
               "name": "Product Description",
@@ -259,6 +246,19 @@
                 "corner_radius": 0,
                 "padding-block-start": 0,
                 "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "variant_picker": {
+              "type": "variant-picker",
+              "settings": {
+                "variant_style": "buttons",
+                "show_swatches": true,
+                "alignment": "left",
+                "padding-block-start": 4,
+                "padding-block-end": 4,
                 "padding-inline-start": 0,
                 "padding-inline-end": 0
               },
@@ -556,8 +556,8 @@
             "rating_block",
             "price_block",
             "divider_1",
-            "variant_picker",
             "description_block",
+            "variant_picker",
             "buy_buttons",
             "ai_gen_block_55b9b59_ztJGEb",
             "accordion_group",
