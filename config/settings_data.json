@@ -647,10 +647,12 @@
   },
   "platform_customizations": {
     "custom_css": [
-      "/* Unselected */.variant-picker .variant-option__button-label {background-color: #FFFFFF !important; border: 1px solid #E85D8F !important; color: #E85D8F !important;}",
-      "/* Selected */.variant-picker .variant-option__button-label:has(input[type=\"radio\"]:checked) {background-color: #E85D8F !important; border-color: #E85D8F !important; color: #FFFFFF !important;}",
-      "/* Hover */.variant-picker .variant-option__button-label:hover {background-color: #FAD1DF !important; border-color: #E85D8F !important; color: #D13F72 !important;}",
-      ".variant-picker .variant-option__button-label__text {color: inherit !important;}"
+      "/* ========================================= SOUL STRUCK - PINK VARIANT BUTTONS ========================================= *//* Normal buttons */.variant-picker .variant-option--buttons .variant-option__button-label {background: #ffffff !important; background-color: #ffffff !important; border: 1px solid #E85D8F !important; border-color: #E85D8F !important; color: #E85D8F !important;}",
+      "/* ACTIVE / SELECTED BUTTON */.variant-picker .variant-option--buttons .variant-option__button-label:has(> input[type=\"radio\"]:checked) {background: #E85D8F !important; background-color: #E85D8F !important; border: 1px solid #E85D8F !important; border-color: #E85D8F !important; color: #ffffff !important;}",
+      "/* Active button text */.variant-picker .variant-option--buttons .variant-option__button-label:has(> input[type=\"radio\"]:checked) .variant-option__button-label__text {color: #ffffff !important;}",
+      "/* Hover - unselected */.variant-picker .variant-option--buttons .variant-option__button-label:hover {background: #FAD1DF !important; background-color: #FAD1DF !important; border-color: #E85D8F !important; color: #D13F72 !important;}",
+      "/* Hover - selected button should remain pink */.variant-picker .variant-option--buttons .variant-option__button-label:has(> input[type=\"radio\"]:checked):hover {background: #E85D8F !important; background-color: #E85D8F !important; border-color: #E85D8F !important; color: #ffffff !important;}",
+      "/* Selected + hover text */.variant-picker .variant-option--buttons .variant-option__button-label:has(> input[type=\"radio\"]:checked):hover .variant-option__button-label__text {color: #ffffff !important;}"
     ]
   }
 }
