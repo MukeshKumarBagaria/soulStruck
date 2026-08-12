@@ -225,6 +225,19 @@
               },
               "blocks": {}
             },
+            "variant_picker": {
+              "type": "variant-picker",
+              "settings": {
+                "variant_style": "buttons",
+                "show_swatches": true,
+                "alignment": "left",
+                "padding-block-start": 4,
+                "padding-block-end": 4,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
             "description_block": {
               "type": "product-description",
               "name": "Product Description",
@@ -405,19 +418,6 @@
                 "accordion_howtouse"
               ]
             },
-            "variant_picker": {
-              "type": "variant-picker",
-              "settings": {
-                "variant_style": "buttons",
-                "show_swatches": true,
-                "alignment": "left",
-                "padding-block-start": 4,
-                "padding-block-end": 4,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
             "ai_gen_block_04bb985_hJqUXz": {
               "type": "ai_gen_block_04bb985",
               "settings": {
@@ -556,11 +556,11 @@
             "rating_block",
             "price_block",
             "divider_1",
+            "variant_picker",
             "description_block",
             "buy_buttons",
             "ai_gen_block_55b9b59_ztJGEb",
             "accordion_group",
-            "variant_picker",
             "ai_gen_block_04bb985_hJqUXz",
             "ai_gen_block_1bd7ab3_gUwT6P",
             "complementary_products"

@@ -644,5 +644,12 @@
         }
       }
     }
+  },
+  "platform_customizations": {
+    "custom_css": [
+      "/* Variant buttons - Pink */.variant-picker input[type=\"radio\"] + label {background: #f4a6c1 !important; border-color: #f4a6c1 !important; color: #000 !important;}",
+      "/* Selected variant */.variant-picker input[type=\"radio\"]:checked + label {background: #e85d8f !important; border-color: #e85d8f !important; color: #fff !important;}",
+      "/* Hover */.variant-picker input[type=\"radio\"] + label:hover {background: #e85d8f !important; border-color: #e85d8f !important; color: #fff !important;}"
+    ]
   }
 }
