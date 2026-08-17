@@ -143,7 +143,7 @@
               "type": "text",
               "name": "Offer Banner",
               "settings": {
-                "text": "<p><strong>Buy2 @1099 | Buy3 @1599 | Buy4 @1999</strong></p>",
+                "text": "<p><strong>BUY2 @ 10%Off | BUY3 @15%off | BUY4 @20%off</strong></p>",
                 "width": "fit-content",
                 "max_width": "normal",
                 "alignment": "left",
