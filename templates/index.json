@@ -193,6 +193,30 @@
     "soulstruck_hero_slider_hTNKR3": {
       "type": "soulstruck-hero-slider",
       "blocks": {
+        "slide_et8Azj": {
+          "type": "slide",
+          "settings": {
+            "badge_emoji": "",
+            "badge_text": "dfadfd",
+            "heading": "more nails,\nmore savings",
+            "subtext": "Shop the best deals on press-on nails",
+            "cta_text": "save now",
+            "cta_url": "shopify://collections/all",
+            "media_type": "image",
+            "card_image": "shopify://shop_images/rakshbandhan.jpg",
+            "card_video_url": "",
+            "video_autoplay": true,
+            "video_loop": true,
+            "video_muted": true,
+            "video_controls": false,
+            "card_bg_color": "#ff2d7c",
+            "show_blobs": true,
+            "price_line_1": "Any 2 at",
+            "price_value_1": "₹999",
+            "price_line_2": "Any 3 at",
+            "price_value_2": "₹1199"
+          }
+        },
         "slide_XzwbrY": {
           "type": "slide",
           "settings": {
@@ -201,7 +225,7 @@
             "heading": "more nails,\nmore savings.",
             "subtext": "Buy2 & Get 10% Off, Buy3 & Get 15% Off, Buy4 & Get 20% Off",
             "cta_text": "Shop Now",
-            "cta_url": "",
+            "cta_url": "shopify://collections",
             "media_type": "video",
             "card_video": "shopify://files/videos/soulstruck-hero-video.mp4",
             "card_video_url": "",
@@ -243,6 +267,7 @@
         }
       },
       "block_order": [
+        "slide_et8Azj",
         "slide_XzwbrY",
         "slide_qYpEPf"
       ],
