@@ -37,7 +37,7 @@
             "extend_media": false,
             "zoom": true,
             "video_loop": false,
-            "hide_variants": true,
+            "hide_variants": false,
             "padding-block-start": 8,
             "padding-block-end": 8,
             "padding-inline-start": 0,
