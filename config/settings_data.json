@@ -73,7 +73,7 @@
     "variant_swatch_width": 34,
     "variant_swatch_height": 34,
     "variant_swatch_radius": 32,
-    "variant_button_border_width": 1,
+    "variant_button_border_width": 2,
     "variant_button_radius": 14,
     "variant_button_width": "equal-width-buttons",
     "button_font_weight_secondary": "default",
@@ -117,10 +117,10 @@
           "input_border_color": "#dfdfdf",
           "input_hover_background": "#00000003",
           "variant_background_color": "#ffffff",
-          "variant_text_color": "#000000",
+          "variant_text_color": "#e91e63",
           "variant_border_color": "#00000021",
           "variant_hover_background_color": "#f5f5f5",
-          "variant_hover_text_color": "#000000",
+          "variant_hover_text_color": "#c2185b",
           "variant_hover_border_color": "#e6e6e6",
           "selected_variant_background_color": "#000000",
           "selected_variant_text_color": "#ffffff",
@@ -647,7 +647,7 @@
   },
   "platform_customizations": {
     "custom_css": [
-      "/* ========================================== SOUL STRUCK - HORIZON VARIANT COLORS ========================================== */.variant-picker {--color-variant-background: #ffffff; --color-variant-border: #E85D8F; --color-variant-text: #E85D8F; --color-variant-hover-background: #FAD1DF; --color-variant-hover-text: #D13F72; --color-variant-hover-border: #E85D8F; /* SELECTED */ --color-selected-variant-background: #E85D8F; --color-selected-variant-border: #E85D8F; --color-selected-variant-text: #ffffff; /* SELECTED + HOVER */ --color-selected-variant-hover-background: #E85D8F; --color-selected-variant-hover-text: #ffffff; --color-selected-variant-hover-border: #E85D8F;}"
+      "/* ========================================== SOUL STRUCK - HORIZON VARIANT COLORS ========================================== */.variant-picker {--color-variant-background: #ffffff; --color-variant-border: #e85d8f; --color-variant-text: #e85d8f; --color-variant-hover-background: #fad1df; --color-variant-hover-text: #d13f72; --color-variant-hover-border: #e85d8f; /* SELECTED */ --color-selected-variant-background: #e85d8f; --color-selected-variant-border: #e85d8f; --color-selected-variant-text: #ffffff; /* SELECTED + HOVER */ --color-selected-variant-hover-background: #e85d8f; --color-selected-variant-hover-text: #ffffff; --color-selected-variant-hover-border: #e85d8f;}"
     ]
   }
 }
