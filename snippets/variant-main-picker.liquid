@@ -310,4 +310,34 @@
     text-align: right;
     justify-content: right;
   }
+
+  /* Kit selection headline */
+.variant-option__legend--kit {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  
+  margin-bottom: 16px;
+  
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  
+  color: #d35b8b;
+}
+
+/* Pink accent bar */
+.variant-option__legend--kit::before {
+  content: "";
+  display: inline-block;
+  
+  width: 4px;
+  height: 24px;
+  
+  border-radius: 999px;
+  background: #d35b8b;
+  
+  flex-shrink: 0;
+}
 {% endstylesheet %}
