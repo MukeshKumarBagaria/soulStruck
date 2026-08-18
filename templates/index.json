@@ -197,9 +197,9 @@
           "type": "slide",
           "settings": {
             "badge_emoji": "",
-            "badge_text": "dfadfd",
-            "heading": "more nails,\nmore savings",
-            "subtext": "Shop the best deals on press-on nails",
+            "badge_text": "",
+            "heading": "The Perfect Rakhi Gift for Her",
+            "subtext": "This Rakhshabandhan gift her something she will actually use",
             "cta_text": "save now",
             "cta_url": "shopify://collections/all",
             "media_type": "image",
@@ -211,10 +211,10 @@
             "video_controls": false,
             "card_bg_color": "#ff2d7c",
             "show_blobs": true,
-            "price_line_1": "Any 2 at",
-            "price_value_1": "₹999",
-            "price_line_2": "Any 3 at",
-            "price_value_2": "₹1199"
+            "price_line_1": "Rakshabandhan Sale",
+            "price_value_1": "Upto 55% Off",
+            "price_line_2": "",
+            "price_value_2": ""
           }
         },
         "slide_XzwbrY": {
