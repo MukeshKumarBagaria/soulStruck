@@ -857,8 +857,11 @@
             "bullet2_text": "Gentle on natural nails",
             "bullet3_icon": "smile",
             "bullet3_text": "100% vegan & cruelty-free",
+            "step1_image": "shopify://shop_images/buff_your_nails.webp",
             "step1_label": "prep",
+            "step2_image": "shopify://shop_images/press-on_nails_application.webp",
             "step2_label": "pick",
+            "step3_image": "shopify://shop_images/application_with_nail_glue.webp",
             "step3_label": "apply",
             "step4_image": "shopify://shop_images/with-glue-4.webp",
             "step4_label": "press"
