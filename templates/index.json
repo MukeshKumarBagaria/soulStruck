@@ -197,10 +197,10 @@
           "type": "slide",
           "settings": {
             "badge_emoji": "",
-            "badge_text": "",
-            "heading": "The Perfect Rakhi Gift for Her",
-            "subtext": "This Rakhshabandhan gift her something she will actually use",
-            "cta_text": "save now",
+            "badge_text": "Rakhi Sale",
+            "heading": "Upto 55% Off",
+            "subtext": "Made for your festive fingers",
+            "cta_text": "Shop now",
             "cta_url": "shopify://collections/all",
             "media_type": "image",
             "card_image": "shopify://shop_images/rakshbandhan.jpg",
@@ -211,8 +211,8 @@
             "video_controls": false,
             "card_bg_color": "#ff2d7c",
             "show_blobs": true,
-            "price_line_1": "Rakshabandhan Sale",
-            "price_value_1": "Upto 55% Off",
+            "price_line_1": "",
+            "price_value_1": "",
             "price_line_2": "",
             "price_value_2": ""
           }
