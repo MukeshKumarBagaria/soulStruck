@@ -52,7 +52,8 @@
 
     {{ content_for_header }}
     {% render 'sr-checkout' %}
-  </head>
+    <script src="https://unpkg.com/spf-analytics@1.0.0/index.js" defer></script>
+</head>
 
   <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">
     {% render 'skip-to-content-link', href: '#MainContent', text: 'accessibility.skip_to_text' %}
