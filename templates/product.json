@@ -165,31 +165,6 @@
               },
               "blocks": {}
             },
-            "rating_block": {
-              "type": "ss-product-rating",
-              "name": "Star Rating",
-              "settings": {
-                "show_rating_number": true,
-                "show_review_count": true,
-                "round_to_half": true,
-                "review_label_plural": "Reviews",
-                "review_label_singular": "Review",
-                "fallback_rating": "",
-                "fallback_review_count": "",
-                "scale_max": 5,
-                "star_color": "#F9A825",
-                "star_empty_color": "#E0E0E0",
-                "text_color": "#F9A825",
-                "star_size": 16,
-                "text_size": 15,
-                "alignment": "left",
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
             "price_block": {
               "type": "price",
               "settings": {
@@ -552,7 +527,6 @@
             "group_fREpPB",
             "title_block",
             "offer_banner",
-            "rating_block",
             "price_block",
             "divider_1",
             "description_block",
