@@ -1,0 +1,368 @@
+{%- comment -%}
+  SoulStruck — Dynamic product rating
+
+  Reads the rating and review count from product metafields instead of hardcoded text:
+    custom.product_rating  — number_decimal / number_integer / rating type
+    custom.review_count    — number_integer / number_decimal / text
+
+  Falls back to the block settings when a product has no metafield value,
+  and renders nothing at all when both the metafield and the fallback are empty.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = block.settings
+  assign product = closest.product
+
+  assign rating_mf = product.metafields.custom.product_rating
+  assign count_mf = product.metafields.custom.review_count
+
+  # `rating` metafields expose an object, number/text metafields expose a scalar.
+  assign rating = rating_mf.value.rating | default: rating_mf.value
+  assign scale_max = rating_mf.value.scale_max | default: s.scale_max
+  assign review_count = count_mf.value
+
+  if rating == blank
+    assign rating = s.fallback_rating
+  endif
+  if review_count == blank
+    assign review_count = s.fallback_review_count
+  endif
+
+  # Block picker preview has no product context.
+  if request.visual_preview_mode and product == blank
+    assign rating = rating | default: 4.5
+    assign review_count = review_count | default: 46
+  endif
+
+  assign has_rating = false
+  if rating != blank and rating != 0
+    assign has_rating = true
+  endif
+-%}
+
+{%- if has_rating -%}
+  {%- liquid
+    assign rating = rating | plus: 0.0
+    assign scale_max = scale_max | default: 5 | plus: 0.0
+    assign star_count = scale_max | floor | at_least: 1 | at_most: 10
+
+    # Crisp half-star steps by default, exact proportional fill when turned off.
+    assign display_rating = rating
+    if s.round_to_half
+      assign display_rating = rating | times: 2.0 | round | divided_by: 2.0
+    endif
+
+    assign fill_pct = display_rating | times: 100.0 | divided_by: scale_max
+    assign fill_pct = fill_pct | at_least: 0 | at_most: 100
+
+    assign rating_display = rating | round: 1
+    assign count_number = review_count | plus: 0
+
+    assign review_label = s.review_label_plural
+    if count_number == 1
+      assign review_label = s.review_label_singular
+    endif
+
+    assign show_count = false
+    if s.show_review_count and review_count != blank and count_number > 0
+      assign show_count = true
+    endif
+
+    capture stars_row
+      for i in (1..star_count)
+        echo '★'
+      endfor
+    endcapture
+
+    capture a11y_label
+      echo 'Rated '
+      echo rating_display
+      echo ' out of '
+      echo scale_max | round
+      echo ' stars'
+      if show_count
+        echo ', based on '
+        echo review_count
+        echo ' '
+        echo review_label | downcase
+      endif
+    endcapture
+  -%}
+
+  <div
+    class="ss-prating ss-prating--{{ s.alignment }} spacing-style"
+    style="
+      {% render 'spacing-style', settings: s %}
+      --ss-prating-star-color: {{ s.star_color }};
+      --ss-prating-star-empty-color: {{ s.star_empty_color }};
+      --ss-prating-text-color: {{ s.text_color }};
+      --ss-prating-size: {{ s.star_size }}px;
+      --ss-prating-text-size: {{ s.text_size }}px;
+    "
+    {{ block.shopify_attributes }}
+  >
+    {%- if s.link != blank -%}<a class="ss-prating__inner" href="{{ s.link }}">{%- else -%}<span class="ss-prating__inner">{%- endif -%}
+      <span class="ss-prating__stars" role="img" aria-label="{{ a11y_label | strip }}">
+        <span class="ss-prating__stars-base" aria-hidden="true">{{ stars_row }}</span>
+        <span class="ss-prating__stars-fill" style="width: {{ fill_pct }}%;" aria-hidden="true">{{ stars_row }}</span>
+      </span>
+
+      {%- if s.show_rating_number -%}
+        <span class="ss-prating__value" aria-hidden="true">({{ rating_display }})</span>
+      {%- endif -%}
+
+      {%- if show_count -%}
+        {%- if s.show_rating_number -%}
+          <span class="ss-prating__sep" aria-hidden="true">|</span>
+        {%- endif -%}
+        <span class="ss-prating__count" aria-hidden="true">{{ review_count }} {{ review_label }}</span>
+      {%- endif -%}
+    {%- if s.link != blank -%}</a>{%- else -%}</span>{%- endif -%}
+  </div>
+
+{%- elsif request.design_mode -%}
+  <div class="ss-prating ss-prating--placeholder" {{ block.shopify_attributes }}>
+    Add a value to this product's <strong>custom.product_rating</strong> metafield to show the rating here.
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .ss-prating {
+    display: flex;
+    line-height: 1;
+  }
+
+  .ss-prating--left {
+    justify-content: flex-start;
+  }
+
+  .ss-prating--center {
+    justify-content: center;
+  }
+
+  .ss-prating--right {
+    justify-content: flex-end;
+  }
+
+  .ss-prating__inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ss-prating-text-color);
+    font-size: var(--ss-prating-text-size);
+    text-decoration: none;
+  }
+
+  a.ss-prating__inner:hover .ss-prating__count {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .ss-prating__stars {
+    position: relative;
+    display: inline-block;
+    font-size: var(--ss-prating-size);
+    /* No letter-spacing: the fill overlay is clipped by percentage width,
+       so every glyph must have an identical advance for half stars to land right. */
+    letter-spacing: 0;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .ss-prating__stars-base {
+    color: var(--ss-prating-star-empty-color);
+  }
+
+  .ss-prating__stars-fill {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    overflow: hidden;
+    line-height: 1;
+    color: var(--ss-prating-star-color);
+  }
+
+  .ss-prating__sep {
+    opacity: 0.45;
+  }
+
+  .ss-prating--placeholder {
+    font-size: 13px;
+    opacity: 0.6;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product Rating",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Reads custom.product_rating and custom.review_count from the product."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating_number",
+      "label": "Show rating number",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_review_count",
+      "label": "Show review count",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "round_to_half",
+      "label": "Round stars to nearest half",
+      "info": "Turn off to fill the stars exactly in proportion to the rating.",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "review_label_plural",
+      "label": "Reviews label",
+      "default": "Reviews"
+    },
+    {
+      "type": "text",
+      "id": "review_label_singular",
+      "label": "Review label (singular)",
+      "default": "Review"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link",
+      "info": "Optional. Link the rating to a reviews section, for example #reviews."
+    },
+    {
+      "type": "header",
+      "content": "Fallback"
+    },
+    {
+      "type": "paragraph",
+      "content": "Used only when a product has no metafield value. Leave empty to hide the block on those products."
+    },
+    {
+      "type": "text",
+      "id": "fallback_rating",
+      "label": "Fallback rating"
+    },
+    {
+      "type": "text",
+      "id": "fallback_review_count",
+      "label": "Fallback review count"
+    },
+    {
+      "type": "range",
+      "id": "scale_max",
+      "label": "Rating scale",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "default": 5,
+      "info": "Ignored when the metafield is a Rating type, which carries its own scale."
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Star color",
+      "default": "#F9A825"
+    },
+    {
+      "type": "color",
+      "id": "star_empty_color",
+      "label": "Empty star color",
+      "default": "#E0E0E0"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#F9A825"
+    },
+    {
+      "type": "range",
+      "id": "star_size",
+      "label": "Star size",
+      "min": 10,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Text size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignment",
+      "label": "Alignment",
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "Left",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "Right",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Rating"
+    }
+  ]
+}
+{% endschema %}
