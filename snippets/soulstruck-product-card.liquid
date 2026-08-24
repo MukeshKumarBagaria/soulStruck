@@ -17,9 +17,18 @@
     assign p_title     = p.title
     assign p_url       = p.url
     assign p_img       = p.featured_image
-    assign p_price     = p.price
-    assign p_compare   = p.compare_at_price
-    assign p_variant   = p.selected_or_first_available_variant
+    # SoulStruck: price and add-to-cart must describe the SAME variant. `p.price` is the
+    # cheapest variant while `selected_or_first_available_variant` is the first one.
+    assign p_variant   = p.variants | sort: 'price' | first | default: p.selected_or_first_available_variant
+    assign p_price     = p_variant.price
+    assign p_compare   = p_variant.compare_at_price
+
+    assign ss_show_from = false
+    unless p.has_only_default_variant
+      if p.variants.size > 1 and p.price_min != p.price_max
+        assign ss_show_from = true
+      endif
+    endunless
     assign p_offer     = p.metafields.custom.offer_text | default: custom_offer
     assign p_avail     = p.available
 
@@ -52,12 +61,12 @@
   endif
 -%}
 
-<div class="ni-ps-card" {% if block_attr %}{{ block_attr }}{% endif %}>
+<div class="ni-ps-card" data-ss-scope {% if block_attr %}{{ block_attr }}{% endif %}>
 
   {%- comment -%} Image + badges {%- endcomment -%}
   <div class="ni-ps-card__img-wrap">
     {%- if has_real_product and p_img != blank -%}
-      <a href="{{ p_url }}" aria-label="{{ p_title | escape }}" tabindex="-1">
+      <a href="{{ p_url }}" aria-label="{{ p_title | escape }}" tabindex="-1" data-ss-product-link>
         <img
           src="{{ p_img | image_url: width: 600 }}"
           srcset="{{ p_img | image_url: width: 300 }} 300w,
@@ -67,6 +76,7 @@
           width="600"
           height="{{ 600 | divided_by: p_img.aspect_ratio | round }}"
           loading="lazy"
+          data-ss-image
           class="ni-ps-card__img">
       </a>
     {%- else -%}
@@ -80,7 +90,11 @@
     {%- endif -%}
 
     {%- if save_amount > 0 -%}
-      <span class="ni-ps-card__badge-save">SAVE {{ p_compare | minus: p_price | money_without_trailing_zeros }}</span>
+      <span
+        class="ni-ps-card__badge-save"
+        data-ss-save
+        data-ss-save-format="SAVE {amount}"
+      >SAVE {{ p_compare | minus: p_price | money_without_trailing_zeros }}</span>
     {%- endif -%}
   </div>
 
@@ -88,7 +102,7 @@
   <div class="ni-ps-card__body">
 
     {%- if has_real_product -%}
-      <a href="{{ p_url }}" class="ni-ps-card__title-link">
+      <a href="{{ p_url }}" class="ni-ps-card__title-link" data-ss-product-link>
         <h3 class="ni-ps-card__title">{{ p_title }}</h3>
       </a>
     {%- else -%}
@@ -126,14 +140,23 @@
       <div class="ni-ps-card__shipping">{{ shipping_text | escape }}</div>
     {%- endif -%}
 
+    {%- comment -%} Kit selector {%- endcomment -%}
+    {%- if has_real_product -%}
+      {%- assign ss_uid = 'ps-' | append: p.id -%}
+      {%- render 'ss-variant-options', product: p, uid: ss_uid, size: 'sm' -%}
+    {%- endif -%}
+
     {%- comment -%} Price + Add to cart {%- endcomment -%}
     <div class="ni-ps-card__buy">
       <div class="ni-ps-card__prices">
         {%- if has_real_product -%}
-          <span class="ni-ps-card__price">{{ p_price | money_without_trailing_zeros }}</span>
-          {%- if p_compare > p_price -%}
-            <span class="ni-ps-card__compare">{{ p_compare | money_without_trailing_zeros }}</span>
+          {%- if ss_show_from -%}
+            <span data-ss-price-prefix>From</span>
           {%- endif -%}
+          <span class="ni-ps-card__price" data-ss-price>{{ p_price | money_without_trailing_zeros }}</span>
+          <span class="ni-ps-card__compare" data-ss-compare {% unless p_compare > p_price %}hidden{% endunless %}>
+            {{- p_compare | money_without_trailing_zeros -}}
+          </span>
         {%- else -%}
           <span class="ni-ps-card__price">₹000</span>
         {%- endif -%}
@@ -142,6 +165,7 @@
       {%- if has_real_product and p_avail and p_variant -%}
         <button
           class="ni-ps-card__atc"
+          data-ss-atc
           data-variant-id="{{ p_variant.id }}"
           aria-label="Add {{ p_title | escape }} to cart">
           Add To Cart

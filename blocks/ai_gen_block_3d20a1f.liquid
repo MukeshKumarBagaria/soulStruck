@@ -361,13 +361,31 @@
     {% if block.settings.collection != blank %}
       <div class="ai-bestsellers-grid-{{ ai_gen_id }}">
         {% for product in block.settings.collection.products limit: block.settings.products_to_show %}
-          <div class="ai-bestsellers-card-{{ ai_gen_id }}">
+          {%- comment -%}
+            SoulStruck: price, badge and add-to-cart all read from ss_card_variant so the
+            card can never display one variant while adding another.
+          {%- endcomment -%}
+          {%- liquid
+            assign ss_card_variant = product.variants | sort: 'price' | first | default: product.selected_or_first_available_variant
+            assign ss_show_from = false
+            unless product.has_only_default_variant
+              if product.variants.size > 1 and product.price_min != product.price_max
+                assign ss_show_from = true
+              endif
+            endunless
+            assign ss_on_sale = false
+            if ss_card_variant.compare_at_price > ss_card_variant.price
+              assign ss_on_sale = true
+            endif
+          -%}
+          <div class="ai-bestsellers-card-{{ ai_gen_id }}" data-ss-scope>
             <div class="ai-bestsellers-image-wrapper-{{ ai_gen_id }}">
               {% if product.featured_image %}
                 <img
                   src="{{ product.featured_image | image_url: width: 600 }}"
                   alt="{{ product.featured_image.alt | escape }}"
                   class="ai-bestsellers-image-{{ ai_gen_id }}"
+                  data-ss-image
                   loading="lazy"
                   width="600"
                   height="600"
@@ -379,11 +397,15 @@
               {% endif %}
 
               {% if block.settings.show_badges %}
-                {% if product.compare_at_price > product.price %}
-                  {% assign savings = product.compare_at_price | minus: product.price %}
-                  <div class="ai-bestsellers-badge-{{ ai_gen_id }}">
+                {% if ss_on_sale %}
+                  {% assign savings = ss_card_variant.compare_at_price | minus: ss_card_variant.price %}
+                  <div
+                    class="ai-bestsellers-badge-{{ ai_gen_id }}"
+                    data-ss-save
+                    data-ss-save-format="{% if block.settings.badge_type == 'percentage' %}{percent}% OFF{% else %}Save {amount}{% endif %}"
+                  >
                     {% if block.settings.badge_type == 'percentage' %}
-                      {% assign savings_percent = savings | times: 100.0 | divided_by: product.compare_at_price | round %}
+                      {% assign savings_percent = savings | times: 100.0 | divided_by: ss_card_variant.compare_at_price | round %}
                       {{ savings_percent }}% OFF
                     {% else %}
                       Save {{ savings | money }}
@@ -399,17 +421,31 @@
 
             <div class="ai-bestsellers-content-{{ ai_gen_id }}">
               <h3 class="ai-bestsellers-title-{{ ai_gen_id }}">
-                <a href="{{ product.url }}">{{ product.title }}</a>
+                <a href="{{ product.url }}" data-ss-product-link>{{ product.title }}</a>
               </h3>
 
+              {%- assign ss_uid = block.id | append: '-' | append: product.id -%}
+              {%- render 'ss-variant-options', product: product, uid: ss_uid, money_style: 'full', size: 'sm' -%}
+
               <div class="ai-bestsellers-price-wrapper-{{ ai_gen_id }}">
-                <span class="ai-bestsellers-price-{{ ai_gen_id }}">{{ product.price | money }}</span>
-                {% if product.compare_at_price > product.price %}
-                  <span class="ai-bestsellers-compare-price-{{ ai_gen_id }}">{{ product.compare_at_price | money }}</span>
-                  {% if block.settings.show_savings %}
-                    {% assign savings = product.compare_at_price | minus: product.price %}
-                    <span class="ai-bestsellers-savings-{{ ai_gen_id }}">Save {{ savings | money }}</span>
-                  {% endif %}
+                {%- if ss_show_from -%}
+                  <span data-ss-price-prefix>From</span>
+                {%- endif -%}
+                <span class="ai-bestsellers-price-{{ ai_gen_id }}" data-ss-price>
+                  {{- ss_card_variant.price | money -}}
+                </span>
+                <span
+                  class="ai-bestsellers-compare-price-{{ ai_gen_id }}"
+                  data-ss-compare
+                  {% unless ss_on_sale %}hidden{% endunless %}
+                >{{ ss_card_variant.compare_at_price | money }}</span>
+                {% if block.settings.show_savings %}
+                  <span
+                    class="ai-bestsellers-savings-{{ ai_gen_id }}"
+                    data-ss-save
+                    data-ss-save-format="Save {amount}"
+                    {% unless ss_on_sale %}hidden{% endunless %}
+                  >Save {{ ss_card_variant.compare_at_price | minus: ss_card_variant.price | money }}</span>
                 {% endif %}
               </div>
 
@@ -420,7 +456,8 @@
                       type="button"
                       class="ai-bestsellers-btn-{{ ai_gen_id }} ai-bestsellers-btn-primary-{{ ai_gen_id }}"
                       data-product-id="{{ product.id }}"
-                      data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+                      data-ss-atc
+                      data-variant-id="{{ ss_card_variant.id }}"
                     >
                       {{ block.settings.add_cart_label }}
                     </button>
@@ -438,6 +475,7 @@
                 {% if block.settings.show_buy_now and product.available %}
                   <a
                     href="{{ product.url }}"
+                    data-ss-product-link
                     class="ai-bestsellers-btn-{{ ai_gen_id }} ai-bestsellers-btn-secondary-{{ ai_gen_id }}"
                   >
                     {{ block.settings.buy_label }}

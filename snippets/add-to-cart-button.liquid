@@ -8,6 +8,7 @@
   @param {string} [class] - Additional CSS classes to apply to the button.
   @param {string} [id] - The ID attribute for the button.
   @param {string} [data_testid] - The data-testid attribute for testing.
+  @param {boolean} [ss_atc] - SoulStruck: marks the button as a variant-gated add-to-cart trigger (see assets/ss-variant-cards.js).
 {%- enddoc -%}
 
 {%- liquid
@@ -34,6 +35,9 @@
     class="button {{ class }}"
     {% if data_testid %}
       data-testid="{{ data_testid }}"
+    {% endif %}
+    {% if ss_atc %}
+      data-ss-atc
     {% endif %}
     {% unless can_add_to_cart %}
       disabled

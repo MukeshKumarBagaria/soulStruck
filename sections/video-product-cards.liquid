@@ -736,10 +736,19 @@
               continue
             endif
 
+            # SoulStruck: one variant drives price, discount and add-to-cart.
+            assign ss_card_variant = product.variants | sort: 'price' | first | default: product.selected_or_first_available_variant
+            assign ss_show_from = false
+            unless product.has_only_default_variant
+              if product.variants.size > 1 and product.price_min != product.price_max
+                assign ss_show_from = true
+              endif
+            endunless
+
             assign on_sale = false
-            if product.compare_at_price > product.price
+            if ss_card_variant.compare_at_price > ss_card_variant.price
               assign on_sale = true
-              assign discount_pct = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price | round
+              assign discount_pct = ss_card_variant.compare_at_price | minus: ss_card_variant.price | times: 100 | divided_by: ss_card_variant.compare_at_price | round
             endif
 
             # Resolve video: per-block override → first product video media → none
@@ -767,6 +776,8 @@
 
           <a class="vpc-{{ sid }}__card{% if section.settings.show_wishlist %} has-wishlist{% endif %}"
              href="{{ product.url }}"
+             data-ss-scope
+             data-ss-product-link
              data-product-card
              aria-label="{{ product.title | escape }}"
              {{ block.shopify_attributes }}>
@@ -777,6 +788,7 @@
               {%- comment -%} Featured image (always rendered as poster + fallback) {%- endcomment -%}
               {% if product.featured_image %}
                 <img class="vpc-{{ sid }}__image"
+                     data-ss-image
                      src="{{ product.featured_image | image_url: width: 800 }}"
                      srcset="{{ product.featured_image | image_url: width: 400 }} 400w, {{ product.featured_image | image_url: width: 800 }} 800w, {{ product.featured_image | image_url: width: 1200 }} 1200w"
                      sizes="(min-width: 990px) 30vw, (min-width: 600px) 50vw, 100vw"
@@ -857,7 +869,8 @@
                   <button type="button"
                           class="vpc-{{ sid }}__cart-btn"
                           data-add-cart
-                          data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+                          data-ss-atc
+                          data-variant-id="{{ ss_card_variant.id }}"
                           {% unless product.available %}disabled{% endunless %}>
                     {% if product.available %}
                       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
@@ -896,12 +909,23 @@
                 </div>
               {% endif %}
 
+              {%- assign ss_uid = sid | append: '-' | append: block.id -%}
+              {%- render 'ss-variant-options', product: product, uid: ss_uid, money_style: 'full', size: 'sm' -%}
+
               <div class="vpc-{{ sid }}__pricing">
-                <span class="vpc-{{ sid }}__price">{{ product.price | money }}</span>
-                {% if on_sale %}
-                  <s class="vpc-{{ sid }}__compare">{{ product.compare_at_price | money }}</s>
-                  <span class="vpc-{{ sid }}__off">{{ discount_pct }}% OFF</span>
-                {% endif %}
+                {%- if ss_show_from -%}
+                  <span data-ss-price-prefix>From</span>
+                {%- endif -%}
+                <span class="vpc-{{ sid }}__price" data-ss-price>{{ ss_card_variant.price | money }}</span>
+                <s class="vpc-{{ sid }}__compare" data-ss-compare {% unless on_sale %}hidden{% endunless %}>
+                  {{- ss_card_variant.compare_at_price | money -}}
+                </s>
+                <span
+                  class="vpc-{{ sid }}__off"
+                  data-ss-save
+                  data-ss-save-format="{percent}% OFF"
+                  {% unless on_sale %}hidden{% endunless %}
+                >{{ discount_pct }}% OFF</span>
               </div>
             </div>
           </a>

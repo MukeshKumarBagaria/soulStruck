@@ -662,21 +662,32 @@
                 {% if tab_collection != blank and tab_collection.products.size > 0 %}
                   {% for product in tab_collection.products limit: section.settings.products_to_show %}
                     {%- liquid
+                      # SoulStruck: one variant drives price, badge and add-to-cart.
+                      assign ss_card_variant = product.variants | sort: 'price' | first | default: product.selected_or_first_available_variant
+
+                      assign ss_show_from = false
+                      unless product.has_only_default_variant
+                        if product.variants.size > 1 and product.price_min != product.price_max
+                          assign ss_show_from = true
+                        endif
+                      endunless
+
                       assign on_sale = false
-                      if product.compare_at_price > product.price
+                      if ss_card_variant.compare_at_price > ss_card_variant.price
                         assign on_sale = true
                       endif
                       assign discount_percent = 0
                       if on_sale
-                        assign discount_percent = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price
+                        assign discount_percent = ss_card_variant.compare_at_price | minus: ss_card_variant.price | times: 100 | divided_by: ss_card_variant.compare_at_price
                       endif
                       assign hover_image = product.media[1].preview_image | default: product.featured_image
                     -%}
-                    <a class="pts__card" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
+                    <a class="pts__card" href="{{ product.url }}" aria-label="{{ product.title | escape }}" data-ss-scope data-ss-product-link>
                       <div class="pts__media">
                         {% if product.featured_image %}
                           <img
                             class="pts__media-img"
+                            data-ss-image
                             src="{{ product.featured_image | image_url: width: 600 }}"
                             srcset="{{ product.featured_image | image_url: width: 300 }} 300w, {{ product.featured_image | image_url: width: 600 }} 600w, {{ product.featured_image | image_url: width: 900 }} 900w"
                             sizes="(min-width: 990px) 280px, (min-width: 600px) 33vw, 50vw"
@@ -703,7 +714,11 @@
                           {% if tab_badge != blank %}
                             <span class="pts__badge">{{ tab_badge }}</span>
                           {% elsif on_sale %}
-                            <span class="pts__badge">{{ discount_percent }}% off</span>
+                            <span
+                              class="pts__badge"
+                              data-ss-save
+                              data-ss-save-format="{percent}% off"
+                            >{{ discount_percent }}% off</span>
                           {% endif %}
                         {% endif %}
 
@@ -724,11 +739,19 @@
                       <div class="pts__body">
                         <h3 class="pts__title">{{ product.title }}</h3>
 
+                        {%- assign ss_uid = section.id | append: '-pts-' | append: product.id -%}
+                        {%- render 'ss-variant-options', product: product, uid: ss_uid, money_style: 'full', size: 'sm' -%}
+
                         {% if section.settings.show_price %}
                           <div class="pts__price-row">
-                            <span class="pts__price">{{ product.price | money }}</span>
-                            {% if section.settings.show_compare and on_sale %}
-                              <span class="pts__compare">{{ product.compare_at_price | money }}</span>
+                            {%- if ss_show_from -%}
+                              <span data-ss-price-prefix>From</span>
+                            {%- endif -%}
+                            <span class="pts__price" data-ss-price>{{ ss_card_variant.price | money }}</span>
+                            {% if section.settings.show_compare %}
+                              <span class="pts__compare" data-ss-compare {% unless on_sale %}hidden{% endunless %}>
+                                {{- ss_card_variant.compare_at_price | money -}}
+                              </span>
                             {% endif %}
                           </div>
                         {% endif %}
@@ -738,7 +761,8 @@
                             class="pts__cart-btn"
                             type="button"
                             data-pts-add-to-cart
-                            data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+                            data-ss-atc
+                            data-variant-id="{{ ss_card_variant.id }}"
                             {% unless product.available %}disabled{% endunless %}
                           >
                             {% if product.available %}

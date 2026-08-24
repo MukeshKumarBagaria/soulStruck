@@ -1,0 +1,118 @@
+{%- doc -%}
+  SoulStruck — shared variant ("Choose Your Kit") selector for the custom product cards.
+
+  Emits two things inside the card:
+    1. A JSON payload describing every variant (id, title, availability, pre-formatted
+       money strings, image, url). Money is formatted in Liquid so the JS never has to
+       guess the shop's currency format.
+    2. A radio-pill fieldset, rendered ONLY for multi-variant products.
+
+  The card root must carry `data-ss-scope`. `assets/ss-variant-cards.js` reads the
+  payload and keeps price / compare / save / add-to-cart / links in sync with the
+  selected pill. Nothing is pre-selected for multi-variant products — the shopper
+  must choose before the card can add to cart.
+
+  @param {object} product - The product object
+  @param {string} uid - Unique suffix for the radio group name (must be unique per card on the page)
+  @param {string} [money_style] - 'full' uses `money`, anything else uses `money_without_trailing_zeros`
+  @param {string} [legend] - Overrides the fieldset legend (defaults to the product's option name)
+  @param {string} [size] - 'sm' for tighter pills on dense grids
+{%- enddoc -%}
+
+{%- liquid
+  assign ss_variants = product.variants
+  assign ss_multi = false
+  unless product.has_only_default_variant
+    if ss_variants.size > 1
+      assign ss_multi = true
+    endif
+  endunless
+
+  assign ss_legend = legend
+  if ss_legend == blank
+    if product.options.size == 1
+      assign ss_legend = product.options.first
+    else
+      assign ss_legend = 'Choose an option'
+    endif
+  endif
+-%}
+
+{%- capture ss_variants_json -%}
+[
+{%- for v in ss_variants -%}
+  {%- liquid
+    if money_style == 'full'
+      capture v_price
+        echo v.price | money
+      endcapture
+      capture v_compare
+        echo v.compare_at_price | money
+      endcapture
+      capture v_save
+        echo v.compare_at_price | minus: v.price | money
+      endcapture
+    else
+      capture v_price
+        echo v.price | money_without_trailing_zeros
+      endcapture
+      capture v_compare
+        echo v.compare_at_price | money_without_trailing_zeros
+      endcapture
+      capture v_save
+        echo v.compare_at_price | minus: v.price | money_without_trailing_zeros
+      endcapture
+    endif
+
+    assign v_on_sale = false
+    assign v_save_pct = 0
+    if v.compare_at_price > v.price
+      assign v_on_sale = true
+      assign v_save_pct = v.compare_at_price | minus: v.price | times: 100.0 | divided_by: v.compare_at_price | round
+    endif
+
+    assign v_image = ''
+    if v.featured_media.preview_image != blank
+      assign v_image = v.featured_media.preview_image | image_url: width: 900
+    endif
+  -%}
+  {
+    "id": {{ v.id }},
+    "title": {{ v.title | json }},
+    "available": {{ v.available | json }},
+    "on_sale": {{ v_on_sale | json }},
+    "price_html": {{ v_price | json }},
+    "compare_html": {{ v_compare | json }},
+    "save_html": {{ v_save | json }},
+    "save_percent": {{ v_save_pct }},
+    "image": {{ v_image | json }},
+    "url": {{ v.url | json }}
+  }{% unless forloop.last %},{% endunless %}
+{%- endfor -%}
+]
+{%- endcapture -%}
+
+<script type="application/json" data-ss-variants>{{ ss_variants_json }}</script>
+
+{%- if ss_multi -%}
+  <fieldset class="ss-kit{% if size == 'sm' %} ss-kit--sm{% endif %}" data-ss-kit>
+    <legend class="ss-kit__legend">{{ ss_legend | escape }}</legend>
+    <div class="ss-kit__options">
+      {%- for v in ss_variants -%}
+        <label class="ss-kit__opt{% unless v.available %} ss-kit__opt--unavailable{% endunless %}">
+          <input
+            type="radio"
+            class="ss-kit__input"
+            name="ss-kit-{{ uid }}"
+            value="{{ v.id }}"
+            data-ss-variant-input
+            data-variant-id="{{ v.id }}"
+            {% unless v.available %}disabled{% endunless %}
+          >
+          <span class="ss-kit__opt-text">{{ v.title }}</span>
+        </label>
+      {%- endfor -%}
+    </div>
+  </fieldset>
+  <p class="ss-kit__error" data-ss-kit-error hidden>Please select your kit</p>
+{%- endif -%}

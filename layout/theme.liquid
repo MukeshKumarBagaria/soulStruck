@@ -1,8 +1,17 @@
 <!doctype html>
+{%- comment -%}
+  SoulStruck: `ss-kit-unselected` gates the product page until the shopper picks a kit.
+  `product.selected_variant` is only set when the URL carries ?variant=..., so this is
+  true exactly when Shopify would silently auto-select the first variant for us.
+{%- endcomment -%}
+{%- liquid
+  assign ss_kit_unselected = false
+  if request.page_type == 'product' and product.has_only_default_variant == false and product.variants.size > 1 and product.selected_variant == blank
+    assign ss_kit_unselected = true
+  endif
+-%}
 <html
-  {% if request.design_mode %}
-    class="shopify-design-mode"
-  {% endif %}
+  class="{% if request.design_mode %}shopify-design-mode{% endif %}{% if ss_kit_unselected %} ss-kit-unselected{% endif %}"
   lang="{{ request.locale.iso_code }}"
 >
   <head>
@@ -40,6 +49,10 @@
     {{ 'soulstruck-header.css' | asset_url | stylesheet_tag }}
     <script src="{{ 'soulstruck-mega-menu.js' | asset_url }}" defer></script>
 
+    {%- comment -%} Variant ("Choose your kit") selection — cards + product page {%- endcomment -%}
+    {{ 'ss-variant.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'ss-variant-cards.js' | asset_url }}" defer></script>
+
     {%- comment -%} Wishlist (custom feature) {%- endcomment -%}
     {{ 'wishlist.css' | asset_url | stylesheet_tag }}
     <script src="{{ 'wishlist.js' | asset_url }}" defer></script>
@@ -48,6 +61,7 @@
     {% if request.page_type == 'product' %}
       {{ 'soulstruck-product.css' | asset_url | stylesheet_tag }}
       <script src="{{ 'soulstruck-product.js' | asset_url }}" defer></script>
+      <script src="{{ 'ss-pdp-variant-gate.js' | asset_url }}" defer></script>
     {% endif %}
 
     {{ content_for_header }}

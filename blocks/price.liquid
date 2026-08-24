@@ -2,6 +2,15 @@
   assign block_settings = block.settings
   assign product_resource = closest.product
   assign selected_variant = product_resource.selected_or_first_available_variant
+
+  # SoulStruck: on a multi-variant product page with no ?variant= in the URL the shopper
+  # has not chosen a kit yet, so showing the auto-selected variant's price would be
+  # misleading. This class lets assets/ss-variant.css hide it (main product only —
+  # recommendation and complementary cards in the same section keep their prices).
+  assign ss_kit_gated = false
+  if request.page_type == 'product' and product_resource.id == product.id and product_resource.has_only_default_variant == false and product_resource.variants.size > 1 and product_resource.selected_variant == blank
+    assign ss_kit_gated = true
+  endif
 -%}
 
 {% liquid
@@ -35,7 +44,7 @@
 %}
 
 <product-price
-  class="text-block {{ text_block_classes }} text-{{ block_settings.alignment }} {{ block_settings.type_preset | default: 'paragraph' }} spacing-style"
+  class="text-block {{ text_block_classes }} text-{{ block_settings.alignment }} {{ block_settings.type_preset | default: 'paragraph' }} spacing-style{% if ss_kit_gated %} ss-price--kit-gated{% endif %}"
   data-block-id="{{ block.id }}"
   data-product-id="{{ product_resource.id }}"
   style="

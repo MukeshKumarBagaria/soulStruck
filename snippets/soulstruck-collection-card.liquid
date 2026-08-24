@@ -16,29 +16,45 @@
 {%- enddoc -%}
 
 {%- liquid
-  assign variant = product.selected_or_first_available_variant
+  # SoulStruck: price, badge, add-to-cart and buy-now all read from one variant.
+  # `product.price` (cheapest) and `selected_or_first_available_variant` (first) are
+  # different variants, which is what made the cart price disagree with the card.
+  assign variant = product.variants | sort: 'price' | first | default: product.selected_or_first_available_variant
   assign main_image = product.featured_image
   assign alt_image = product.images[1]
   assign available = product.available
 
+  assign ss_multi = false
+  unless product.has_only_default_variant
+    if product.variants.size > 1
+      assign ss_multi = true
+    endif
+  endunless
+
+  assign ss_show_from = false
+  if ss_multi and product.price_min != product.price_max
+    assign ss_show_from = true
+  endif
+
   assign on_sale = false
-  if product.compare_at_price > product.price
+  if variant.compare_at_price > variant.price
     assign on_sale = true
   endif
 
   assign save_pct = 0
-  if on_sale and product.compare_at_price > 0
-    assign save_pct = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round
+  if on_sale
+    assign save_pct = variant.compare_at_price | minus: variant.price | times: 100.0 | divided_by: variant.compare_at_price | round
   endif
 
   assign form_id = 'ss-cc-form-' | append: product.id
 -%}
 
-<div class="ss-cc">
+<div class="ss-cc" data-ss-scope>
   <div class="ss-cc__media-wrap">
     {%- if main_image -%}
       <img
         class="ss-cc__img ss-cc__img--main"
+        data-ss-image
         src="{{ main_image | image_url: width: 600 }}"
         srcset="{{ main_image | image_url: width: 300 }} 300w, {{ main_image | image_url: width: 600 }} 600w, {{ main_image | image_url: width: 900 }} 900w"
         sizes="(max-width: 749px) 50vw, 25vw"
@@ -69,20 +85,31 @@
       {%- if available == false -%}
         <span class="ss-cc__badge ss-cc__badge--out">Sold out</span>
       {%- elsif save_pct > 0 -%}
-        <span class="ss-cc__badge ss-cc__badge--sale">{{ save_pct }}% off</span>
+        <span
+          class="ss-cc__badge ss-cc__badge--sale"
+          data-ss-save
+          data-ss-save-format="{percent}% off"
+        >{{ save_pct }}% off</span>
       {%- endif -%}
     </div>
   </div>
 
   <div class="ss-cc__info">
     <h3 class="ss-cc__title">{{ product.title }}</h3>
+
+    {%- assign ss_uid = 'cc-' | append: product.id -%}
+    {%- render 'ss-variant-options', product: product, uid: ss_uid, money_style: 'full', size: 'sm' -%}
+
     <div class="ss-cc__price">
-      <span class="ss-cc__price-now{% if on_sale %} ss-cc__price-now--sale{% endif %}">
-        {{- product.price | money -}}
-      </span>
-      {%- if on_sale -%}
-        <span class="ss-cc__price-was">{{ product.compare_at_price | money }}</span>
+      {%- if ss_show_from -%}
+        <span data-ss-price-prefix>From</span>
       {%- endif -%}
+      <span class="ss-cc__price-now{% if on_sale %} ss-cc__price-now--sale{% endif %}" data-ss-price>
+        {{- variant.price | money -}}
+      </span>
+      <span class="ss-cc__price-was" data-ss-compare {% unless on_sale %}hidden{% endunless %}>
+        {{- variant.compare_at_price | money -}}
+      </span>
     </div>
   </div>
 
@@ -96,17 +123,24 @@
       >
         <div class="visually-hidden" aria-live="assertive" role="status" aria-atomic="true" ref="liveRegion"></div>
         {%- form 'product', product, id: form_id, data-type: 'add-to-cart-form' -%}
-          <input type="hidden" name="id" ref="variantId" value="{{ variant.id }}">
+          <input type="hidden" name="id" ref="variantId" value="{{ variant.id }}" data-ss-variant-id-input>
           {%- render 'add-to-cart-button',
             class: 'ss-cc__btn ss-cc__btn--add',
             can_add_to_cart: true,
             product: product,
-            add_to_cart_text: 'Add to cart'
+            add_to_cart_text: 'Add to cart',
+            ss_atc: true
           -%}
         {%- endform -%}
       </product-form-component>
 
-      <a class="ss-cc__btn ss-cc__btn--buy" href="{{ routes.cart_url }}/{{ variant.id }}:1">Buy now</a>
+      <a
+        class="ss-cc__btn ss-cc__btn--buy"
+        href="{{ routes.cart_url }}/{{ variant.id }}:1"
+        data-ss-buy-link
+        data-ss-atc
+        data-ss-buy-base="{{ routes.cart_url }}"
+      >Buy now</a>
     {%- else -%}
       <button class="ss-cc__btn ss-cc__btn--add" type="button" disabled>Sold out</button>
     {%- endif -%}

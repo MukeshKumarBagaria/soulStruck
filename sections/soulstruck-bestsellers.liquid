@@ -57,10 +57,27 @@
     {%- if coll != blank and coll.products_count > 0 -%}
       {%- for product in coll.products limit: max_products -%}
         {%- liquid
-          assign p_variant = product.selected_or_first_available_variant
+          # SoulStruck: the card must show and add THE SAME variant. `product.price` is
+          # the cheapest variant while `selected_or_first_available_variant` is the first
+          # one, so the two used to disagree. Both now come from `ss_card_variant`, and
+          # multi-variant cards stay unselected until the shopper picks a kit.
+          assign ss_card_variant = product.variants | sort: 'price' | first | default: product.selected_or_first_available_variant
+
+          assign ss_multi = false
+          unless product.has_only_default_variant
+            if product.variants.size > 1
+              assign ss_multi = true
+            endif
+          endunless
+
+          assign ss_show_from = false
+          if ss_multi and product.price_min != product.price_max
+            assign ss_show_from = true
+          endif
+
           assign save_amount = 0
-          if product.compare_at_price > product.price
-            assign save_amount = product.compare_at_price | minus: product.price
+          if ss_card_variant.compare_at_price > ss_card_variant.price
+            assign save_amount = ss_card_variant.compare_at_price | minus: ss_card_variant.price
           endif
 
           assign p_rating = product.metafields.reviews.rating.value.rating | default: product.metafields.loox.avg_rating
@@ -73,16 +90,20 @@
           endif
         -%}
 
-        <article class="ni-bs__card" role="listitem">
+        <article class="ni-bs__card" role="listitem" data-ss-scope>
 
-          <a href="{{ product.url }}" class="ni-bs__media-link" aria-label="{{ product.title | escape }}">
+          <a href="{{ product.url }}" class="ni-bs__media-link" aria-label="{{ product.title | escape }}" data-ss-product-link>
             <div class="ni-bs__media">
               {%- if show_badges and hot_auto -%}
                 <span class="ni-bs__badge ni-bs__badge--hot">Hot Seller</span>
               {%- endif -%}
 
               {%- if show_badges and show_save_badge and save_amount > 0 -%}
-                <span class="ni-bs__badge ni-bs__badge--save">SAVE {{ save_amount | money_without_trailing_zeros }}</span>
+                <span
+                  class="ni-bs__badge ni-bs__badge--save"
+                  data-ss-save
+                  data-ss-save-format="SAVE {amount}"
+                >SAVE {{ save_amount | money_without_trailing_zeros }}</span>
               {%- endif -%}
 
               {%- if product.featured_image != blank -%}
@@ -97,6 +118,7 @@
                   width="{{ product.featured_image.width }}"
                   height="{{ product.featured_image.height }}"
                   class="ni-bs__img"
+                  data-ss-image
                 >
 
                 {%- if product.images.size > 1 -%}
@@ -117,7 +139,7 @@
           </a>
 
           <div class="ni-bs__body">
-            <a href="{{ product.url }}" class="ni-bs__title-link">
+            <a href="{{ product.url }}" class="ni-bs__title-link" data-ss-product-link>
               <h3 class="ni-bs__product-title">{{ product.title | escape }}</h3>
             </a>
 
@@ -144,13 +166,19 @@
               <div class="ni-bs__shipping">{{ shipping_text | escape }}</div>
             {%- endif -%}
 
+            {%- assign ss_uid = section.id | append: '-' | append: product.id -%}
+            {%- render 'ss-variant-options', product: product, uid: ss_uid, size: 'sm' -%}
+
             <div class="ni-bs__price">
-              {%- if save_amount > 0 -%}
-                <span class="ni-bs__price-current">{{ product.price | money_without_trailing_zeros }}</span>
-                <s class="ni-bs__price-compare">{{ product.compare_at_price | money_without_trailing_zeros }}</s>
-              {%- else -%}
-                <span class="ni-bs__price-current">{{ product.price | money_without_trailing_zeros }}</span>
+              {%- if ss_show_from -%}
+                <span class="ni-bs__price-from" data-ss-price-prefix>From</span>
               {%- endif -%}
+              <span class="ni-bs__price-current" data-ss-price>
+                {{- ss_card_variant.price | money_without_trailing_zeros -}}
+              </span>
+              <s class="ni-bs__price-compare" data-ss-compare {% if save_amount <= 0 %}hidden{% endif %}>
+                {{- ss_card_variant.compare_at_price | money_without_trailing_zeros -}}
+              </s>
             </div>
 
             <form
@@ -160,13 +188,14 @@
               enctype="multipart/form-data"
               data-bs-add-form
             >
-              <input type="hidden" name="id" value="{{ p_variant.id }}">
+              <input type="hidden" name="id" value="{{ ss_card_variant.id }}" data-ss-variant-id-input>
               <input type="hidden" name="quantity" value="1">
               <button
                 type="submit"
                 class="ni-bs__cta"
                 {% unless product.available %}disabled aria-disabled="true"{% endunless %}
                 data-bs-cta
+                data-ss-atc
               >
                 <span class="ni-bs__cta-label" data-bs-label>
                   {%- if product.available -%}
