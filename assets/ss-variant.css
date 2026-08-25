@@ -12,10 +12,12 @@
 
 /* --------------------------------------------
    1. Card kit selector
+   Sized so a shopper scanning a grid sees at a glance that the product
+   comes in two kits, and which one they have picked.
    -------------------------------------------- */
 .ss-kit {
   border: 0;
-  margin: 0 0 10px;
+  margin: 0 0 12px;
   padding: 0;
   min-width: 0; /* fieldsets refuse to shrink inside grid/flex without this */
 }
@@ -24,11 +26,11 @@
   display: block;
   float: left; /* legends ignore width; floating makes them wrap like a block */
   width: 100%;
-  margin: 0 0 6px;
+  margin: 0 0 8px;
   padding: 0;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ss-kit-accent);
 }
@@ -37,12 +39,12 @@
   clear: both;
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
 }
 
 .ss-kit__opt {
   position: relative;
-  flex: 1 1 auto;
+  flex: 1 1 0;
   min-width: 0;
   cursor: pointer;
 }
@@ -57,24 +59,26 @@
 
 .ss-kit__opt-text {
   display: block;
-  padding: 7px 10px;
-  border: 1px solid var(--ss-kit-border);
+  padding: 11px 12px;
+  border: 1.5px solid var(--ss-kit-border);
   border-radius: 999px;
-  background: #fff;
+  background: var(--ss-kit-accent-soft);
   color: var(--ss-kit-text);
-  font-size: 0.76rem;
+  font-size: 0.86rem;
   font-weight: 600;
   line-height: 1.2;
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
 @media (hover: hover) {
   .ss-kit__opt:hover .ss-kit__opt-text {
     border-color: var(--ss-kit-accent);
+    background: #fbdfeb;
   }
 }
 
@@ -82,6 +86,7 @@
   background: var(--ss-kit-accent);
   border-color: var(--ss-kit-accent);
   color: #fff;
+  box-shadow: 0 2px 8px rgb(211 91 139 / 0.35);
 }
 
 .ss-kit__input:focus-visible + .ss-kit__opt-text {
@@ -91,20 +96,60 @@
 
 .ss-kit__opt--unavailable .ss-kit__opt-text {
   opacity: 0.45;
+  background: transparent;
   text-decoration: line-through;
   cursor: not-allowed;
 }
 
-.ss-kit--sm .ss-kit__opt-text {
-  padding: 5px 8px;
-  font-size: 0.7rem;
+/* `sm` is only a slight trim now — the pills must stay obvious in dense grids. */
+.ss-kit--sm {
+  margin-bottom: 10px;
 }
 
-.ss-kit__error {
-  margin: 0 0 8px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--ss-kit-accent);
+.ss-kit--sm .ss-kit__opt-text {
+  padding: 9px 10px;
+  font-size: 0.8rem;
+}
+
+/* --------------------------------------------
+   2. "Please select your kit"
+   An amber alert reads as "something is required" and stays legible against the
+   pink brand palette, which pink-on-white did not.
+   -------------------------------------------- */
+.ss-kit__error,
+.ss-kit-gate__message {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 10px;
+  padding: 8px 11px;
+  border: 1px solid #f0b429;
+  border-radius: 8px;
+  background: #fff5d6;
+  color: #7a4a02;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.ss-kit__error::before,
+.ss-kit-gate__message::before {
+  content: '!';
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #d97706;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.ss-kit-gate__message {
+  font-size: 0.9rem;
+  padding: 10px 13px;
 }
 
 .ss-kit--pulse {
@@ -120,12 +165,13 @@
 /* Narrow grids: stack the pills rather than overflowing the card. */
 @media (max-width: 480px) {
   .ss-kit__options {
-    gap: 5px;
+    gap: 6px;
   }
 
-  .ss-kit__opt-text {
-    padding: 6px 8px;
-    font-size: 0.7rem;
+  .ss-kit__opt-text,
+  .ss-kit--sm .ss-kit__opt-text {
+    padding: 9px 8px;
+    font-size: 0.78rem;
   }
 }
 
@@ -163,16 +209,9 @@ html.ss-kit-unselected .product-details .variant-picker .variant-option__button-
 }
 
 .ss-kit-gate__price {
-  margin: 0 0 4px;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--ss-kit-accent);
-}
-
-.ss-kit-gate__message {
-  margin: 0 0 10px;
-  font-size: 0.85rem;
-  font-weight: 600;
+  margin: 0 0 6px;
+  font-size: 1.05rem;
+  font-weight: 700;
   color: var(--ss-kit-accent);
 }
 

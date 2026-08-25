@@ -15,6 +15,74 @@
   lang="{{ request.locale.iso_code }}"
 >
   <head>
+    {%- comment -%}
+      SoulStruck variant guard — MUST stay the first script in <head>.
+
+      Shiprocket Smart Cart registers a capture-phase click listener on `document`
+      that turns any submit button inside form[action^="/cart/add"] (or any element
+      with data-variant-id whose text is "add to cart") into a /cart/add.js call,
+      reading the variant id straight out of the form. Capture listeners on the same
+      node fire in REGISTRATION order and the app's bundle loads before any deferred
+      theme script, so a deferred blocker can never win. Running inline here — before
+      content_for_header and before every external script — guarantees we register
+      first, and stopImmediatePropagation() (not stopPropagation) is what actually
+      stops another listener on the same node.
+
+      This only blocks; assets/ss-variant-cards.js and assets/ss-pdp-variant-gate.js
+      render the message in response to the events dispatched below.
+    {%- endcomment -%}
+    <script>
+      (function () {
+        var SCOPE = '[data-ss-scope]';
+        var BUY =
+          'button[name="add"], .add-to-cart-button, .buy-buttons-block button, ' +
+          '.buy-buttons-block a, sticky-add-to-cart button, .shiprocket-headless button';
+        var NESTED = 'product-card, quick-add-component, quick-add-modal, [data-ss-scope]';
+
+        function block(event, target, name) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          try {
+            target.dispatchEvent(new CustomEvent(name, { bubbles: true }));
+          } catch (err) {
+            /* CustomEvent is unavailable in very old browsers; the block still held. */
+          }
+        }
+
+        document.addEventListener(
+          'click',
+          function (event) {
+            var el = event.target;
+            if (!el || !el.closest) return;
+
+            // --- product cards -------------------------------------------------
+            var atc = el.closest('[data-ss-atc]');
+            if (atc) {
+              var scope = atc.closest(SCOPE);
+              if (!scope) return;
+              if (scope.getAttribute('data-ss-state') === 'selected') return;
+              // No picker in the card means a single-variant product: leave it alone.
+              if (!scope.querySelector('[data-ss-kit]')) return;
+              block(event, scope, 'ss:variant-required');
+              return;
+            }
+
+            // --- product page --------------------------------------------------
+            if (!document.documentElement.classList.contains('ss-kit-unselected')) return;
+
+            var buy = el.closest(BUY);
+            if (!buy || buy.closest(NESTED) || buy.closest('variant-picker')) return;
+
+            var details = document.querySelector('.product-details');
+            var sticky = document.querySelector('sticky-add-to-cart');
+            if (!(details && details.contains(buy)) && !(sticky && sticky.contains(buy))) return;
+
+            block(event, document, 'ss:kit-required');
+          },
+          true
+        );
+      })();
+    </script>
 
     <meta name="google-site-verification" content="Jg5YzDap7rW2r0NnYZFWFdHvrwLw5A72KwRdJkM2Ow0" />
     {%- if settings.favicon != blank -%}

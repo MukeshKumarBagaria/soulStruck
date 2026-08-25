@@ -119,15 +119,21 @@
       if (button.closest(NESTED_PRODUCT_CONTEXT)) return;
       if (!root.contains(button) && !(sticky && sticky.contains(button))) return;
       event.preventDefault();
-      event.stopPropagation();
+      event.stopImmediatePropagation();
       flagMissingSelection();
     }
 
+    // The inline guard in layout/theme.liquid blocks first (it beats the Shiprocket
+    // Smart Cart capture listener); this renders the message it asks for.
+    document.addEventListener('ss:kit-required', flagMissingSelection);
+
+    // Fallback block for when the inline guard is absent.
     document.addEventListener('click', blockBuy, true);
 
     function release() {
       html.classList.remove('ss-kit-unselected');
       document.removeEventListener('click', blockBuy, true);
+      document.removeEventListener('ss:kit-required', flagMissingSelection);
       window.clearTimeout(messageTimer);
       picker.classList.remove('ss-kit-gate__picker--pulse');
       injected.forEach(function (node) {

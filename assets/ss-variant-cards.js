@@ -199,8 +199,17 @@
     if (variant) apply(scope, variant);
   });
 
-  // Capture phase: this must win over each section's own click/submit handler so an
-  // unselected card can never reach /cart/add.js with a fallback variant id.
+  // The inline guard in layout/theme.liquid does the actual blocking (it has to run
+  // before the Shiprocket Smart Cart bundle registers its own capture listener).
+  // It tells us here so the message lives with the rest of the card logic.
+  document.addEventListener('ss:variant-required', function (event) {
+    var scope = event.target.closest && event.target.closest(SCOPE);
+    if (!scope) return;
+    init(scope);
+    requireSelection(scope);
+  });
+
+  // Fallback for the case where the inline guard is missing: same block, later.
   document.addEventListener(
     'click',
     function (event) {
@@ -212,7 +221,7 @@
 
       if (scope.dataset.ssState !== 'selected') {
         event.preventDefault();
-        event.stopPropagation();
+        event.stopImmediatePropagation();
         requireSelection(scope);
       }
     },
@@ -229,7 +238,7 @@
       if (!label) return;
 
       event.preventDefault();
-      event.stopPropagation();
+      event.stopImmediatePropagation();
 
       var input = label.querySelector('[data-ss-variant-input]');
       if (!input || input.disabled || input.checked) return;
