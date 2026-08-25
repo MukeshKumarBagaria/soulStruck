@@ -1111,7 +1111,7 @@
             "platform_1_logo": "shopify://shop_images/amazon_logo.avif",
             "platform_1_name": "Amazon",
             "platform_1_link": "https://www.amazon.in/stores/SoulStruck/page/8FA02937-E4C7-496B-9EC9-4D36A6388C10?lp_asin=B0F43MMM6H&ref_=cm_sw_r_apin_ast_store_RTHM5KQVCF9K7FXCMFW1&store_ref=bl_ast_dp_brandlogo_sto",
-            "platform_2_enabled": true,
+            "platform_2_enabled": false,
             "platform_2_logo": "shopify://shop_images/Zeepty-Creator.png",
             "platform_2_name": "Zeepty",
             "platform_2_link": "",
@@ -1168,6 +1168,32 @@
     "17766087610ab8ede2": {
       "type": "_blocks",
       "blocks": {
+        "text_PKGVWz": {
+          "type": "text",
+          "name": "t:names.heading",
+          "settings": {
+            "text": "<h2>From Our Instagram</h2>",
+            "width": "fit-content",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "rte",
+            "font": "var(--font-body--family)",
+            "font_size": "1rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "var(--color-foreground)",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
         "instafeed_app_block_FWdEX4": {
           "type": "shopify://apps/instafeed/blocks/app-block/c447db20-095d-4a10-9725-b5977662c9d5",
           "settings": {
@@ -1188,6 +1214,7 @@
         }
       },
       "block_order": [
+        "text_PKGVWz",
         "instafeed_app_block_FWdEX4"
       ],
       "name": "Instagram-Feed",
