@@ -24,7 +24,23 @@
 {%- endif -%}
 {%- liquid
   assign selected_product = closest.product
-  assign selected_variant_media = selected_product.selected_or_first_available_variant.featured_media
+
+  # SoulStruck: the kit images are variant images, so Shopify's auto-selected first
+  # variant would put a kit graphic on slide 0 before the shopper has chosen anything,
+  # hiding the product's own hero photo on landing. Only honour the variant image once
+  # a kit is actually chosen. `selected_variant` is set both by ?variant= and by the
+  # ?option_values= request the variant picker makes on selection, so the kit image
+  # still leads the gallery the moment a kit is picked. Same signal as the gate in
+  # layout/theme.liquid and blocks/price.liquid.
+  assign ss_kit_unchosen = false
+  if request.page_type == 'product' and selected_product.id == product.id and selected_product.has_only_default_variant == false and selected_product.variants.size > 1 and selected_product.selected_variant == blank
+    assign ss_kit_unchosen = true
+  endif
+
+  unless ss_kit_unchosen
+    assign selected_variant_media = selected_product.selected_or_first_available_variant.featured_media
+  endunless
+
   assign first_3d_model = selected_product.media | where: 'media_type', 'model' | first
 
   # ====== Top-level "Thumbnails layout" override (vertical / horizontal) ======
