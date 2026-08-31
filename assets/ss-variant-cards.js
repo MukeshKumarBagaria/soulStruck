@@ -125,7 +125,11 @@
       link.href = link.dataset.ssHrefBase + '?variant=' + variant.id;
     });
 
-    if (variant.image) {
+    // Opt-in only. Once variant images exist in Shopify (see
+    // scripts/assign-kit-variant-images.mjs) this would otherwise replace the nail
+    // photo on every card with the kit-contents graphic, which is informational
+    // rather than a hero shot. Add data-ss-image-swap to a card root to enable it.
+    if (variant.image && scope.hasAttribute('data-ss-image-swap')) {
       qa(scope, '[data-ss-image]').forEach(function (img) {
         if (!img.dataset.ssImageBase) img.dataset.ssImageBase = img.getAttribute('src') || '';
         img.removeAttribute('srcset');
