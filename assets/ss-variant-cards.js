@@ -117,13 +117,20 @@
       link.href = base + '/' + variant.id + ':1';
     });
 
-    // Requirement: carrying the choice through to the PDP.
-    qa(scope, '[data-ss-product-link]').forEach(function (link) {
-      if (!link.dataset.ssHrefBase) {
-        link.dataset.ssHrefBase = (link.getAttribute('href') || '').split('?')[0];
-      }
-      link.href = link.dataset.ssHrefBase + '?variant=' + variant.id;
-    });
+    // Carry the choice through to the product page. On the collection card the
+    // navigation anchors are rendered by the theme OUTSIDE the .ss-cc scope, so widen
+    // the search to the <product-card> wrapper when there is one. Links stay clean
+    // (no ?variant=) until the shopper actually picks a kit — see
+    // snippets/ss-product-card-url.liquid.
+    var linkRoot = scope.closest('product-card') || scope;
+    Array.prototype.slice
+      .call(linkRoot.querySelectorAll('[data-ss-product-link]'))
+      .forEach(function (link) {
+        if (!link.dataset.ssHrefBase) {
+          link.dataset.ssHrefBase = (link.getAttribute('href') || '').split('?')[0];
+        }
+        link.href = link.dataset.ssHrefBase + '?variant=' + variant.id;
+      });
 
     // Opt-in only. Once variant images exist in Shopify (see
     // scripts/assign-kit-variant-images.mjs) this would otherwise replace the nail

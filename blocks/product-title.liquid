@@ -7,7 +7,8 @@
   <a
     class="contents user-select-text"
     ref="productTitleLink"
-    href="{{ closest.product.selected_or_first_available_variant.url }}"
+    href="{% render 'ss-product-card-url', product: closest.product %}"
+    data-ss-product-link
   >
     {% render 'text', fallback_text: product_title, block: block %}
   </a>

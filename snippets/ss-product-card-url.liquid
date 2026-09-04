@@ -1,0 +1,33 @@
+{%- doc -%}
+  SoulStruck — the URL a product card should link to.
+
+  The theme linked cards with `variant.url`, which is `/products/handle?variant=<id>`
+  for Shopify's auto-selected first variant. Landing on the product page with a
+  variant already in the URL defeats the "Choose Your Kit" gate: `product.selected_variant`
+  is set, so the price shows, Add to cart is live, and the shopper is never asked to
+  pick a kit they never picked.
+
+  For a multi-variant product this outputs the clean `/products/handle` instead, so the
+  product page opens in its unselected state. Single-variant products keep the theme's
+  original variant URL, since there is nothing to choose.
+
+  A kit the shopper DID pick on the card is still carried through — assets/ss-variant-cards.js
+  rewrites any [data-ss-product-link] href to ?variant=<chosen id> on selection.
+
+  @param {object} product - The product object
+{%- enddoc -%}
+
+{%- liquid
+  assign ss_multi = false
+  unless product.has_only_default_variant
+    if product.variants.size > 1
+      assign ss_multi = true
+    endif
+  endunless
+
+  if ss_multi
+    echo product.url
+  else
+    echo product.selected_or_first_available_variant.url
+  endif
+-%}

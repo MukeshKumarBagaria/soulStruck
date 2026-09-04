@@ -78,7 +78,8 @@
   <a
     id="{{ product_card_id | md5 }}"
     {% unless onboarding %}
-      href="{{ variant_to_link.url }}"
+      href="{% render 'ss-product-card-url', product: product %}"
+      data-ss-product-link
     {% endunless %}
     class="product-card__link"
     ref="productCardLink"
