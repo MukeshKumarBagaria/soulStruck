@@ -1,0 +1,213 @@
+{%- doc -%}
+  SoulStruck — kit contents that follow the selected variant.
+
+  Renders both kit content lists into the accordion and shows the one matching the
+  chosen "Choose Your Kit" variant. Until the shopper picks a kit (the product page
+  starts unselected — see layout/theme.liquid) the Signature Edit list is shown.
+
+  The lists are block settings rather than per-product metafields because the kit
+  contents are identical across the catalogue; editing them here updates every product.
+
+  Server-side it reads the selected variant, so a ?variant= link and a page reload both
+  land on the right list. Client-side it listens to the variant picker so switching kits
+  swaps the list without a reload.
+{%- enddoc -%}
+
+{%- liquid
+  assign s = block.settings
+  assign product_resource = closest.product
+
+  if request.visual_preview_mode and product_resource == blank
+    assign product_resource = collections.all.products.first
+  endif
+
+  # Blank until the shopper actually chooses — same signal as the rest of the kit gate.
+  assign kit_value = ''
+  if product_resource.selected_variant != blank
+    assign kit_value = product_resource.selected_variant.option1 | default: product_resource.selected_variant.title
+  endif
+
+  # Anything that isn't a Pocket Edit falls back to Signature, which also covers the
+  # "Signatute Edit" typo on some products and any casing differences.
+  assign active_kit = 'signature'
+  assign kit_compare = kit_value | downcase
+  if kit_compare contains 'pocket'
+    assign active_kit = 'pocket'
+  endif
+-%}
+
+<div
+  class="ss-kit-contents spacing-style"
+  style="{% render 'spacing-style', settings: s %}"
+  data-ss-kit-contents
+  {{ block.shopify_attributes }}
+>
+  {%- assign panes = 'signature,pocket' | split: ',' -%}
+  {%- for pane in panes -%}
+    {%- liquid
+      if pane == 'signature'
+        assign pane_label = s.signature_label
+        assign pane_items = s.signature_items
+      else
+        assign pane_label = s.pocket_label
+        assign pane_items = s.pocket_items
+      endif
+      assign lines = pane_items | strip | newline_to_br | split: '<br />'
+    -%}
+    <div
+      class="ss-kit-contents__pane"
+      data-kit="{{ pane }}"
+      {% unless active_kit == pane %}hidden{% endunless %}
+    >
+      {%- if s.show_label and pane_label != blank -%}
+        <p class="ss-kit-contents__label">{{ pane_label }}</p>
+      {%- endif -%}
+
+      <ul class="ss-kit-contents__list">
+        {%- for line in lines -%}
+          {%- assign item = line | strip | remove_first: '•' | strip -%}
+          {%- if item != blank -%}
+            <li>{{ item }}</li>
+          {%- endif -%}
+        {%- endfor -%}
+      </ul>
+    </div>
+  {%- endfor -%}
+</div>
+
+<script>
+  (function () {
+    // One delegated listener serves the page no matter how many blocks are present.
+    if (window.__ssKitContentsBound) return;
+    window.__ssKitContentsBound = true;
+
+    function paneFor(value) {
+      return /pocket/i.test(value) ? 'pocket' : 'signature';
+    }
+
+    function apply(kit) {
+      document.querySelectorAll('[data-ss-kit-contents]').forEach(function (root) {
+        root.querySelectorAll('[data-kit]').forEach(function (pane) {
+          pane.hidden = pane.getAttribute('data-kit') !== kit;
+        });
+      });
+    }
+
+    document.addEventListener('change', function (event) {
+      var el = event.target;
+      if (!el || !el.closest) return;
+
+      // Only the product page's own picker — not a quick-add dialog or a card.
+      if (!el.closest('variant-picker')) return;
+      if (el.closest('product-card') || el.closest('quick-add-modal')) return;
+
+      var value = el.value || '';
+      // Ignore options that are not the kit (size, colour, …).
+      if (!/pocket|signat/i.test(value)) return;
+
+      apply(paneFor(value));
+    });
+  })();
+</script>
+
+{% stylesheet %}
+  .ss-kit-contents__label {
+    margin: 0 0 var(--margin-2xs);
+    font-weight: 600;
+  }
+
+  .ss-kit-contents__list {
+    margin: 0;
+    padding-inline-start: 1.15em;
+  }
+
+  .ss-kit-contents__list li {
+    margin-block: 2px;
+  }
+
+  .ss-kit-contents__pane[hidden] {
+    display: none !important;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Kit contents",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Shows the contents of the selected kit. Signature Edit is shown until a kit is chosen."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_label",
+      "label": "Show kit name above the list",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Signature Edit"
+    },
+    {
+      "type": "text",
+      "id": "signature_label",
+      "label": "Label",
+      "default": "Signature Edit"
+    },
+    {
+      "type": "textarea",
+      "id": "signature_items",
+      "label": "Contents",
+      "info": "One item per line.",
+      "default": "24 Press-On Nails\nCuticle Stick\nBrush-On Glue\nNail File\nInstruction Manual\nNail Glue Tabs\n4-Way Nail Buffer\nCuticle Oil\nAlcohol Pad"
+    },
+    {
+      "type": "header",
+      "content": "Pocket Edit"
+    },
+    {
+      "type": "text",
+      "id": "pocket_label",
+      "label": "Label",
+      "default": "Pocket Edit"
+    },
+    {
+      "type": "textarea",
+      "id": "pocket_items",
+      "label": "Contents",
+      "info": "One item per line.",
+      "default": "24 Press-On Nails\nNail File\nCuticle Stick\nAlcohol Swab\nNail Glue Tabs (24 Tabs)\nLiquid Glue"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Kit contents"
+    }
+  ]
+}
+{% endschema %}

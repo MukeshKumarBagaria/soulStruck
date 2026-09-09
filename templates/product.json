@@ -318,27 +318,15 @@
                   },
                   "blocks": {
                     "text_ingredients": {
-                      "type": "text",
+                      "type": "ss-kit-contents",
                       "settings": {
-                        "text": "<p></p>{{ closest.product.metafields.custom.contents | metafield_tag }}",
-                        "width": "100%",
-                        "max_width": "normal",
-                        "alignment": "left",
-                        "type_preset": "rte",
-                        "font": "var(--font-body--family)",
-                        "font_size": "1rem",
-                        "line_height": "normal",
-                        "letter_spacing": "normal",
-                        "case": "none",
-                        "wrap": "pretty",
-                        "color": "var(--color-foreground)",
-                        "background": false,
-                        "background_color": "#00000026",
-                        "corner_radius": 0,
+                        "show_label": true,
+                        "signature_label": "Signature Edit",
+                        "signature_items": "24 Press-On Nails\nCuticle Stick\nBrush-On Glue\nNail File\nInstruction Manual\nNail Glue Tabs\n4-Way Nail Buffer\nCuticle Oil\nAlcohol Pad",
+                        "pocket_label": "Pocket Edit",
+                        "pocket_items": "24 Press-On Nails\nNail File\nCuticle Stick\nAlcohol Swab\nNail Glue Tabs (24 Tabs)\nLiquid Glue",
                         "padding-block-start": 0,
-                        "padding-block-end": 0,
-                        "padding-inline-start": 0,
-                        "padding-inline-end": 0
+                        "padding-block-end": 0
                       },
                       "blocks": {}
                     }
