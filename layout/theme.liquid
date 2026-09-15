@@ -134,7 +134,8 @@
 
     {{ content_for_header }}
     {% render 'sr-checkout' %}
-    <script src="https://unpkg.com/spf-analytics@1.0.0/index.js" defer></script>
+    <script src="{{ 'sdk-meta.js' | asset_url }}" defer></script>
+<script src="https://unpkg.com/spf-analytics@1.0.0/index.js" defer></script>
 </head>
 
   <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">
@@ -231,5 +232,6 @@
     {% if settings.quick_add or settings.mobile_quick_add %}
       {% render 'quick-add-modal' %}
     {% endif %}
-  </body>
+  <script src="{{ 'meta-shopify.js' | asset_url }}" defer></script>
+</body>
 </html>
