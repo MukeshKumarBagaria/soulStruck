@@ -114,53 +114,83 @@
         {% render 'price', product_resource: product, show_sale_price_first: true %}
       </div>
 
-      <button
-        type="button"
-        class="sticky-add-to-cart__button add-to-cart-button button"
-        ref="addToCartButton"
-        on:click="/handleAddToCartClick"
-        {% unless current_variant.available %}
-          disabled
-        {% endunless %}
-      >
-        <span
-          class="add-to-cart-text"
+      {%- comment -%}
+        SoulStruck: the three actions a shopper reaches for — save, add, buy — travel
+        with them for the whole page instead of only living at the buy block.
+      {%- endcomment -%}
+      <div class="sticky-add-to-cart__actions">
+        {%- if section.settings.sticky_show_wishlist -%}
+          {% render 'wishlist-button', product: product, context: 'sticky' %}
+        {%- endif -%}
+
+        <button
+          type="button"
+          class="sticky-add-to-cart__button add-to-cart-button button"
+          ref="addToCartButton"
+          on:click="/handleAddToCartClick"
+          {% unless current_variant.available %}
+            disabled
+          {% endunless %}
         >
-          {% if current_variant.available %}
-            <span class="svg-wrapper add-to-cart-icon">
-              {{- 'icon-add-to-cart.svg' | inline_asset_content -}}
-            </span>
-          {% endif %}
-          <span class="add-to-cart-text__content">
-            <span>
-              {%- if current_variant.available -%}
-                {{- 'products.product.add_to_cart' | t -}}
-              {%- elsif current_variant == blank -%}
-                {{- 'products.product.unavailable' | t -}}
-              {%- else -%}
-                {{- 'products.product.sold_out' | t -}}
-              {%- endif -%}
-            </span>
-            <span
-              ref="quantityDisplay"
-              {% if current_variant.available and initial_quantity > 1 %}
-                style="display: inline;"
-              {% else %}
-                style="display: none;"
-              {% endif %}
-            >
-              {{- ' (' -}}
-              <span ref="quantityNumber">{{- initial_quantity -}}</span>
-              {{- ')' -}}
+          <span
+            class="add-to-cart-text"
+          >
+            {% if current_variant.available %}
+              <span class="svg-wrapper add-to-cart-icon">
+                {{- 'icon-add-to-cart.svg' | inline_asset_content -}}
+              </span>
+            {% endif %}
+            <span class="add-to-cart-text__content">
+              <span>
+                {%- if current_variant.available -%}
+                  {{- 'products.product.add_to_cart' | t -}}
+                {%- elsif current_variant == blank -%}
+                  {{- 'products.product.unavailable' | t -}}
+                {%- else -%}
+                  {{- 'products.product.sold_out' | t -}}
+                {%- endif -%}
+              </span>
+              <span
+                ref="quantityDisplay"
+                {% if current_variant.available and initial_quantity > 1 %}
+                  style="display: inline;"
+                {% else %}
+                  style="display: none;"
+                {% endif %}
+              >
+                {{- ' (' -}}
+                <span ref="quantityNumber">{{- initial_quantity -}}</span>
+                {{- ')' -}}
+              </span>
             </span>
           </span>
-        </span>
-        <span class="add-to-cart__added">
-          <span class="svg-wrapper add-to-cart__added-icon">
-            {{- 'icon-checkmark-burst.svg' | inline_asset_content -}}
+          <span class="add-to-cart__added">
+            <span class="svg-wrapper add-to-cart__added-icon">
+              {{- 'icon-checkmark-burst.svg' | inline_asset_content -}}
+            </span>
           </span>
-        </span>
-      </button>
+        </button>
+
+        {%- if section.settings.sticky_show_buy_now -%}
+          {%- comment -%}
+            Hidden until sticky-add-to-cart.js finds a real buy-now button in the buy
+            block to click. The checkout button is rendered by the checkout app, so a
+            sticky copy that leads nowhere would be worse than no button at all.
+          {%- endcomment -%}
+          <button
+            type="button"
+            class="sticky-add-to-cart__button sticky-add-to-cart__button--buy-now button button-secondary"
+            ref="buyNowButton"
+            on:click="/handleBuyNowClick"
+            hidden
+            {% unless current_variant.available %}
+              disabled
+            {% endunless %}
+          >
+            {{- section.settings.sticky_buy_now_label | default: 'Buy now' | escape -}}
+          </button>
+        {%- endif -%}
+      </div>
     </div>
   </sticky-add-to-cart>
 {% endif %}
@@ -183,7 +213,9 @@
     transform: translateX(-50%) translateY(calc(100% + 40px));
     z-index: calc(var(--layer-sticky) - 1); /* Below sticky header */
     display: block;
-    width: 600px;
+    /* Wider than the stock bar: it now carries wishlist, add to cart and buy now. */
+    width: 720px;
+    max-width: calc(100vw - 2 * var(--padding-lg));
     border-radius: calc(
       var(--style-border-radius-buttons-primary) + min(var(--padding-sm), var(--style-border-radius-buttons-primary))
     );
@@ -281,6 +313,54 @@
     position: relative;
   }
 
+  /* --- SoulStruck: wishlist + add to cart + buy now ------------------------ */
+  .sticky-add-to-cart__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-xs);
+    flex-shrink: 0;
+  }
+
+  .sticky-add-to-cart__actions .sticky-add-to-cart__button {
+    flex: 1 1 auto;
+    min-width: 132px;
+    white-space: nowrap;
+  }
+
+  /* Add to cart keeps the solid primary style it has at the buy block; buy now sits
+     next to it as the outlined second choice. */
+  .sticky-add-to-cart__button--buy-now {
+    display: grid;
+    place-content: center;
+    height: var(--height-buy-buttons);
+  }
+
+  .wishlist-btn--sticky {
+    flex: 0 0 auto;
+    width: var(--height-buy-buttons);
+    height: var(--height-buy-buttons);
+    border: 1px solid var(--color-border);
+    border-radius: var(--style-border-radius-buttons-primary);
+    background: var(--color-background);
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .wishlist-btn--sticky .wishlist-btn__icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  @media (hover: hover) {
+    .wishlist-btn--sticky:hover {
+      border-color: var(--wl-accent, #cd8276);
+      color: var(--wl-accent, #cd8276);
+    }
+  }
+
+  .wishlist-btn--sticky.is-active {
+    border-color: var(--wl-accent, #cd8276);
+  }
+
   /* Mobile adjustments */
   @media screen and (max-width: 749px) {
     .sticky-add-to-cart__bar {
@@ -288,14 +368,24 @@
       width: 100%;
       max-width: none;
       border-radius: 0;
+      /* Two rows: product + price, then the actions. */
+      flex-wrap: wrap;
+      row-gap: var(--gap-xs);
+      padding-bottom: calc(var(--padding-sm) + env(safe-area-inset-bottom, 0px));
 
       &::before {
         --border: 1px;
       }
     }
 
-    .sticky-add-to-cart__bar .add-to-cart-text__content {
-      display: none;
+    .sticky-add-to-cart__actions {
+      flex: 1 0 100%;
+      gap: var(--gap-xs);
+    }
+
+    .sticky-add-to-cart__actions .sticky-add-to-cart__button {
+      flex: 1 1 0;
+      min-width: 0;
     }
 
     .sticky-add-to-cart__info[data-has-image='false'] {
@@ -307,28 +397,35 @@
     }
 
     .sticky-add-to-cart__button {
-      padding: var(--padding-lg);
+      padding-inline: var(--padding-md);
     }
 
     .sticky-add-to-cart__price {
       font-size: var(--font-paragraph-small--size);
     }
 
-    .sticky-add-to-cart__button {
-      width: var(--height-buy-buttons);
-    }
-
-    sticky-add-to-cart:not([data-variant-available='true']) .add-to-cart-text__content {
-      display: initial;
-    }
-
-    sticky-add-to-cart:not([data-variant-available='true']) .sticky-add-to-cart__button {
-      width: auto;
+    .sticky-add-to-cart__info {
+      /* Leave the image and price their space on the first row. */
+      flex: 1 1 40%;
     }
   }
 
   /* Small mobile - hide text content and compare price */
   @media screen and (max-width: 389px) {
+    /* Three actions on a 320-360px row: trim the chrome, never the labels. */
+    .sticky-add-to-cart__actions {
+      gap: 6px;
+    }
+
+    .sticky-add-to-cart__actions .sticky-add-to-cart__button {
+      padding-inline: 6px;
+      font-size: var(--font-paragraph-small--size);
+    }
+
+    .wishlist-btn--sticky {
+      width: 40px;
+    }
+
     .sticky-add-to-cart__bar {
       .compare-at-price {
         display: none;
@@ -437,6 +534,28 @@
       "id": "enable_sticky_add_to_cart",
       "label": "t:settings.enable_sticky_add_to_cart",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_show_wishlist",
+      "label": "Show wishlist in sticky bar",
+      "default": true,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_show_buy_now",
+      "label": "Show buy now in sticky bar",
+      "info": "Only appears when the product page has a buy now button of its own.",
+      "default": true,
+      "visible_if": "{{ section.settings.enable_sticky_add_to_cart }}"
+    },
+    {
+      "type": "text",
+      "id": "sticky_buy_now_label",
+      "label": "Buy now label",
+      "default": "Buy now",
+      "visible_if": "{{ section.settings.sticky_show_buy_now }}"
     },
     {
       "type": "color_scheme",

@@ -27,6 +27,7 @@ import { onAnimationEnd } from '@theme/utilities';
  * @typedef {Object} StickyAddToCartRefs
  * @property {HTMLElement} stickyBar - The floating bar container
  * @property {HTMLButtonElement} addToCartButton - Sticky bar's button
+ * @property {HTMLButtonElement} [buyNowButton] - Sticky bar's buy now button (optional)
  * @property {HTMLElement} quantityDisplay - Quantity display container
  * @property {HTMLElement} quantityNumber - Quantity number element
  * @property {HTMLImageElement} productImage - Product image element
@@ -40,6 +41,19 @@ import { onAnimationEnd } from '@theme/utilities';
  */
 class StickyAddToCartComponent extends Component {
   requiredRefs = ['stickyBar', 'addToCartButton', 'quantityDisplay', 'quantityNumber'];
+
+  /**
+   * Buy now buttons the sticky bar knows how to click: Shiprocket's headless checkout
+   * first, then Shopify's own dynamic checkout button. Wallet buttons (Apple Pay, Google
+   * Pay) live in cross-origin iframes and cannot be clicked from here, so they are left
+   * out — the buy block itself still offers them.
+   */
+  static buyNowSelector = [
+    '.shiprocket-headless button',
+    'button[name="sr-headless-button"]',
+    '.shopify-payment-button__button--unbranded',
+    '.shopify-payment-button__button',
+  ].join(', ');
 
   /** @type {IntersectionObserver | null} */
   #buyButtonsIntersectionObserver = null;
@@ -62,6 +76,16 @@ class StickyAddToCartComponent extends Component {
   /** @type {HTMLButtonElement | null} */
   #targetAddToCartButton = null;
 
+  /**
+   * The page's own buy now button, which the sticky one clicks. Rendered by the
+   * checkout app (or Shopify's dynamic checkout), so it may not exist at all.
+   * @type {HTMLElement | null}
+   */
+  #targetBuyNowButton = null;
+
+  /** @type {MutationObserver | null} */
+  #buyNowObserver = null;
+
   /** @type {number} */
   #currentQuantity = 1;
 
@@ -83,12 +107,14 @@ class StickyAddToCartComponent extends Component {
     document.addEventListener(ThemeEvents.quantitySelectorUpdate, this.#handleQuantityUpdate, { signal });
 
     this.#getInitialQuantity();
+    this.#watchBuyNowButton();
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     this.#buyButtonsIntersectionObserver?.disconnect();
     this.#mainBottomObserver?.disconnect();
+    this.#buyNowObserver?.disconnect();
     this.#abortController.abort();
     if (this.#animationTimeout) {
       clearTimeout(this.#animationTimeout);
@@ -193,6 +219,61 @@ class StickyAddToCartComponent extends Component {
   };
 
   /**
+   * Handles the buy now button click in the sticky bar by clicking the page's own buy
+   * now button, so the checkout app keeps ownership of the flow (variant, quantity,
+   * discounts and analytics all come from the form it already reads).
+   */
+  handleBuyNowClick = () => {
+    this.#resolveBuyNowButton();
+
+    const target = this.#targetBuyNowButton;
+    if (!target) return;
+
+    target.dataset.puppet = 'true';
+    target.click();
+  };
+
+  /**
+   * Finds the page's buy now button and shows or hides the sticky copy to match.
+   * @returns {HTMLElement | null}
+   */
+  #resolveBuyNowButton() {
+    const { buyNowButton } = this.refs;
+    if (!buyNowButton) return null;
+
+    const productForm = this.#getProductForm();
+    const scope = productForm?.closest('.buy-buttons-block') ?? productForm;
+
+    this.#targetBuyNowButton = /** @type {HTMLElement | null} */ (
+      scope?.querySelector(StickyAddToCartComponent.buyNowSelector) ?? null
+    );
+
+    // A sticky button that leads nowhere is worse than no button at all.
+    buyNowButton.hidden = !this.#targetBuyNowButton;
+
+    return this.#targetBuyNowButton;
+  }
+
+  /**
+   * Checkout apps inject their button after the page has rendered, so keep looking
+   * until it turns up rather than deciding once and hiding the button for good.
+   */
+  #watchBuyNowButton() {
+    if (!this.refs.buyNowButton) return;
+    if (this.#resolveBuyNowButton()) return;
+
+    const productForm = this.#getProductForm();
+    const scope = productForm?.closest('.buy-buttons-block') ?? productForm;
+    if (!scope) return;
+
+    this.#buyNowObserver = new MutationObserver(() => {
+      if (this.#resolveBuyNowButton()) this.#buyNowObserver?.disconnect();
+    });
+
+    this.#buyNowObserver.observe(scope, { childList: true, subtree: true });
+  }
+
+  /**
    * Handles variant update events
    * @param {CustomEvent} event - The variant update event
    */
@@ -229,6 +310,9 @@ class StickyAddToCartComponent extends Component {
     if (productForm) {
       this.#targetAddToCartButton = productForm.querySelector('[ref="addToCartButton"]');
     }
+
+    // The morph brings back a hidden buy now button; show it again if the page has one.
+    this.#resolveBuyNowButton();
 
     if (variant == null) {
       this.#handleVariantUnavailable();

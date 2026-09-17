@@ -72,6 +72,9 @@
 
             var buy = el.closest(BUY);
             if (!buy || buy.closest(NESTED) || buy.closest('variant-picker')) return;
+            // Saving to the wishlist needs no kit — it sits inside the buy block and the
+            // sticky bar, so it would otherwise be caught by the selectors above.
+            if (buy.closest('[data-wishlist-toggle]')) return;
 
             var details = document.querySelector('.product-details');
             var sticky = document.querySelector('sticky-add-to-cart');

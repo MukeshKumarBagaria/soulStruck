@@ -117,6 +117,9 @@
       var button = event.target.closest && event.target.closest(BUY_SELECTOR);
       if (!button || picker.contains(button)) return;
       if (button.closest(NESTED_PRODUCT_CONTEXT)) return;
+      // The wishlist heart lives in the buy block and the sticky bar, and saving a
+      // product for later does not depend on a kit.
+      if (button.closest('[data-wishlist-toggle]')) return;
       if (!root.contains(button) && !(sticky && sticky.contains(button))) return;
       event.preventDefault();
       event.stopImmediatePropagation();
