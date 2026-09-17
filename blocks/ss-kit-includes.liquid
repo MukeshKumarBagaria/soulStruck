@@ -1,0 +1,693 @@
+{%- doc -%}
+  SoulStruck — "What's in the kit" card that follows the Choose Your Kit selection.
+
+  Sits directly under the variant picker and shows a flatlay of the chosen kit next to a
+  ticked list of everything inside it. Both kits are rendered; only the selected one is
+  visible, so switching kits never waits on a network round-trip.
+
+  Server-side it reads the selected variant, so a ?variant= link and a page reload both
+  land on the right kit. Client-side it listens to the variant picker (and to the theme's
+  `variant:update` event) because the product page only morphs the picker itself — the
+  rest of the product details column keeps its first-render markup.
+
+  Until the shopper picks a kit (the page starts unselected — see layout/theme.liquid)
+  the Signature Edit card is shown.
+
+  Contents and images are block settings rather than per-product metafields because the
+  kits are identical across the catalogue; editing them here updates every product. Each
+  kit takes its own desktop and mobile image so a wide flatlay can be swapped for a
+  tighter crop on phones; with neither set the block uses the image already assigned to
+  that kit's variant.
+{%- enddoc -%}
+
+{%- liquid
+  assign s = block.settings
+  assign product_resource = closest.product
+
+  if request.visual_preview_mode and product_resource == blank
+    assign product_resource = collections.all.products.first
+  endif
+
+  # Blank until the shopper actually chooses — same signal as the rest of the kit gate.
+  assign kit_value = ''
+  if product_resource.selected_variant != blank
+    assign kit_value = product_resource.selected_variant.option1 | default: product_resource.selected_variant.title
+  endif
+
+  # Anything that isn't a Pocket Edit falls back to Signature, which also covers the
+  # "Signatute Edit" typo on some products and any casing differences.
+  assign active_kit = 'signature'
+  assign kit_compare = kit_value | downcase
+  if kit_compare contains 'pocket'
+    assign active_kit = 'pocket'
+  endif
+
+  case s.image_ratio
+    when 'portrait'
+      assign ratio_css = '4 / 5'
+    when 'landscape'
+      assign ratio_css = '4 / 3'
+    when 'natural'
+      assign ratio_css = 'auto'
+    else
+      assign ratio_css = '1 / 1'
+  endcase
+-%}
+
+<div
+  class="ss-kit-includes spacing-style"
+  style="
+    {% render 'spacing-style', settings: s %}
+    --ki-card-bg: {{ s.card_background }};
+    --ki-accent: {{ s.accent_color }};
+    --ki-heading: {{ s.heading_color }};
+    --ki-muted: {{ s.subheading_color }};
+    --ki-text: {{ s.text_color }};
+    --ki-card-radius: {{ s.corner_radius }}px;
+    --ki-media-radius: {{ s.image_corner_radius }}px;
+    --ki-media-ratio: {{ ratio_css }};
+    --ki-media-fit: {{ s.image_fit }};
+  "
+  data-ss-kit-includes
+  data-default-pane="signature"
+  {{ block.shopify_attributes }}
+>
+  {%- assign panes = 'signature,pocket' | split: ',' -%}
+  {%- for pane in panes -%}
+    {%- liquid
+      if pane == 'signature'
+        assign pane_heading = s.signature_heading
+        assign pane_subheading = s.signature_subheading
+        assign pane_items = s.signature_items
+        assign pane_image = s.signature_image
+        assign pane_image_mobile = s.signature_image_mobile
+      else
+        assign pane_heading = s.pocket_heading
+        assign pane_subheading = s.pocket_subheading
+        assign pane_items = s.pocket_items
+        assign pane_image = s.pocket_image
+        assign pane_image_mobile = s.pocket_image_mobile
+      endif
+
+      # One image is enough — it stands in for the other breakpoint when only one is set.
+      assign image_desktop = pane_image
+      assign image_mobile = pane_image_mobile
+      if image_desktop == blank
+        assign image_desktop = pane_image_mobile
+      endif
+      if image_mobile == blank
+        assign image_mobile = pane_image
+      endif
+
+      # Nothing chosen in the theme editor: fall back to the image already attached to
+      # this kit's variant (scripts/assign-kit-variant-images.mjs put it there), so the
+      # card is never imageless and each product can still show its own kit photo.
+      if image_desktop == blank
+        for kit_variant in product_resource.variants
+          assign variant_name = kit_variant.option1 | default: kit_variant.title | downcase
+          assign variant_is_pocket = false
+          if variant_name contains 'pocket'
+            assign variant_is_pocket = true
+          endif
+
+          if kit_variant.featured_media == blank
+            continue
+          endif
+
+          if pane == 'pocket' and variant_is_pocket
+            assign image_desktop = kit_variant.featured_media.preview_image
+            assign image_mobile = image_desktop
+            break
+          endif
+
+          if pane == 'signature' and variant_is_pocket == false
+            assign image_desktop = kit_variant.featured_media.preview_image
+            assign image_mobile = image_desktop
+            break
+          endif
+        endfor
+      endif
+    -%}
+
+    {%- capture pane_items_clean -%}
+      {%- assign lines = pane_items | strip | newline_to_br | split: '<br />' -%}
+      {%- for line in lines -%}
+        {%- assign item = line | strip | remove_first: '•' | remove_first: '-' | remove_first: '*' | strip -%}
+        {%- if item != blank %}{{ item }}|~|{% endif -%}
+      {%- endfor -%}
+    {%- endcapture -%}
+
+    {%- liquid
+      assign items = pane_items_clean | strip | split: '|~|'
+      assign item_count = items.size
+
+      # The design splits the list down the middle, shorter column first (9 items -> 4 + 5).
+      assign first_column = item_count
+      if s.desktop_columns == '2' and item_count > 2
+        assign first_column = item_count | divided_by: 2
+      endif
+    -%}
+
+    {%- if item_count > 0 or image_desktop != blank -%}
+      <div
+        class="ss-kit-includes__pane"
+        data-kit-pane="{{ pane }}"
+        {% unless active_kit == pane %}hidden{% endunless %}
+      >
+        <div class="ss-kit-includes__card">
+          {%- if image_desktop != blank -%}
+            <div class="ss-kit-includes__media">
+              <picture>
+                {%- if image_mobile != blank -%}
+                  <source
+                    media="(max-width: 749px)"
+                    srcset="
+                      {{ image_mobile | image_url: width: 300 }} 300w,
+                      {{ image_mobile | image_url: width: 500 }} 500w,
+                      {{ image_mobile | image_url: width: 700 }} 700w
+                    "
+                    sizes="42vw"
+                  >
+                {%- endif -%}
+                <img
+                  src="{{ image_desktop | image_url: width: 520 }}"
+                  srcset="
+                    {{ image_desktop | image_url: width: 260 }} 260w,
+                    {{ image_desktop | image_url: width: 520 }} 520w,
+                    {{ image_desktop | image_url: width: 780 }} 780w
+                  "
+                  sizes="(max-width: 749px) 42vw, 250px"
+                  width="{{ image_desktop.width }}"
+                  height="{{ image_desktop.height }}"
+                  alt="{{ image_desktop.alt | default: pane_heading | escape }}"
+                  loading="lazy"
+                  class="ss-kit-includes__img"
+                >
+              </picture>
+            </div>
+          {%- elsif request.design_mode -%}
+            <div class="ss-kit-includes__media ss-kit-includes__media--placeholder">
+              {{ 'product-1' | placeholder_svg_tag: 'ss-kit-includes__img' }}
+            </div>
+          {%- endif -%}
+
+          <div class="ss-kit-includes__body">
+            {%- if pane_heading != blank -%}
+              <p class="ss-kit-includes__heading">{{ pane_heading }}</p>
+            {%- endif -%}
+
+            {%- if pane_subheading != blank -%}
+              <p class="ss-kit-includes__subheading">{{ pane_subheading }}</p>
+            {%- endif -%}
+
+            {%- if item_count > 0 -%}
+              <div
+                class="ss-kit-includes__columns"
+                {% if s.desktop_columns == '1' %}data-single-column{% endif %}
+              >
+                <ul class="ss-kit-includes__list">
+                  {%- for item in items limit: first_column -%}
+                    <li class="ss-kit-includes__item">
+                      {%- render 'ss-kit-includes-tick' -%}
+                      <span class="ss-kit-includes__item-text">{{ item }}</span>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+
+                {%- if first_column < item_count -%}
+                  <ul class="ss-kit-includes__list">
+                    {%- for item in items offset: first_column -%}
+                      <li class="ss-kit-includes__item">
+                        {%- render 'ss-kit-includes-tick' -%}
+                        <span class="ss-kit-includes__item-text">{{ item }}</span>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+    {%- endif -%}
+  {%- endfor -%}
+</div>
+
+<script>
+  (function () {
+    // One delegated listener serves the page no matter how many blocks are present.
+    if (window.__ssKitIncludesBound) return;
+    window.__ssKitIncludesBound = true;
+
+    var KIT_RE = /pocket|signat/i;
+
+    function paneFor(value) {
+      return /pocket/i.test(value) ? 'pocket' : 'signature';
+    }
+
+    function apply(kit) {
+      document.querySelectorAll('[data-ss-kit-includes]').forEach(function (root) {
+        var panes = root.querySelectorAll('[data-kit-pane]');
+        var wanted = kit;
+
+        // A kit with neither items nor an image is not rendered — fall back rather than
+        // hiding the card entirely.
+        var exists = false;
+        panes.forEach(function (pane) {
+          if (pane.getAttribute('data-kit-pane') === wanted) exists = true;
+        });
+        if (!exists) wanted = root.getAttribute('data-default-pane') || 'signature';
+
+        panes.forEach(function (pane) {
+          pane.hidden = pane.getAttribute('data-kit-pane') !== wanted;
+        });
+      });
+    }
+
+    // Fires the moment the shopper clicks, before the theme's section fetch returns.
+    document.addEventListener('change', function (event) {
+      var el = event.target;
+      if (!el || !el.closest) return;
+
+      // Only the product page's own picker — not a quick-add dialog or a card.
+      if (!el.closest('variant-picker')) return;
+      if (el.closest('product-card') || el.closest('quick-add-modal') || el.closest('quick-add-dialog')) {
+        return;
+      }
+
+      var value = el.value || '';
+      // Ignore options that are not the kit (size, colour, …).
+      if (!KIT_RE.test(value)) return;
+
+      apply(paneFor(value));
+    });
+
+    // Covers every other path into a variant change — a dropdown picker, a combined
+    // listing swap, or another script selecting a variant programmatically.
+    document.addEventListener('variant:update', function (event) {
+      var variant = event.detail && event.detail.resource;
+      if (!variant) return;
+
+      var value = variant.title || '';
+      if (variant.options && variant.options.join) value += ' ' + variant.options.join(' ');
+      if (!KIT_RE.test(value)) return;
+
+      apply(paneFor(value));
+    });
+  })();
+</script>
+
+{% stylesheet %}
+  /* The card sits in the product details column, whose width varies with the page
+     layout — sizing off the block's own width keeps the two-column list from appearing
+     before there is room for it. */
+  .ss-kit-includes {
+    container-type: inline-size;
+    /* `container-type` also turns on inline-size containment, which makes the element
+       measure as if it were empty — without an explicit width it collapses inside the
+       details column's `align-items: flex-start` flex layout. */
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .ss-kit-includes__pane[hidden] {
+    display: none !important;
+  }
+
+  .ss-kit-includes__card {
+    /* Phone-first values; the container query below swaps in the wide ones. */
+    --ki-pad: 14px;
+    --ki-gap: 14px;
+    --ki-media-w: 42%;
+    --ki-heading-size: 15px;
+    --ki-sub-size: 12px;
+    --ki-item-size: 13px;
+    --ki-tick-size: 16px;
+    --ki-row-gap: 8px;
+    --ki-col-gap: 0px;
+    --ki-cols: 1;
+
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ki-gap);
+    padding: var(--ki-pad);
+    border-radius: var(--ki-card-radius);
+    background: var(--ki-card-bg);
+  }
+
+  .ss-kit-includes__media {
+    flex: 0 0 auto;
+    width: var(--ki-media-w);
+    min-width: 0;
+  }
+
+  .ss-kit-includes__media picture {
+    display: block;
+  }
+
+  .ss-kit-includes__img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: var(--ki-media-ratio);
+    object-fit: var(--ki-media-fit);
+    border-radius: var(--ki-media-radius);
+  }
+
+  .ss-kit-includes__media--placeholder .ss-kit-includes__img {
+    background: #fff;
+  }
+
+  .ss-kit-includes__body {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .ss-kit-includes__heading {
+    margin: 0;
+    font-size: var(--ki-heading-size);
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    color: var(--ki-heading);
+  }
+
+  .ss-kit-includes__subheading {
+    margin: 3px 0 0;
+    font-size: var(--ki-sub-size);
+    font-weight: 400;
+    line-height: 1.35;
+    color: var(--ki-muted);
+  }
+
+  /* Two lists rather than one `columns: 2` list so the split stays predictable
+     (9 items read 4 + 5, as in the design) and so they stack in reading order on
+     phones. */
+  .ss-kit-includes__columns {
+    display: grid;
+    grid-template-columns: repeat(var(--ki-cols), minmax(0, 1fr));
+    column-gap: var(--ki-col-gap);
+    row-gap: var(--ki-row-gap);
+    margin-top: 11px;
+  }
+
+  .ss-kit-includes__columns[data-single-column] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ss-kit-includes__list {
+    display: grid;
+    row-gap: var(--ki-row-gap);
+    align-content: start;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ss-kit-includes__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 0;
+    font-size: var(--ki-item-size);
+    font-weight: 500;
+    line-height: 1.3;
+    color: var(--ki-text);
+  }
+
+  .ss-kit-includes__tick {
+    flex: 0 0 auto;
+    width: var(--ki-tick-size);
+    height: var(--ki-tick-size);
+    /* Optically centre the tick on the first line of a wrapping item. */
+    margin-top: calc((1.3em - var(--ki-tick-size)) / 2);
+    color: var(--ki-accent);
+  }
+
+  .ss-kit-includes__item-text {
+    min-width: 0;
+  }
+
+  /* The product details column is ~490px on desktop (the page is capped at 90rem and
+     the column is a third of it), and 375-400px on tablets — so two lists get their own
+     tier at 430px rather than sharing the wide one. */
+  @container (min-width: 430px) {
+    .ss-kit-includes__card {
+      --ki-pad: 16px;
+      --ki-gap: 16px;
+      --ki-media-w: clamp(140px, 32%, 180px);
+      --ki-heading-size: 15.5px;
+      --ki-sub-size: 12.5px;
+      --ki-item-size: 13px;
+      --ki-tick-size: 16px;
+      --ki-row-gap: 10px;
+      --ki-col-gap: 16px;
+      --ki-cols: 2;
+    }
+  }
+
+  /* Roomier columns — a full-width template, or a wider details column. */
+  @container (min-width: 600px) {
+    .ss-kit-includes__card {
+      --ki-pad: 20px;
+      --ki-gap: 22px;
+      --ki-media-w: clamp(190px, 37%, 250px);
+      --ki-heading-size: 16px;
+      --ki-sub-size: 13px;
+      --ki-item-size: 13.5px;
+      --ki-tick-size: 18px;
+      --ki-row-gap: 11px;
+      --ki-col-gap: 24px;
+    }
+  }
+
+  /* Safari 15 and older have no container queries — fall back to the viewport, at the
+     width where the details column stops being a narrow sidebar. */
+  @supports not (container-type: inline-size) {
+    @media screen and (min-width: 1200px) {
+      .ss-kit-includes__card {
+        --ki-pad: 16px;
+        --ki-gap: 16px;
+        --ki-media-w: clamp(140px, 32%, 180px);
+        --ki-heading-size: 15.5px;
+        --ki-sub-size: 12.5px;
+        --ki-item-size: 13px;
+        --ki-tick-size: 16px;
+        --ki-row-gap: 10px;
+        --ki-col-gap: 16px;
+        --ki-cols: 2;
+      }
+    }
+  }
+
+  /* Very narrow phones: the image would squeeze the list into two words a line. */
+  @media screen and (max-width: 359px) {
+    .ss-kit-includes__card {
+      --ki-media-w: 38%;
+      --ki-gap: 10px;
+      --ki-item-size: 12.5px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Kit includes card",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Shows the contents of the selected kit with its own image. Signature Edit is shown until a kit is chosen."
+    },
+    {
+      "type": "header",
+      "content": "Signature Edit"
+    },
+    {
+      "type": "text",
+      "id": "signature_heading",
+      "label": "Heading",
+      "default": "Signature Edit Includes"
+    },
+    {
+      "type": "text",
+      "id": "signature_subheading",
+      "label": "Subheading",
+      "default": "Everything you need for a perfect application"
+    },
+    {
+      "type": "textarea",
+      "id": "signature_items",
+      "label": "Contents",
+      "info": "One item per line.",
+      "default": "24 Nails\nCuticle Stick\nFiler\nAlcohol Pad\nAdhesive Tab\nBrush On Glue\n4 Ways Buffer\nCuticle Oil\nInstruction Manual"
+    },
+    {
+      "type": "image_picker",
+      "id": "signature_image",
+      "label": "Image — desktop",
+      "info": "Optional. Falls back to the image on the Signature Edit variant."
+    },
+    {
+      "type": "image_picker",
+      "id": "signature_image_mobile",
+      "label": "Image — mobile",
+      "info": "Optional. Falls back to the desktop image."
+    },
+    {
+      "type": "header",
+      "content": "Pocket Edit"
+    },
+    {
+      "type": "text",
+      "id": "pocket_heading",
+      "label": "Heading",
+      "default": "Pocket Edit Includes"
+    },
+    {
+      "type": "text",
+      "id": "pocket_subheading",
+      "label": "Subheading",
+      "default": "The essentials, ready whenever you are"
+    },
+    {
+      "type": "textarea",
+      "id": "pocket_items",
+      "label": "Contents",
+      "info": "One item per line.",
+      "default": "24 Nails\nCuticle Stick\nFiler\nAlcohol Pad\nAdhesive Tab\nLiquid Glue"
+    },
+    {
+      "type": "image_picker",
+      "id": "pocket_image",
+      "label": "Image — desktop",
+      "info": "Optional. Falls back to the image on the Pocket Edit variant."
+    },
+    {
+      "type": "image_picker",
+      "id": "pocket_image_mobile",
+      "label": "Image — mobile",
+      "info": "Optional. Falls back to the desktop image."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "desktop_columns",
+      "label": "Contents columns on desktop",
+      "options": [
+        { "value": "2", "label": "Two" },
+        { "value": "1", "label": "One" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image shape",
+      "options": [
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "landscape", "label": "Landscape (4:3)" },
+        { "value": "portrait", "label": "Portrait (4:5)" },
+        { "value": "natural", "label": "Original" }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Image fit",
+      "options": [
+        { "value": "cover", "label": "Fill (crops)" },
+        { "value": "contain", "label": "Fit (no crop)" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "range",
+      "id": "corner_radius",
+      "label": "Card corner radius",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "image_corner_radius",
+      "label": "Image corner radius",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Card background",
+      "default": "#fdeef4"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Tick",
+      "default": "#e8537f"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading",
+      "default": "#8b8b8b"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Contents",
+      "default": "#2f2f2f"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    }
+  ],
+  "presets": [
+    {
+      "name": "Kit includes card"
+    }
+  ]
+}
+{% endschema %}
