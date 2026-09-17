@@ -238,58 +238,6 @@
               },
               "blocks": {}
             },
-            "buy_buttons": {
-              "type": "buy-buttons",
-              "settings": {
-                "stacking": true,
-                "show_pickup_availability": false,
-                "gift_card_form": true,
-                "padding-block-start": 4,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {
-                "quantity": {
-                  "type": "quantity",
-                  "static": true,
-                  "settings": {},
-                  "blocks": {}
-                },
-                "add-to-cart": {
-                  "type": "add-to-cart",
-                  "static": true,
-                  "settings": {
-                    "style_class": "button"
-                  },
-                  "blocks": {}
-                },
-                "accelerated-checkout": {
-                  "type": "accelerated-checkout",
-                  "static": true,
-                  "settings": {},
-                  "blocks": {}
-                }
-              },
-              "block_order": []
-            },
-            "ai_gen_block_55b9b59_ztJGEb": {
-              "type": "ai_gen_block_55b9b59",
-              "settings": {
-                "banner_image": "shopify://shop_images/promo.avif",
-                "banner_link": "",
-                "desktop_width_percent": 100,
-                "banner_height": 40,
-                "banner_height_mobile": 60,
-                "spacing_top": 20,
-                "spacing_bottom": 20,
-                "border_radius": 12,
-                "enable_shadow": true,
-                "enable_hover_effect": true,
-                "enable_hover_zoom": false
-              },
-              "blocks": {}
-            },
             "accordion_group": {
               "type": "accordion",
               "settings": {
@@ -379,6 +327,58 @@
                 "accordion_ingredients",
                 "accordion_howtouse"
               ]
+            },
+            "buy_buttons": {
+              "type": "buy-buttons",
+              "settings": {
+                "stacking": true,
+                "show_pickup_availability": false,
+                "gift_card_form": true,
+                "padding-block-start": 4,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {
+                "quantity": {
+                  "type": "quantity",
+                  "static": true,
+                  "settings": {},
+                  "blocks": {}
+                },
+                "add-to-cart": {
+                  "type": "add-to-cart",
+                  "static": true,
+                  "settings": {
+                    "style_class": "button"
+                  },
+                  "blocks": {}
+                },
+                "accelerated-checkout": {
+                  "type": "accelerated-checkout",
+                  "static": true,
+                  "settings": {},
+                  "blocks": {}
+                }
+              },
+              "block_order": []
+            },
+            "ai_gen_block_55b9b59_ztJGEb": {
+              "type": "ai_gen_block_55b9b59",
+              "settings": {
+                "banner_image": "shopify://shop_images/promo.avif",
+                "banner_link": "",
+                "desktop_width_percent": 100,
+                "banner_height": 40,
+                "banner_height_mobile": 60,
+                "spacing_top": 20,
+                "spacing_bottom": 20,
+                "border_radius": 12,
+                "enable_shadow": true,
+                "enable_hover_effect": true,
+                "enable_hover_zoom": false
+              },
+              "blocks": {}
             },
             "ai_gen_block_04bb985_hJqUXz": {
               "type": "ai_gen_block_04bb985",
@@ -519,9 +519,9 @@
             "divider_1",
             "description_block",
             "variant_picker",
+            "accordion_group",
             "buy_buttons",
             "ai_gen_block_55b9b59_ztJGEb",
-            "accordion_group",
             "ai_gen_block_04bb985_hJqUXz",
             "ai_gen_block_1bd7ab3_gUwT6P",
             "complementary_products"
