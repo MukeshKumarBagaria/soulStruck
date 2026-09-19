@@ -238,6 +238,34 @@
               },
               "blocks": {}
             },
+            "kit_includes": {
+              "type": "ss-kit-includes",
+              "settings": {
+                "signature_heading": "Signature Edit Includes",
+                "signature_subheading": "Everything you need for a perfect application",
+                "signature_items": "24 Nails\nCuticle Stick\nFiler\nAlcohol Pad\nAdhesive Tab\nBrush On Glue\n4 Ways Buffer\nCuticle Oil\nInstruction Manual",
+                "signature_image": "shopify://shop_images/Desktop-soul_struck_signature_edit_kit.webp",
+                "signature_image_mobile": "shopify://shop_images/Mobile-signature_edit_kit_Soul_Struck.webp",
+                "pocket_heading": "Pocket Edit Includes",
+                "pocket_subheading": "The essentials, ready whenever you are",
+                "pocket_items": "24 Nails\nCuticle Stick\nFiler\nAlcohol Pad\nAdhesive Tab\nLiquid Glue",
+                "pocket_image": "shopify://shop_images/Desktop-Soul_struck_pocket_edit_edit.webp",
+                "pocket_image_mobile": "shopify://shop_images/Mobile-Pocket_Edit_kit_Soul_Struck.webp",
+                "desktop_columns": "2",
+                "image_ratio": "square",
+                "image_fit": "cover",
+                "corner_radius": 16,
+                "image_corner_radius": 12,
+                "card_background": "#fdeef4",
+                "accent_color": "#e8537f",
+                "heading_color": "#1a1a1a",
+                "subheading_color": "#8b8b8b",
+                "text_color": "#2f2f2f",
+                "padding-block-start": 12,
+                "padding-block-end": 8
+              },
+              "blocks": {}
+            },
             "accordion_group": {
               "type": "accordion",
               "settings": {
@@ -481,30 +509,6 @@
               "block_order": [
                 "reco_header"
               ]
-            },
-            "kit_includes": {
-              "type": "ss-kit-includes",
-              "settings": {
-                "signature_heading": "Signature Edit Includes",
-                "signature_subheading": "Everything you need for a perfect application",
-                "signature_items": "24 Nails\nCuticle Stick\nFiler\nAlcohol Pad\nAdhesive Tab\nBrush On Glue\n4 Ways Buffer\nCuticle Oil\nInstruction Manual",
-                "pocket_heading": "Pocket Edit Includes",
-                "pocket_subheading": "The essentials, ready whenever you are",
-                "pocket_items": "24 Nails\nCuticle Stick\nFiler\nAlcohol Pad\nAdhesive Tab\nLiquid Glue",
-                "desktop_columns": "2",
-                "image_ratio": "square",
-                "image_fit": "cover",
-                "corner_radius": 16,
-                "image_corner_radius": 12,
-                "card_background": "#fdeef4",
-                "accent_color": "#e8537f",
-                "heading_color": "#1a1a1a",
-                "subheading_color": "#8b8b8b",
-                "text_color": "#2f2f2f",
-                "padding-block-start": 12,
-                "padding-block-end": 8
-              },
-              "blocks": {}
             }
           },
           "block_order": [
