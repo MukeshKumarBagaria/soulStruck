@@ -1147,7 +1147,7 @@
           "type": "text",
           "name": "t:names.heading",
           "settings": {
-            "text": "<h2>From Our Instagram</h2>",
+            "text": "<h3>From Our Instagram</h3>",
             "width": "fit-content",
             "max_width": "normal",
             "alignment": "left",
