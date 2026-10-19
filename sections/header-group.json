@@ -212,11 +212,33 @@
         "drawer_bg": "#ffffff",
         "drawer_link_color": "#1a1a1a"
       }
+    },
+    "ss_trust_marquee_T7kQ2m": {
+      "type": "ss-trust-marquee",
+      "blocks": {
+        "item_truck": { "type": "item", "settings": { "icon": "truck", "label": "ships in 24-48 hours", "link": "" } },
+        "item_heart": { "type": "item", "settings": { "icon": "heart", "label": "20,000+ girlies", "link": "" } },
+        "item_pin": { "type": "item", "settings": { "icon": "pin", "label": "delivery across india", "link": "" } },
+        "item_lightning": { "type": "item", "settings": { "icon": "lightning", "label": "fast checkout", "link": "" } },
+        "item_chat": { "type": "item", "settings": { "icon": "chat", "label": "24 / 7 support", "link": "" } },
+        "item_check": { "type": "item", "settings": { "icon": "check", "label": "safe payments", "link": "" } }
+      },
+      "block_order": [
+        "item_truck",
+        "item_heart",
+        "item_pin",
+        "item_lightning",
+        "item_chat",
+        "item_check"
+      ],
+      "name": "Trust marquee",
+      "settings": {}
     }
   },
   "order": [
     "soulstruck_announcement_bar_qDXRDm",
     "header_section",
-    "soulstruck_custom_header_RGh7Qz"
+    "soulstruck_custom_header_RGh7Qz",
+    "ss_trust_marquee_T7kQ2m"
   ]
 }
