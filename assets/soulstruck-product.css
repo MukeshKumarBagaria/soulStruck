@@ -857,15 +857,9 @@ slideshow-controls[pagination-position="center"] .slideshow-controls__thumbnail[
 }
 
 /* ============================================
-   16. STICKY ADD TO CART ENHANCEMENTS
+   16. STICKY ADD TO CART
+   Styled with the bar in sections/product-information.liquid.
    ============================================ */
-.sticky-add-to-cart__bar {
-  border-radius: var(--ss-radius-lg) !important;
-}
-
-.sticky-add-to-cart__button.button {
-  border-radius: var(--ss-radius-md) !important;
-}
 
 /* ============================================
    17. DIVIDER POLISH

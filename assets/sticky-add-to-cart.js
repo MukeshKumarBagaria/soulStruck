@@ -1,7 +1,6 @@
 import { Component } from '@theme/component';
 import { ThemeEvents, QuantitySelectorUpdateEvent } from '@theme/events';
 import { morph } from '@theme/morph';
-import { onAnimationEnd } from '@theme/utilities';
 
 /**
  * @typedef {Object} ProductVariant
@@ -9,33 +8,21 @@ import { onAnimationEnd } from '@theme/utilities';
  * @property {string} [title] - Variant title
  * @property {string} [name] - Variant name
  * @property {boolean} [available] - Whether variant is available
- * @property {Object} [featured_media] - Featured media object
- * @property {Object} [featured_media.preview_image] - Preview image data
- * @property {string} [featured_media.preview_image.src] - Image source URL
- * @property {string} [featured_media.alt] - Alt text for the image
- */
-
-/**
- * @typedef {HTMLElement & {
- *   source: Element,
- *   destination: Element,
- *   useSourceSize: string | boolean
- * }} FlyToCart
  */
 
 /**
  * @typedef {Object} StickyAddToCartRefs
- * @property {HTMLElement} stickyBar - The floating bar container
- * @property {HTMLButtonElement} addToCartButton - Sticky bar's button
+ * @property {HTMLElement} stickyBar - The bar container
+ * @property {HTMLButtonElement} addToCartButton - Sticky bar's add to cart button
  * @property {HTMLButtonElement} [buyNowButton] - Sticky bar's buy now button (optional)
  * @property {HTMLElement} quantityDisplay - Quantity display container
  * @property {HTMLElement} quantityNumber - Quantity number element
- * @property {HTMLImageElement} productImage - Product image element
  */
 
 /**
- * A custom element that manages a sticky add-to-cart bar.
- * Shows when the main buy buttons scroll out of view.
+ * SoulStruck: a buy bar that stays on screen for the whole product page, holding
+ * just Add to cart and Buy now. Each button clicks its twin in the buy block, so
+ * the kit gate, Shiprocket and the add-to-cart popup behave exactly as they do there.
  *
  * @extends {Component<StickyAddToCartRefs>}
  */
@@ -55,20 +42,11 @@ class StickyAddToCartComponent extends Component {
     '.shopify-payment-button__button',
   ].join(', ');
 
-  /** @type {IntersectionObserver | null} */
-  #buyButtonsIntersectionObserver = null;
+  /** How long a Buy now tap waits for the checkout app's button to turn up. */
+  static buyNowWaitMs = 4000;
 
-  /** @type {IntersectionObserver | null} */
-  #mainBottomObserver = null;
-
-  /** @type {number | undefined} */
-  #resetTimeout;
-
-  /** @type {boolean} */
-  #isStuck = false;
-
-  /** @type {number | null} */
-  #animationTimeout = null;
+  /** After page load, how long to wait for that button before hiding the sticky copy. */
+  static buyNowGiveUpMs = 6000;
 
   /** @type {AbortController} */
   #abortController = new AbortController();
@@ -78,7 +56,7 @@ class StickyAddToCartComponent extends Component {
 
   /**
    * The page's own buy now button, which the sticky one clicks. Rendered by the
-   * checkout app (or Shopify's dynamic checkout), so it may not exist at all.
+   * checkout app (or Shopify's dynamic checkout), so it may arrive late or not at all.
    * @type {HTMLElement | null}
    */
   #targetBuyNowButton = null;
@@ -86,16 +64,29 @@ class StickyAddToCartComponent extends Component {
   /** @type {MutationObserver | null} */
   #buyNowObserver = null;
 
+  /** @type {Array<(button: HTMLElement | null) => void>} */
+  #buyNowWaiters = [];
+
+  /** @type {number | undefined} */
+  #buyNowGiveUpTimer;
+
+  /** @type {ResizeObserver | null} */
+  #resizeObserver = null;
+
   /** @type {number} */
   #currentQuantity = 1;
-
-  /** @type {boolean} */
-  #hiddenByBottom = false;
 
   connectedCallback() {
     super.connectedCallback();
 
-    this.#setupIntersectionObserver();
+    const productForm = this.#getProductForm();
+    if (productForm) {
+      this.#targetAddToCartButton = productForm.querySelector('[ref="addToCartButton"]');
+    }
+
+    // Always on screen, from the top of the page to the bottom.
+    this.refs.stickyBar.dataset.stuck = 'true';
+    this.#reserveSpace();
 
     const { signal } = this.#abortController;
     const target = this.closest('.shopify-section');
@@ -112,129 +103,66 @@ class StickyAddToCartComponent extends Component {
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    this.#buyButtonsIntersectionObserver?.disconnect();
-    this.#mainBottomObserver?.disconnect();
     this.#buyNowObserver?.disconnect();
+    this.#resizeObserver?.disconnect();
     this.#abortController.abort();
-    if (this.#animationTimeout) {
-      clearTimeout(this.#animationTimeout);
-    }
+    window.clearTimeout(this.#buyNowGiveUpTimer);
+    this.#settleBuyNowWaiters(null);
+    document.documentElement.style.removeProperty('--sticky-add-to-cart-space');
   }
 
   /**
-   * Sets up the IntersectionObserver to watch the buy buttons visibility
+   * The bar covers the bottom of the viewport, so give the page that much extra room
+   * at the end (see `body { padding-bottom }` in the section stylesheet).
    */
-  #setupIntersectionObserver() {
-    const productForm = this.#getProductForm();
-    if (!productForm) return;
+  #reserveSpace() {
+    const { stickyBar } = this.refs;
+    const update = () => {
+      const offset = parseFloat(getComputedStyle(stickyBar).bottom) || 0;
+      const space = Math.ceil(stickyBar.offsetHeight + offset);
+      document.documentElement.style.setProperty('--sticky-add-to-cart-space', `${space}px`);
+    };
 
-    const buyButtonsBlock = productForm.closest('.buy-buttons-block');
-    if (!buyButtonsBlock) return;
-
-    // In themes migrated from 2.0, the footer element doesn't exist
-    const footer = document.querySelector('footer') ?? document.querySelector('[class*="footer-group"]');
-    if (!footer) return;
-
-    // Observer for buy buttons visibility
-    this.#buyButtonsIntersectionObserver = new IntersectionObserver((entries) => {
-      const [entry] = entries;
-      if (!entry) return;
-
-      // Only show sticky bar if buy buttons have been scrolled past (above viewport)
-      if (!entry.isIntersecting && !this.#isStuck) {
-        // Check if the element is above the viewport (scrolled past) or below (not yet reached)
-        const rect = entry.target.getBoundingClientRect();
-        if (rect.bottom < 0 || rect.top < 0) {
-          // Element is above viewport - show sticky bar
-          this.#showStickyBar();
-        }
-        // If rect.top >= 0, element is below viewport - don't show sticky bar yet
-      } else if (entry.isIntersecting && this.#isStuck) {
-        this.#hiddenByBottom = false;
-        this.#hideStickyBar();
-      }
-    });
-
-    // Observer for footer visibility - hides sticky bar at page bottom
-    this.#mainBottomObserver = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        if (!entry) return;
-
-        if (entry.isIntersecting && this.#isStuck) {
-          this.#hiddenByBottom = true;
-          this.#hideStickyBar();
-        } else if (!entry.isIntersecting && this.#hiddenByBottom) {
-          // Footer out of view - check if we should show sticky bar again
-          const rect = buyButtonsBlock.getBoundingClientRect();
-          // Only show if buy buttons are above the viewport (scrolled past)
-          if (rect.bottom < 0 || rect.top < 0) {
-            this.#hiddenByBottom = false;
-            this.#showStickyBar();
-          }
-        }
-      },
-      {
-        rootMargin: '200px 0px 0px 0px',
-      }
-    );
-
-    this.#buyButtonsIntersectionObserver.observe(buyButtonsBlock);
-    this.#mainBottomObserver.observe(footer);
-    this.#targetAddToCartButton = productForm.querySelector('[ref="addToCartButton"]');
+    this.#resizeObserver = new ResizeObserver(update);
+    this.#resizeObserver.observe(stickyBar);
+    window.addEventListener('resize', update, { signal: this.#abortController.signal });
+    update();
   }
 
   // Public action handlers
   /**
-   * Handles the add to cart button click in the sticky bar
+   * Handles the add to cart button click in the sticky bar. The add-to-cart popup
+   * confirms the result, so the bar itself doesn't animate.
    */
-  handleAddToCartClick = async () => {
+  handleAddToCartClick = () => {
     if (!this.#targetAddToCartButton) return;
     this.#targetAddToCartButton.dataset.puppet = 'true';
     this.#targetAddToCartButton.click();
-    const cartIcon = document.querySelector('.header-actions__cart-icon');
-
-    if (this.refs.addToCartButton.dataset.added !== 'true') {
-      this.refs.addToCartButton.dataset.added = 'true';
-    }
-
-    if (!cartIcon || !this.refs.addToCartButton || !this.refs.productImage) return;
-    if (this.#resetTimeout) clearTimeout(this.#resetTimeout);
-
-    const flyToCartElement = /** @type {FlyToCart} */ (document.createElement('fly-to-cart'));
-    const sourceStyles = getComputedStyle(this.refs.productImage);
-
-    flyToCartElement.classList.add('fly-to-cart--sticky');
-    flyToCartElement.style.setProperty('background-image', `url(${this.refs.productImage.src})`);
-    flyToCartElement.useSourceSize = 'true';
-    flyToCartElement.source = this.refs.productImage;
-    flyToCartElement.destination = cartIcon;
-
-    document.body.appendChild(flyToCartElement);
-
-    await onAnimationEnd([this.refs.addToCartButton, flyToCartElement]);
-    this.#resetTimeout = setTimeout(() => {
-      this.refs.addToCartButton.removeAttribute('data-added');
-    }, 800);
   };
 
   /**
    * Handles the buy now button click in the sticky bar by clicking the page's own buy
    * now button, so the checkout app keeps ownership of the flow (variant, quantity,
-   * discounts and analytics all come from the form it already reads).
+   * discounts and analytics all come from the form it already reads). A tap that
+   * lands before the checkout app has rendered its button waits for it.
    */
-  handleBuyNowClick = () => {
-    this.#resolveBuyNowButton();
+  handleBuyNowClick = async () => {
+    const { buyNowButton } = this.refs;
+    let target = this.#resolveBuyNowButton();
 
-    const target = this.#targetBuyNowButton;
+    if (!target && buyNowButton) {
+      buyNowButton.setAttribute('aria-busy', 'true');
+      target = await this.#waitForBuyNowButton(StickyAddToCartComponent.buyNowWaitMs);
+      buyNowButton.removeAttribute('aria-busy');
+    }
+
     if (!target) return;
-
     target.dataset.puppet = 'true';
     target.click();
   };
 
   /**
-   * Finds the page's buy now button and shows or hides the sticky copy to match.
+   * Finds the page's buy now button and brings the sticky copy in line with it.
    * @returns {HTMLElement | null}
    */
   #resolveBuyNowButton() {
@@ -248,29 +176,92 @@ class StickyAddToCartComponent extends Component {
       scope?.querySelector(StickyAddToCartComponent.buyNowSelector) ?? null
     );
 
-    // A sticky button that leads nowhere is worse than no button at all.
-    buyNowButton.hidden = !this.#targetBuyNowButton;
+    if (this.#targetBuyNowButton) {
+      buyNowButton.hidden = false;
+      this.#copyPaymentIcons(this.#targetBuyNowButton);
+      this.#settleBuyNowWaiters(this.#targetBuyNowButton);
+    }
 
     return this.#targetBuyNowButton;
   }
 
   /**
+   * Shows the same payment icons as the checkout app's button (Shiprocket's UPI badges).
+   * @param {HTMLElement} source
+   */
+  #copyPaymentIcons(source) {
+    const { buyNowButton } = this.refs;
+    if (!buyNowButton || buyNowButton.querySelector('.sticky-add-to-cart__pay')) return;
+
+    const icons = source.querySelector('img.sr-payment-icons');
+    const src = icons?.getAttribute('src');
+    if (!src) return;
+
+    const img = document.createElement('img');
+    img.className = 'sticky-add-to-cart__pay';
+    img.src = src;
+    img.alt = '';
+    img.setAttribute('aria-hidden', 'true');
+    buyNowButton.appendChild(img);
+  }
+
+  /**
+   * @param {number} timeout
+   * @returns {Promise<HTMLElement | null>}
+   */
+  #waitForBuyNowButton(timeout) {
+    return new Promise((resolve) => {
+      const timer = window.setTimeout(() => {
+        this.#buyNowWaiters = this.#buyNowWaiters.filter((waiter) => waiter !== done);
+        resolve(null);
+      }, timeout);
+      /** @param {HTMLElement | null} button */
+      const done = (button) => {
+        window.clearTimeout(timer);
+        resolve(button);
+      };
+      this.#buyNowWaiters.push(done);
+    });
+  }
+
+  /** @param {HTMLElement | null} button */
+  #settleBuyNowWaiters(button) {
+    const waiters = this.#buyNowWaiters;
+    this.#buyNowWaiters = [];
+    waiters.forEach((done) => done(button));
+  }
+
+  /**
    * Checkout apps inject their button after the page has rendered, so keep looking
-   * until it turns up rather than deciding once and hiding the button for good.
+   * until it turns up. If it never does, hide the sticky copy: a button that leads
+   * nowhere is worse than no button at all.
    */
   #watchBuyNowButton() {
-    if (!this.refs.buyNowButton) return;
-    if (this.#resolveBuyNowButton()) return;
+    const { buyNowButton } = this.refs;
+    if (!buyNowButton) return;
+
+    // Done once the button is found and its payment icons copied (Shiprocket fills
+    // the button in after inserting it).
+    const settled = () => !!this.#resolveBuyNowButton() && !!buyNowButton.querySelector('.sticky-add-to-cart__pay');
+    if (settled()) return;
 
     const productForm = this.#getProductForm();
     const scope = productForm?.closest('.buy-buttons-block') ?? productForm;
-    if (!scope) return;
+    if (scope) {
+      this.#buyNowObserver = new MutationObserver(() => {
+        if (settled()) this.#buyNowObserver?.disconnect();
+      });
+      this.#buyNowObserver.observe(scope, { childList: true, subtree: true });
+    }
 
-    this.#buyNowObserver = new MutationObserver(() => {
-      if (this.#resolveBuyNowButton()) this.#buyNowObserver?.disconnect();
-    });
-
-    this.#buyNowObserver.observe(scope, { childList: true, subtree: true });
+    const giveUp = () => {
+      this.#buyNowGiveUpTimer = window.setTimeout(() => {
+        this.#buyNowObserver?.disconnect();
+        if (!this.#targetBuyNowButton && this.refs.buyNowButton) this.refs.buyNowButton.hidden = true;
+      }, StickyAddToCartComponent.buyNowGiveUpMs);
+    };
+    if (document.readyState === 'complete') giveUp();
+    else window.addEventListener('load', giveUp, { once: true, signal: this.#abortController.signal });
   }
 
   /**
@@ -289,20 +280,16 @@ class StickyAddToCartComponent extends Component {
     const newStickyBar = newStickyAddToCart.querySelector('[ref="stickyBar"]');
     if (!newStickyBar) return;
 
-    // Store current visibility state before morphing
-    const currentStuck = this.refs.stickyBar.getAttribute('data-stuck') || 'false';
-    const variantAvailable = newStickyAddToCart.dataset.variantAvailable;
-
-    // Morph the entire sticky bar content
+    // Morph the sticky bar content (button labels, sold out state)
     morph(this.refs.stickyBar, newStickyBar, { childrenOnly: true });
 
-    // Restore visibility state after morphing
-    this.refs.stickyBar.setAttribute('data-stuck', currentStuck);
-    this.dataset.variantAvailable = variantAvailable;
+    this.refs.stickyBar.dataset.stuck = 'true';
+    this.dataset.variantAvailable = newStickyAddToCart.dataset.variantAvailable;
 
-    // Update the dataset attributes with new variant info
     if (variant && variant.id) {
       this.dataset.currentVariantId = variant.id;
+    } else {
+      this.dataset.currentVariantId = '';
     }
 
     // Re-cache the target add to cart button after morphing
@@ -311,12 +298,9 @@ class StickyAddToCartComponent extends Component {
       this.#targetAddToCartButton = productForm.querySelector('[ref="addToCartButton"]');
     }
 
-    // The morph brings back a hidden buy now button; show it again if the page has one.
+    // The morph drops the copied payment icons; restore them.
     this.#resolveBuyNowButton();
 
-    if (variant == null) {
-      this.#handleVariantUnavailable();
-    }
     // Restore the current quantity display if needed
     this.#updateButtonText();
   };
@@ -331,24 +315,6 @@ class StickyAddToCartComponent extends Component {
     const variantId = event.detail.resource?.id;
     if (!variantId) return;
     this.dataset.currentVariantId = variantId;
-  };
-
-  /**
-   * Updates the variant title based on selected options when the variant is unavailable
-   */
-  #handleVariantUnavailable = () => {
-    this.dataset.currentVariantId = '';
-    const variantTitleElement = this.querySelector('.sticky-add-to-cart__variant');
-    const productId = this.dataset.productId;
-    const variantPicker = document.querySelector(`variant-picker[data-product-id="${productId}"]`);
-    if (!variantTitleElement || !variantPicker) return;
-
-    const selectedOptions = Array.from(variantPicker.querySelectorAll('input:checked'))
-      .map((option) => /** @type {HTMLInputElement} */ (option).value)
-      .filter((value) => value !== '')
-      .join(' / ');
-    if (!selectedOptions) return;
-    variantTitleElement.textContent = selectedOptions;
   };
 
   /**
@@ -373,24 +339,6 @@ class StickyAddToCartComponent extends Component {
     this.#currentQuantity = event.detail.quantity;
     this.#updateButtonText();
   };
-
-  /**
-   * Shows the sticky bar with animation
-   */
-  #showStickyBar() {
-    const { stickyBar } = this.refs;
-    this.#isStuck = true;
-    stickyBar.dataset.stuck = 'true';
-  }
-
-  /**
-   * Hides the sticky bar with animation
-   */
-  #hideStickyBar() {
-    const { stickyBar } = this.refs;
-    this.#isStuck = false;
-    stickyBar.dataset.stuck = 'false';
-  }
 
   // Helper methods
   /**

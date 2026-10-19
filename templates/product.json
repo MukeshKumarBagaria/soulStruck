@@ -529,7 +529,7 @@
         "limit_details_width": false,
         "gap": 48,
         "enable_sticky_add_to_cart": true,
-        "sticky_show_wishlist": true,
+        "sticky_show_wishlist": false,
         "sticky_show_buy_now": true,
         "sticky_buy_now_label": "Buy now",
         "color_scheme": "",
