@@ -241,8 +241,17 @@
     }
 
     .ai-available-on-grid-{{ ai_gen_id }} {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: {{ block.settings.card_spacing | times: 0.8 }}px;
+      max-width: 100%;
+    }
+
+    /* A lone card on the last row (1, 3 or 5 platforms) spans both columns
+       and sits centered at the same width as the other cards. */
+    .ai-available-on-card-{{ ai_gen_id }}:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+      justify-self: center;
+      width: calc((100% - {{ block.settings.card_spacing | times: 0.8 }}px) / 2);
     }
 
     .ai-available-on-heading-{{ ai_gen_id }} {

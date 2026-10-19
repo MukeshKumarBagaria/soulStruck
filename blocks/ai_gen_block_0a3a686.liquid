@@ -63,8 +63,43 @@
 {% enddoc %}
 {% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
 
+
+{% liquid
+  case block.settings.card_aspect_ratio
+    when '3:4'
+      assign card_ratio = 0.75
+    when '1:1'
+      assign card_ratio = 1.0
+    when '9:16'
+      assign card_ratio = 0.5625
+    else
+      assign card_ratio = 0.8
+  endcase
+
+  assign card_height = block.settings.card_height
+  assign card_height_mobile = block.settings.card_height_mobile
+  assign card_width = card_height | times: card_ratio | round
+  assign card_width_mobile = card_height_mobile | times: card_ratio | round
+
+  case block.settings.animation_speed
+    when 'slow'
+      assign scroll_speed = 60
+    when 'medium'
+      assign scroll_speed = 120
+    when 'fast'
+      assign scroll_speed = 200
+    when 'very_fast'
+      assign scroll_speed = 300
+    else
+      assign scroll_speed = block.settings.scroll_speed
+  endcase
+%}
+
 {% style %}
   .ai-social-proof-slider-{{ ai_gen_id }} {
+    --sps-card-h: {{ card_height }}px;
+    --sps-card-ratio: {{ card_ratio }};
+    --sps-gap: {{ block.settings.card_gap }}px;
     width: 100%;
     overflow: hidden;
     padding: {{ block.settings.section_padding_top }}px 0 {{ block.settings.section_padding_bottom }}px;
@@ -79,13 +114,27 @@
     padding: 0 20px;
     color: {{ block.settings.heading_color }};
     font-size: {{ block.settings.heading_size }}px;
+    line-height: 1.2;
     max-width: 800px;
+    overflow-wrap: break-word;
   }
 
   .ai-social-proof-slider__track-wrapper-{{ ai_gen_id }} {
     position: relative;
     width: 100%;
+    margin: 0 auto;
     overflow: hidden;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: grab;
+    {% if block.settings.enable_hover_effect %}
+      padding: 10px 0;
+    {% endif %}
+  }
+
+  .ai-social-proof-slider__track-wrapper-{{ ai_gen_id }}.is-dragging {
+    cursor: grabbing;
   }
 
   {% if block.settings.show_fade_edges %}
@@ -95,63 +144,48 @@
       position: absolute;
       top: 0;
       bottom: 0;
-      width: {{ block.settings.fade_width }}px;
+      width: min({{ block.settings.fade_width }}px, 12vw);
       z-index: 2;
       pointer-events: none;
     }
 
     .ai-social-proof-slider__track-wrapper-{{ ai_gen_id }}::before {
       left: 0;
-      background: linear-gradient(to right, {{ block.settings.background_color }}, transparent);
+      background: linear-gradient(to right, {{ block.settings.background_color }}, {{ block.settings.background_color | color_modify: 'alpha', 0 }});
     }
 
     .ai-social-proof-slider__track-wrapper-{{ ai_gen_id }}::after {
       right: 0;
-      background: linear-gradient(to left, {{ block.settings.background_color }}, transparent);
+      background: linear-gradient(to left, {{ block.settings.background_color }}, {{ block.settings.background_color | color_modify: 'alpha', 0 }});
     }
   {% endif %}
 
   .ai-social-proof-slider__track-{{ ai_gen_id }} {
+    position: relative;
     display: flex;
-    gap: {{ block.settings.card_gap }}px;
-    width: fit-content;
-    {% if block.settings.enable_autoplay %}
-      {% liquid
-        if block.settings.animation_speed == 'slow'
-          assign duration = 60
-        elsif block.settings.animation_speed == 'medium'
-          assign duration = 40
-        elsif block.settings.animation_speed == 'fast'
-          assign duration = 20
-        else
-          assign duration = block.settings.animation_duration
-        endif
-      %}
-      animation: ai-social-proof-scroll-{{ ai_gen_id }} {{ duration }}s linear infinite;
-    {% endif %}
+    gap: var(--sps-gap);
+    width: max-content;
+    will-change: transform;
   }
 
-  {% if block.settings.pause_on_hover %}
-    .ai-social-proof-slider__track-{{ ai_gen_id }}:hover {
-      animation-play-state: paused;
-    }
-  {% endif %}
-
   .ai-social-proof-slider__card-{{ ai_gen_id }} {
-    flex-shrink: 0;
-    height: {{ block.settings.card_height }}px;
-    width: auto;
+    flex: 0 0 auto;
+    height: var(--sps-card-h);
+    width: calc(var(--sps-card-h) * var(--sps-card-ratio));
     border-radius: {{ block.settings.card_border_radius }}px;
     overflow: hidden;
     position: relative;
+    background-color: #f4f4f4;
     {% if block.settings.enable_hover_effect %}
       transition: transform 0.3s ease;
     {% endif %}
   }
 
   {% if block.settings.enable_hover_effect %}
-    .ai-social-proof-slider__card-{{ ai_gen_id }}:hover {
-      transform: scale(1.05);
+    @media (hover: hover) and (pointer: fine) {
+      .ai-social-proof-slider__card-{{ ai_gen_id }}:hover {
+        transform: scale(1.03);
+      }
     }
   {% endif %}
 
@@ -160,12 +194,12 @@
     height: 100%;
     object-fit: cover;
     display: block;
+    pointer-events: none;
   }
 
   .ai-social-proof-slider__placeholder-{{ ai_gen_id }} {
     width: 100%;
     height: 100%;
-    background-color: #f4f4f4;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -177,42 +211,38 @@
     opacity: 0.3;
   }
 
-  @keyframes ai-social-proof-scroll-{{ ai_gen_id }} {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(calc(-50% - {{ block.settings.card_gap | divided_by: 2.0 }}px));
-    }
-  }
-
   {% if block.settings.show_entrance_animation %}
-    .ai-social-proof-slider-{{ ai_gen_id }} {
-      opacity: 0;
-      transform: translateY(20px);
-      animation: ai-social-proof-entrance-{{ ai_gen_id }} 0.8s ease forwards;
-    }
+    @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+      .ai-social-proof-slider-{{ ai_gen_id }} {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.8s ease, transform 0.8s ease;
+      }
 
-    @keyframes ai-social-proof-entrance-{{ ai_gen_id }} {
-      to {
+      .ai-social-proof-slider-{{ ai_gen_id }}.is-visible {
         opacity: 1;
-        transform: translateY(0);
+        transform: none;
       }
     }
   {% endif %}
 
+  @media screen and (min-width: 750px) {
+    .ai-social-proof-slider__track-wrapper-{{ ai_gen_id }} {
+      width: {{ block.settings.desktop_width_percent }}%;
+    }
+  }
+
   @media screen and (max-width: 749px) {
-    .ai-social-proof-slider__heading-{{ ai_gen_id }} {
-      font-size: {{ block.settings.heading_size | times: 0.7 }}px;
-      margin-bottom: {{ block.settings.heading_margin_bottom | times: 0.7 }}px;
-    }
-
-    .ai-social-proof-slider__card-{{ ai_gen_id }} {
-      height: {{ block.settings.card_height | times: 0.8 }}px;
-    }
-
     .ai-social-proof-slider-{{ ai_gen_id }} {
-      padding: {{ block.settings.section_padding_top | times: 0.7 }}px 0 {{ block.settings.section_padding_bottom | times: 0.7 }}px;
+      --sps-card-h: {{ card_height_mobile }}px;
+      --sps-gap: {{ block.settings.card_gap | times: 0.75 | round }}px;
+      padding: {{ block.settings.section_padding_top | times: 0.7 | round }}px 0 {{ block.settings.section_padding_bottom | times: 0.7 | round }}px;
+    }
+
+    .ai-social-proof-slider__heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.heading_size | times: 0.7 | round }}px;
+      margin-bottom: {{ block.settings.heading_margin_bottom | times: 0.6 | round }}px;
+      padding: 0 16px;
     }
   }
 {% endstyle %}
@@ -222,6 +252,8 @@
   {{ block.shopify_attributes }}
   data-autoplay="{{ block.settings.enable_autoplay }}"
   data-pause-on-hover="{{ block.settings.pause_on_hover }}"
+  data-speed="{{ scroll_speed }}"
+  data-mobile-speed="{{ block.settings.mobile_speed_percent }}"
 >
   {% if block.settings.heading != blank %}
     <h2 class="ai-social-proof-slider__heading-{{ ai_gen_id }}">
@@ -229,81 +261,55 @@
     </h2>
   {% endif %}
 
-  <div class="ai-social-proof-slider__track-wrapper-{{ ai_gen_id }}">
-    <div class="ai-social-proof-slider__track-{{ ai_gen_id }}">
+  <div class="ai-social-proof-slider__track-wrapper-{{ ai_gen_id }}" data-viewport>
+    <div class="ai-social-proof-slider__track-{{ ai_gen_id }}" data-track>
       {% liquid
         assign total_images = 0
         for i in (1..30)
           assign enable_key = 'enable_image_' | append: i
           assign image_key = 'image_' | append: i
-          assign is_enabled = block.settings[enable_key]
-          assign current_image = block.settings[image_key]
-          if is_enabled and current_image != blank
+          if block.settings[enable_key] and block.settings[image_key] != blank
             assign total_images = total_images | plus: 1
           endif
         endfor
       %}
 
       {% if total_images > 0 %}
-        {% for iteration in (1..2) %}
-          {% for i in (1..30) %}
-            {% liquid
-              assign enable_key = 'enable_image_' | append: i
-              assign image_key = 'image_' | append: i
-              assign is_enabled = block.settings[enable_key]
-              assign current_image = block.settings[image_key]
-            %}
-            {% if is_enabled and current_image != blank %}
-              <div class="ai-social-proof-slider__card-{{ ai_gen_id }}">
-                {% liquid
-                  assign aspect_ratio = block.settings.card_aspect_ratio
-                  if aspect_ratio == '4:5'
-                    assign card_width = block.settings.card_height | times: 0.8
-                  elsif aspect_ratio == '3:4'
-                    assign card_width = block.settings.card_height | times: 0.75
-                  elsif aspect_ratio == '1:1'
-                    assign card_width = block.settings.card_height
-                  elsif aspect_ratio == '9:16'
-                    assign card_width = block.settings.card_height | times: 0.5625
-                  endif
-                %}
-                <img
-                  src="{{ current_image | image_url: width: 800 }}"
-                  alt="{{ current_image.alt | escape }}"
-                  class="ai-social-proof-slider__image-{{ ai_gen_id }}"
-                  loading="lazy"
-                  width="{{ card_width }}"
-                  height="{{ block.settings.card_height }}"
-                  style="width: {{ card_width }}px;"
-                >
-              </div>
-            {% endif %}
-          {% endfor %}
+        {% for i in (1..30) %}
+          {% liquid
+            assign enable_key = 'enable_image_' | append: i
+            assign image_key = 'image_' | append: i
+            assign current_image = block.settings[image_key]
+          %}
+          {% if block.settings[enable_key] and current_image != blank %}
+            <div class="ai-social-proof-slider__card-{{ ai_gen_id }}">
+              <img
+                src="{{ current_image | image_url: width: 540 }}"
+                srcset="
+                  {{ current_image | image_url: width: 360 }} 360w,
+                  {{ current_image | image_url: width: 540 }} 540w,
+                  {{ current_image | image_url: width: 720 }} 720w,
+                  {{ current_image | image_url: width: 1080 }} 1080w
+                "
+                sizes="(max-width: 749px) {{ card_width_mobile }}px, {{ card_width }}px"
+                alt="{{ current_image.alt | escape }}"
+                class="ai-social-proof-slider__image-{{ ai_gen_id }}"
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+                width="{{ card_width }}"
+                height="{{ card_height }}"
+              >
+            </div>
+          {% endif %}
         {% endfor %}
       {% else %}
-        {% for iteration in (1..2) %}
-          {% for i in (1..6) %}
-            <div class="ai-social-proof-slider__card-{{ ai_gen_id }}">
-              {% liquid
-                assign aspect_ratio = block.settings.card_aspect_ratio
-                if aspect_ratio == '4:5'
-                  assign card_width = block.settings.card_height | times: 0.8
-                elsif aspect_ratio == '3:4'
-                  assign card_width = block.settings.card_height | times: 0.75
-                elsif aspect_ratio == '1:1'
-                  assign card_width = block.settings.card_height
-                elsif aspect_ratio == '9:16'
-                  assign card_width = block.settings.card_height | times: 0.5625
-                endif
-              %}
-              <div
-                class="ai-social-proof-slider__placeholder-{{ ai_gen_id }}"
-                style="width: {{ card_width }}px;"
-              >
-                {{ 'image' | placeholder_svg_tag }}
-              </div>
+        {% for i in (1..6) %}
+          <div class="ai-social-proof-slider__card-{{ ai_gen_id }}">
+            <div class="ai-social-proof-slider__placeholder-{{ ai_gen_id }}">
+              {{ 'image' | placeholder_svg_tag }}
             </div>
-          {% endfor %}
+          </div>
         {% endfor %}
       {% endif %}
     </div>
@@ -311,42 +317,187 @@
 </social-proof-slider-{{ ai_gen_id }}>
 
 <script>
-  (function() {
-    class SocialProofSlider{{ ai_gen_id }} extends HTMLElement {
-      constructor() {
-        super();
-        this.track = this.querySelector('.ai-social-proof-slider__track-{{ ai_gen_id }}');
-        this.autoplay = this.dataset.autoplay === 'true';
-        this.pauseOnHover = this.dataset.pauseOnHover === 'true';
-        this.touchStartX = 0;
-        this.touchEndX = 0;
-        this.isDragging = false;
-      }
+  (function () {
+    var tagName = 'social-proof-slider-{{ ai_gen_id }}';
+    if (customElements.get(tagName)) return;
 
+    class SocialProofSlider extends HTMLElement {
       connectedCallback() {
-        this.setupTouchEvents();
+        this.viewport = this.querySelector('[data-viewport]');
+        this.track = this.querySelector('[data-track]');
+        if (!this.viewport || !this.track) return;
+
+        this.originals = Array.from(this.track.children);
+        if (!this.originals.length) return;
+
+        this.baseSpeed = parseFloat(this.dataset.speed) || 200;
+        this.mobileFactor = (parseFloat(this.dataset.mobileSpeed) || 100) / 100;
+        this.pauseOnHover = this.dataset.pauseOnHover === 'true';
+        this.mobileQuery = window.matchMedia('(max-width: 749px)');
+        this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+        this.autoplay = this.dataset.autoplay === 'true';
+
+        this.offset = 0;
+        this.loopWidth = 0;
+        this.currentSpeed = 0;
+        this.velocity = 0;
+        this.hovering = false;
+        this.dragging = false;
+        this.inView = false;
+        this.imagesReleased = false;
+        this.lastTime = null;
+        this.tick = this.tick.bind(this);
+
+        this.build();
+        this.bindPointer();
+
+        this.resizeObserver = new ResizeObserver(() => this.build());
+        this.resizeObserver.observe(this.viewport);
+
+        this.intersectionObserver = new IntersectionObserver(
+          (entries) => {
+            this.inView = entries[0].isIntersecting;
+            if (this.inView) {
+              this.classList.add('is-visible');
+              this.releaseImages();
+              this.start();
+            } else {
+              this.stop();
+            }
+          },
+          { rootMargin: '300px 0px' }
+        );
+        this.intersectionObserver.observe(this);
       }
 
-      setupTouchEvents() {
-        if (!this.track) return;
+      disconnectedCallback() {
+        this.stop();
+        if (this.resizeObserver) this.resizeObserver.disconnect();
+        if (this.intersectionObserver) this.intersectionObserver.disconnect();
+      }
 
-        this.track.addEventListener('touchstart', (e) => {
-          this.touchStartX = e.changedTouches[0].screenX;
-          this.isDragging = true;
-        }, { passive: true });
+      // Clone the image set until the track is always wider than the screen,
+      // so the loop never shows a gap — no matter how few images are enabled.
+      build() {
+        this.track.querySelectorAll('[data-clone]').forEach((node) => node.remove());
+        this.appendCloneSet();
 
-        this.track.addEventListener('touchmove', (e) => {
-          if (!this.isDragging) return;
-          this.touchEndX = e.changedTouches[0].screenX;
-        }, { passive: true });
+        var firstClone = this.track.querySelector('[data-clone]');
+        this.loopWidth = firstClone.offsetLeft - this.originals[0].offsetLeft;
+        if (this.loopWidth <= 0) return;
 
-        this.track.addEventListener('touchend', () => {
-          this.isDragging = false;
-        }, { passive: true });
+        var setsNeeded = Math.ceil(this.viewport.offsetWidth / this.loopWidth) + 1;
+        for (var sets = 2; sets < setsNeeded; sets++) this.appendCloneSet();
+
+        if (this.imagesReleased) this.releaseImages();
+        this.render();
+      }
+
+      appendCloneSet() {
+        this.originals.forEach((node) => {
+          var clone = node.cloneNode(true);
+          clone.setAttribute('data-clone', '');
+          clone.setAttribute('aria-hidden', 'true');
+          this.track.appendChild(clone);
+        });
+      }
+
+      // Images start lazy for page speed; once the slider is near the screen,
+      // load them all so off-screen cards are ready before they scroll in.
+      releaseImages() {
+        this.imagesReleased = true;
+        this.track.querySelectorAll('img[loading="lazy"]').forEach((img) => {
+          img.loading = 'eager';
+        });
+      }
+
+      bindPointer() {
+        var startX = 0;
+        var startOffset = 0;
+        var lastX = 0;
+        var lastMoveTime = 0;
+
+        this.viewport.addEventListener('pointerenter', (event) => {
+          if (event.pointerType === 'mouse') this.hovering = true;
+        });
+        this.viewport.addEventListener('pointerleave', (event) => {
+          if (event.pointerType === 'mouse') this.hovering = false;
+        });
+
+        this.viewport.addEventListener('pointerdown', (event) => {
+          if (event.pointerType === 'mouse' && event.button !== 0) return;
+          this.dragging = true;
+          this.velocity = 0;
+          startX = lastX = event.clientX;
+          startOffset = this.offset;
+          lastMoveTime = performance.now();
+          this.viewport.classList.add('is-dragging');
+          this.viewport.setPointerCapture(event.pointerId);
+        });
+
+        this.viewport.addEventListener('pointermove', (event) => {
+          if (!this.dragging) return;
+          var now = performance.now();
+          var dt = Math.max(now - lastMoveTime, 1);
+          this.velocity = ((lastX - event.clientX) / dt) * 1000;
+          lastX = event.clientX;
+          lastMoveTime = now;
+          this.offset = startOffset - (event.clientX - startX);
+          this.render();
+        });
+
+        var endDrag = () => {
+          if (!this.dragging) return;
+          this.dragging = false;
+          this.viewport.classList.remove('is-dragging');
+          if (performance.now() - lastMoveTime > 100) this.velocity = 0;
+        };
+        this.viewport.addEventListener('pointerup', endDrag);
+        this.viewport.addEventListener('pointercancel', endDrag);
+      }
+
+      targetSpeed() {
+        if (!this.autoplay || this.reducedMotion.matches) return 0;
+        if (this.dragging || (this.pauseOnHover && this.hovering)) return 0;
+        return this.baseSpeed * (this.mobileQuery.matches ? this.mobileFactor : 1);
+      }
+
+      start() {
+        if (this.frame) return;
+        this.lastTime = null;
+        this.frame = requestAnimationFrame(this.tick);
+      }
+
+      stop() {
+        if (this.frame) cancelAnimationFrame(this.frame);
+        this.frame = null;
+      }
+
+      tick(time) {
+        var dt = this.lastTime === null ? 0 : Math.min((time - this.lastTime) / 1000, 0.1);
+        this.lastTime = time;
+
+        // Ease toward the target speed so pausing/resuming feels smooth.
+        this.currentSpeed += (this.targetSpeed() - this.currentSpeed) * Math.min(1, dt * 6);
+
+        if (!this.dragging) {
+          this.offset += (this.currentSpeed + this.velocity) * dt;
+          this.velocity *= Math.pow(0.04, dt);
+          if (Math.abs(this.velocity) < 5) this.velocity = 0;
+          this.render();
+        }
+
+        this.frame = requestAnimationFrame(this.tick);
+      }
+
+      render() {
+        if (this.loopWidth <= 0) return;
+        var position = ((this.offset % this.loopWidth) + this.loopWidth) % this.loopWidth;
+        this.track.style.transform = 'translate3d(' + -position + 'px, 0, 0)';
       }
     }
 
-    customElements.define('social-proof-slider-{{ ai_gen_id }}', SocialProofSlider{{ ai_gen_id }});
+    customElements.define(tagName, SocialProofSlider);
   })();
 </script>
 
@@ -875,6 +1026,16 @@
     },
     {
       "type": "range",
+      "id": "card_height_mobile",
+      "label": "Card height on mobile",
+      "min": 160,
+      "max": 480,
+      "step": 20,
+      "unit": "px",
+      "default": 360
+    },
+    {
+      "type": "range",
       "id": "card_gap",
       "label": "Gap between cards",
       "min": 8,
@@ -921,22 +1082,37 @@
           "label": "Fast"
         },
         {
+          "value": "very_fast",
+          "label": "Very fast"
+        },
+        {
           "value": "custom",
           "label": "Custom"
         }
       ],
-      "default": "medium"
+      "default": "fast"
     },
     {
       "type": "range",
-      "id": "animation_duration",
-      "label": "Custom duration",
-      "min": 10,
-      "max": 100,
-      "step": 5,
-      "unit": "s",
-      "default": 40,
-      "info": "Only applies when speed is set to Custom"
+      "id": "scroll_speed",
+      "label": "Custom speed",
+      "min": 20,
+      "max": 600,
+      "step": 10,
+      "unit": "px",
+      "default": 200,
+      "info": "Pixels per second. Only applies when speed is set to Custom."
+    },
+    {
+      "type": "range",
+      "id": "mobile_speed_percent",
+      "label": "Mobile speed",
+      "min": 50,
+      "max": 200,
+      "step": 10,
+      "unit": "%",
+      "default": 100,
+      "info": "Adjusts scroll speed on phones relative to desktop."
     },
     {
       "type": "checkbox",
