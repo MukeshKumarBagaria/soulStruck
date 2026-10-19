@@ -800,96 +800,6 @@
         "padding-block-end": 48
       }
     },
-    "soulstruck_how_to_rfWMyj": {
-      "type": "soulstruck-how-to",
-      "blocks": {
-        "tab_cQKUEE": {
-          "type": "tab",
-          "settings": {
-            "tab_label": "apply with glue",
-            "heading": "Super Strong Glue (stays ~2-3 weeks)",
-            "description": "Prep. Press. Slay.\nFlawless nails in just three simple steps.",
-            "bullet1_icon": "globe",
-            "bullet1_text": "Extreme long-lasting hold",
-            "bullet2_icon": "heart",
-            "bullet2_text": "Gentle on natural nails",
-            "bullet3_icon": "smile",
-            "bullet3_text": "100% vegan & cruelty-free",
-            "step1_image": "shopify://shop_images/buff_your_nails.webp",
-            "step1_label": "prep",
-            "step2_image": "shopify://shop_images/press-on_nails_application.webp",
-            "step2_label": "pick",
-            "step3_image": "shopify://shop_images/application_with_nail_glue.webp",
-            "step3_label": "apply",
-            "step4_image": "shopify://shop_images/with-glue-4.webp",
-            "step4_label": "press"
-          }
-        },
-        "tab_n469R6": {
-          "type": "tab",
-          "settings": {
-            "tab_label": "apply with tabs",
-            "heading": "Easy Stick Adhesive Tabs (stays ~ 3-4 days)",
-            "description": "Peel. Press. Pose.",
-            "bullet1_icon": "leaf",
-            "bullet1_text": "Strong stick-on grip",
-            "bullet2_icon": "heart",
-            "bullet2_text": "Beginner-friendly application",
-            "bullet3_icon": "clock",
-            "bullet3_text": "Gentle on natural nails",
-            "step1_image": "shopify://shop_images/app-guide-adhesive-tab-1.png",
-            "step1_label": "prep",
-            "step2_image": "shopify://shop_images/app-guide-adhesive-tab-2.png",
-            "step2_label": "pick",
-            "step3_image": "shopify://shop_images/app-guide-adhesive-tab-3.png",
-            "step3_label": "apply tab",
-            "step4_image": "shopify://shop_images/app-guide-adhesive-tab-4.png",
-            "step4_label": "press"
-          }
-        },
-        "tab_VEHK7c": {
-          "type": "tab",
-          "settings": {
-            "tab_label": "remove press-ons",
-            "heading": "Fast & Gentle Press-On Removal",
-            "description": "Soak. Lift. Nourish.\n5.Finish with cuticle oil to nourish and soften your natural nails.",
-            "bullet1_icon": "shield",
-            "bullet1_text": "Soak your fingertips in a bowl of lukewarm soapy water.",
-            "bullet2_icon": "leaf",
-            "bullet2_text": "Let them sit for 5–10 minutes to loosen the adhesive.",
-            "bullet3_icon": "zap",
-            "bullet3_text": "Gently lift the nails from the sides using a cuticle pusher.",
-            "step1_image": "shopify://shop_images/4-soak.webp",
-            "step1_label": "soak",
-            "step2_image": "shopify://shop_images/5-lift.webp",
-            "step2_label": "lift",
-            "step3_image": "shopify://shop_images/3-buff.webp",
-            "step3_label": "clean",
-            "step4_image": "shopify://shop_images/1-nourish.webp",
-            "step4_label": "nourish"
-          }
-        }
-      },
-      "block_order": [
-        "tab_cQKUEE",
-        "tab_n469R6",
-        "tab_VEHK7c"
-      ],
-      "name": "SS How To",
-      "settings": {
-        "heading": "how to",
-        "bg_color": "#ffffff",
-        "text_color": "#a85b6c",
-        "tab_active_color": "#1a1a1a",
-        "tab_inactive_color": "#999999",
-        "border_color": "#e0e0e0",
-        "badge_bg": "#1a1a1a",
-        "badge_color": "#ffffff",
-        "image_radius": 16,
-        "section_padding_top": 64,
-        "section_padding_bottom": 64
-      }
-    },
     "1778783667af3288a8": {
       "type": "_blocks",
       "settings": {
@@ -926,7 +836,6 @@
     "ss_trust_grid_Eq8c8b",
     "177602750288e40ae4",
     "product_recommendations_section",
-    "soulstruck_how_to_rfWMyj",
     "1778783667af3288a8"
   ]
 }
