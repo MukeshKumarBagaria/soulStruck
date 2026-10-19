@@ -701,8 +701,8 @@
         "pill_border": "#e5e5e5",
         "pill_hover_bg": "#111111",
         "pill_hover_text": "#ffffff",
-        "padding_top": 64,
-        "padding_bottom": 56
+        "padding_top": 36,
+        "padding_bottom": 40
       }
     },
     "177667234430136b04": {
@@ -852,17 +852,17 @@
         "ai_gen_block_02f01d3_BKTxrL": {
           "type": "ai_gen_block_02f01d3",
           "settings": {
-            "heading": "",
-            "subtext": "LOVE FROM YOU",
-            "heading_size": 48,
+            "heading": "LOVE FROM YOU",
+            "subtext": "",
+            "heading_size": 32,
             "heading_color": "#000000",
             "subtext_size": 16,
             "subtext_color": "#666666",
             "subtext_spacing": 10,
-            "header_spacing": 50,
+            "header_spacing": 20,
             "max_width": 1200,
-            "section_padding_top": 80,
-            "section_padding_bottom": 80,
+            "section_padding_top": 0,
+            "section_padding_bottom": 0,
             "background_color": "#ffffff",
             "cards_per_row": 4,
             "cards_per_row_tablet": 3,
