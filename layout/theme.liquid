@@ -201,6 +201,16 @@ var accountIconSVG = `
     <script src="{{ 'wishlist.js' | asset_url }}" defer></script>
     {% render 'wishlist-data' %}
 
+    {%- comment -%}
+      Shiprocket Smart Cart skin. The drawer lives in a shadow root, so the
+      script links ss-smart-cart.css into it. The serif is loaded here because
+      fonts must be declared at document level to be usable inside the shadow root.
+    {%- endcomment -%}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
+    <script src="{{ 'ss-smart-cart.js' | asset_url }}" data-css="{{ 'ss-smart-cart.css' | asset_url }}" defer></script>
+
     {% if request.page_type == 'product' %}
       {{ 'soulstruck-product.css' | asset_url | stylesheet_tag }}
       <script src="{{ 'soulstruck-product.js' | asset_url }}" defer></script>
