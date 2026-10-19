@@ -14,6 +14,78 @@
   class="{% if request.design_mode %}shopify-design-mode{% endif %}{% if ss_kit_unselected %} ss-kit-unselected{% endif %}"
   lang="{{ request.locale.iso_code }}"
 >
+  <script>
+function isCustomerLoggedIn() {
+ {% if customer %}
+  return true;
+ {% else %}
+  return false;
+ {% endif %}
+}// Your custom SVG icon
+var accountIconSVG = `
+ <a id="kp-account33" class="custom-account-icon" href="#" style="display:inline-flex; align-items:center;">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 15 14" fill="none">
+   <path d="M13.12 13.1193C13.12 10.1 10.1828 7.65234 6.56 7.65234C2.93724 7.65234 0 10.1 0 13.1193H13.12Z" fill="currentColor"/>
+   <path d="M6.54562 6.56C8.35712 6.56 9.82562 5.09149 9.82562 3.28C9.82562 1.46851 8.35712 0 6.54562 0C4.73413 0 3.26562 1.46851 3.26562 3.28C3.26562 5.09149 4.73413 6.56 6.54562 6.56Z" fill="currentColor"/>
+   <path d="M11.9339 6.93928C12.1313 7.09937 12.1313 7.40062 11.9339 7.56071L8.65191 10.2215C8.39043 10.4335 8 10.2474 8 9.91077V4.58923C8 4.25262 8.39043 4.06653 8.6519 4.27852L11.9339 6.93928Z" fill="url(#paint0_linear_7227_3265)" stroke="url(#paint1_linear_7227_3265)" stroke-opacity="0.6725" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+   <path d="M14.6135 6.93928C14.811 7.09937 14.811 7.40062 14.6135 7.56071L11.3316 10.2215C11.0701 10.4335 10.6797 10.2474 10.6797 9.91077V4.58923C10.6797 4.25262 11.0701 4.06653 11.3316 4.27852L14.6135 6.93928Z" fill="url(#paint2_linear_7227_3265)" stroke="url(#paint3_linear_7227_3265)" stroke-opacity="0.6725" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+   <defs>
+    <linearGradient id="paint0_linear_7227_3265" x1="10.2062" y1="6.3744" x2="10.0865" y2="10.748" gradientUnits="userSpaceOnUse">
+     <stop stop-color="#FFE6A5
+"/>
+     <stop offset="1" stop-color="white"/>
+    </linearGradient>
+    <linearGradient id="paint1_linear_7227_3265" x1="10.1586" y1="3.75" x2="10.1586" y2="10.75" gradientUnits="userSpaceOnUse">
+     <stop stop-color="#DBB015
+"/>
+     <stop offset="0.517213" stop-color="#FFDC5B
+"/>
+    </linearGradient>
+    <linearGradient id="paint2_linear_7227_3265" x1="12.8858" y1="6.3744" x2="12.7662" y2="10.748" gradientUnits="userSpaceOnUse">
+     <stop stop-color="#FFE6A5
+"/>
+     <stop offset="1" stop-color="white"/>
+    </linearGradient>
+    <linearGradient id="paint3_linear_7227_3265" x1="12.8382" y1="3.75" x2="12.8382" y2="10.75" gradientUnits="userSpaceOnUse">
+     <stop stop-color="#DBB015
+"/>
+     <stop offset="0.517213" stop-color="#FFDC5B
+"/>
+    </linearGradient>
+   </defs>
+  </svg>
+ </a>
+`;function insertAndConfigureAccountIcon() {
+ const searchIconContainer = document.querySelector('.ni-ch__right a[href="/account/login"]');
+ if (!searchIconContainer) {
+  console.warn('Search icon container not found.');
+  return;
+ } // Prevent multiple insertions
+ if (document.getElementById('kp-account33')) return; // Insert account icon after search icon
+ searchIconContainer.insertAdjacentHTML('afterend', accountIconSVG); const accountLink = document.getElementById('kp-account33'); if (isCustomerLoggedIn()) {
+  accountLink.setAttribute('href', '/account');
+ } else {
+  accountLink.setAttribute('href', '#');
+  accountLink.addEventListener('click', function (e) {
+   e.preventDefault();
+   if (typeof shipRocketMarketingLogin === 'function') {
+    shipRocketMarketingLogin();
+   } else {
+    window.location.href = '/account/login';
+   }
+  });
+ }
+}document.addEventListener('DOMContentLoaded', insertAndConfigureAccountIcon);
+</script><script>
+  document.addEventListener('DOMContentLoaded', function() {
+ var accountIconElement = document.querySelector('.ni-ch__right a[href="/account/login"]');
+ if (accountIconElement) {
+  accountIconElement.remove();
+  console.log('Account icon element removed.');
+ } else {
+  console.log('Account icon element not found.');
+ }
+}); </script>
   <head>
     {%- comment -%}
       SoulStruck variant guard — MUST stay the first script in <head>.

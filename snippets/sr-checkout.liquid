@@ -1,7 +1,8 @@
 <input type="hidden" value="true" id="srCheckoutAutoOnboardClient"/>
 <link rel="stylesheet" href="https://fastrr-boost-ui.pickrr.com/assets/styles/sr-checkout.css">
 <script src="https://fastrr-boost-ui.pickrr.com/assets/js/channels/shopify.js" defer></script>
-<script src="https://fastrr-boost-ui.pickrr.com/assets/js/channels/shiprocketMarketing.js" defer></script>
+{% comment %} <script src="https://fastrr-boost-ui.pickrr.com/assets/js/channels/shiprocketMarketing.js" defer></script> {% endcomment %}
+ <script src="https://fastrr-boost-ui.pickrr.com/assets/js/channels/shiprocket-login.js"></script>
 <style>
   .shiprocket-headless{
   width:100% !important;
@@ -10,6 +11,27 @@
   width:unset !important;
 }
 </style>
+<script>
+ document.addEventListener('DOMContentLoaded', function () {
+   function triggerShiprocketLogin(e) {
+     e.preventDefault();
+     if (typeof shipRocketMarketingLogin === 'function') {
+       shipRocketMarketingLogin();
+     } else {
+       window.location.href = '/account/login';
+     }
+   }
+   document
+     .querySelectorAll('.shiprocket-login-btn, .shiprocket-login-link')
+     .forEach(function (btn) {
+       btn.addEventListener('click', triggerShiprocketLogin);
+     });
+ });
+</script>
+<script>
+  window.srAccountPagePath = '/pages/user-account';
+  window.accountPortalUrl = 'https://fastrr-login-account.pickrr.com/'
+</script>
  <!-- BTN - CUST - SCRIPT - START  -->
  <input type="hidden" value="true" id="shiprocketCheckoutBtnStylesCheck"/>
  <script>
