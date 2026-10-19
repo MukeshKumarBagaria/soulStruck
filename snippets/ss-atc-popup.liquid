@@ -1,0 +1,75 @@
+{%- comment -%}
+  Add-to-cart confirmation popup — the step between "Add to cart" and the
+  Shiprocket side cart. Bottom sheet on mobile, top-right card on desktop.
+  Filled and driven by assets/ss-atc-popup.js; styles in assets/ss-atc-popup.css.
+{%- endcomment -%}
+<div class="ss-atc" id="ss-atc" hidden>
+  <div class="ss-atc__backdrop" data-ss-atc-close></div>
+
+  <div
+    class="ss-atc__panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="ss-atc-title"
+    tabindex="-1"
+    data-ss-atc-panel
+  >
+    <div class="ss-atc__handle" aria-hidden="true"></div>
+
+    <div class="ss-atc__head">
+      <span class="ss-atc__tick" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </span>
+      <p class="ss-atc__title" id="ss-atc-title">Added to your bag</p>
+      <button type="button" class="ss-atc__close" aria-label="Close" data-ss-atc-close>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="ss-atc__item">
+      <div class="ss-atc__media">
+        <img class="ss-atc__img" alt="" width="80" height="80" data-ss-atc-img hidden>
+      </div>
+      <div class="ss-atc__info">
+        <p class="ss-atc__name" data-ss-atc-name></p>
+        <p class="ss-atc__variant" data-ss-atc-variant hidden></p>
+        <p class="ss-atc__price">
+          <span class="ss-atc__now" data-ss-atc-price></span>
+          <s class="ss-atc__was" data-ss-atc-compare hidden></s>
+          <span class="ss-atc__off" data-ss-atc-off hidden></span>
+        </p>
+      </div>
+    </div>
+
+    <p class="ss-atc__nudge" data-ss-atc-nudge hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+      <span data-ss-atc-nudge-text></span>
+    </p>
+
+    <div class="ss-atc__summary" data-ss-atc-summary hidden>
+      <div class="ss-atc__total-row">
+        <span class="ss-atc__total-label">Bag total <span data-ss-atc-items></span></span>
+        <span class="ss-atc__total-amount">
+          <s class="ss-atc__total-was" data-ss-atc-total-was hidden></s>
+          <span class="ss-atc__total" data-ss-atc-total></span>
+        </span>
+      </div>
+      <p class="ss-atc__saving" data-ss-atc-saving hidden></p>
+    </div>
+
+    <div class="ss-atc__actions">
+      <button type="button" class="ss-atc__btn ss-atc__btn--ghost" data-ss-atc-view>
+        View cart<span class="ss-atc__count" data-ss-atc-count></span>
+      </button>
+      <button type="button" class="ss-atc__btn ss-atc__btn--primary" data-ss-atc-checkout>
+        <span class="ss-atc__btn-label">Checkout</span>
+        <img class="ss-atc__pay" alt="" width="58" height="20" data-ss-atc-pay hidden>
+        <span class="ss-atc__spinner" aria-hidden="true"></span>
+      </button>
+    </div>
+
+    <button type="button" class="ss-atc__continue" data-ss-atc-close>Continue shopping</button>
+  </div>
+
+  <p class="ss-atc__sr" aria-live="polite" data-ss-atc-live></p>
+</div>

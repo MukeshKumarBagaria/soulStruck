@@ -211,6 +211,14 @@ var accountIconSVG = `
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
     <script src="{{ 'ss-smart-cart.js' | asset_url }}" data-css="{{ 'ss-smart-cart.css' | asset_url }}" defer></script>
 
+    {%- comment -%}
+      Add-to-cart popup (View cart / Checkout) shown instead of opening the
+      Shiprocket side cart. Deferred in <head> so it runs before Shiprocket's
+      body scripts and can wrap their globals as they are assigned.
+    {%- endcomment -%}
+    {{ 'ss-atc-popup.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'ss-atc-popup.js' | asset_url }}" defer></script>
+
     {% if request.page_type == 'product' %}
       {{ 'soulstruck-product.css' | asset_url | stylesheet_tag }}
       <script src="{{ 'soulstruck-product.js' | asset_url }}" defer></script>
@@ -317,6 +325,8 @@ var accountIconSVG = `
     {% if settings.quick_add or settings.mobile_quick_add %}
       {% render 'quick-add-modal' %}
     {% endif %}
-  
+
+    {% render 'ss-atc-popup' %}
+
 </body>
 </html>

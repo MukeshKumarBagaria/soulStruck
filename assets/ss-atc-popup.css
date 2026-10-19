@@ -1,0 +1,467 @@
+/*
+  Add-to-cart confirmation popup (snippets/ss-atc-popup.liquid).
+  Mobile-first bottom sheet; a top-right card from 750px up.
+  Palette and type match the Shiprocket cart skin (assets/ss-smart-cart.css).
+*/
+
+.ss-atc {
+  --ss-atc-ink: #141826;
+  --ss-atc-ink-soft: #3c4150;
+  --ss-atc-muted: #6b7080;
+  --ss-atc-strike: #9aa0ab;
+  --ss-atc-coral: #e2574c;
+  --ss-atc-pill: #fde3df;
+  --ss-atc-line: #f1e3e0;
+  --ss-atc-green: #2f9b3c;
+  --ss-atc-black: #0b0b0d;
+  --ss-atc-serif: 'Source Serif 4', 'Source Serif Pro', Georgia, 'Times New Roman', serif;
+  --ss-atc-sans: var(--font-body--family, 'Inter'), 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  position: fixed;
+  inset: 0;
+  /* above the sticky header and chat widgets, below Shiprocket's drawer/checkout */
+  z-index: 2147483000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  font-family: var(--ss-atc-sans);
+  color: var(--ss-atc-ink);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ss-atc[hidden] { display: none; }
+
+.ss-atc *,
+.ss-atc *::before,
+.ss-atc *::after { box-sizing: border-box; }
+
+.ss-atc p { margin: 0; }
+
+.ss-atc button {
+  font: inherit;
+  letter-spacing: normal;
+  text-transform: none;
+  margin: 0;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* ── Backdrop ─────────────────────────────────────────────── */
+.ss-atc__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 24, 38, 0.45);
+  opacity: 0;
+  transition: opacity 0.28s ease;
+  touch-action: none;
+}
+
+.ss-atc.is-open .ss-atc__backdrop { opacity: 1; }
+
+/* ── Panel (mobile: bottom sheet) ─────────────────────────── */
+.ss-atc__panel {
+  position: relative;
+  width: 100%;
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 10px 18px calc(16px + env(safe-area-inset-bottom, 0px));
+  border-radius: 22px 22px 0 0;
+  background:
+    radial-gradient(120% 70% at 100% 0%, #fde7e2 0%, rgba(253, 231, 226, 0) 55%),
+    linear-gradient(180deg, #fdf3f1 0%, #ffffff 60%);
+  box-shadow: 0 -12px 40px rgba(20, 24, 38, 0.18);
+  transform: translateY(100%);
+  transition: transform 0.34s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+}
+
+.ss-atc.is-open .ss-atc__panel { transform: translateY(0); }
+
+.ss-atc__handle {
+  width: 40px;
+  height: 4px;
+  margin: 0 auto 10px;
+  border-radius: 999px;
+  background: #ead7d3;
+}
+
+/* ── Head ─────────────────────────────────────────────────── */
+.ss-atc__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.ss-atc__tick {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ss-atc-green);
+  color: #fff;
+}
+
+.ss-atc__tick svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ss-atc__title {
+  flex: 1 1 auto;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.ss-atc__close {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  margin: -8px -10px -8px 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ss-atc-ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.ss-atc__close svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.ss-atc__close:focus-visible { outline: 2px solid var(--ss-atc-ink); outline-offset: 0; }
+
+/* ── Item ─────────────────────────────────────────────────── */
+.ss-atc__item {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 16px;
+  background: #fffdfc;
+  border: 1px solid var(--ss-atc-line);
+  box-shadow: 0 6px 18px rgba(226, 87, 76, 0.06);
+}
+
+.ss-atc__media {
+  flex: 0 0 auto;
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: linear-gradient(110deg, #f8ebe8 30%, #fdf4f2 50%, #f8ebe8 70%) 0 0 / 200% 100%;
+  animation: ss-atc-shimmer 1.2s linear infinite;
+}
+
+.ss-atc__media.is-loaded {
+  animation: none;
+  background: #f8ebe8;
+}
+
+.ss-atc__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@keyframes ss-atc-shimmer {
+  to { background-position: -200% 0; }
+}
+
+.ss-atc__info {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.ss-atc__name {
+  font-family: var(--ss-atc-serif);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+  color: var(--ss-atc-ink);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.ss-atc__variant {
+  font-size: 13.5px;
+  line-height: 1.35;
+  color: var(--ss-atc-muted);
+}
+
+.ss-atc__price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  margin-top: 2px !important;
+}
+
+.ss-atc__now {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.ss-atc__was {
+  font-size: 13.5px;
+  color: var(--ss-atc-strike);
+}
+
+.ss-atc__off {
+  align-self: center;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: #e5f5e8;
+  color: var(--ss-atc-green);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.ss-atc [hidden] { display: none !important; }
+
+/* ── Discount nudge (text comes from the Shiprocket cart) ─── */
+.ss-atc__nudge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px !important;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: linear-gradient(100deg, #fde6e2 0%, #fbd9d3 100%);
+  color: #c2443a;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.ss-atc__nudge svg {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ── Summary ──────────────────────────────────────────────── */
+.ss-atc__summary {
+  margin-top: 14px;
+  padding: 0 2px;
+}
+
+.ss-atc__total-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ss-atc__total-label {
+  font-size: 14px;
+  color: var(--ss-atc-ink-soft);
+}
+
+.ss-atc__total-label span { color: var(--ss-atc-muted); }
+
+.ss-atc__total-amount {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.ss-atc__total-was {
+  font-size: 14px;
+  color: var(--ss-atc-strike);
+}
+
+.ss-atc__total {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.ss-atc__saving {
+  margin-top: 6px !important;
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #d9f6ea;
+  color: #136b46;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ── Actions ──────────────────────────────────────────────── */
+.ss-atc__actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.ss-atc__btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 18px;
+  border-radius: 14px;
+  font-size: 16px !important;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  touch-action: manipulation;
+}
+
+.ss-atc__btn:active { transform: scale(0.985); }
+
+.ss-atc__btn:focus-visible {
+  outline: 2px solid var(--ss-atc-coral);
+  outline-offset: 2px;
+}
+
+.ss-atc__btn--ghost {
+  background: #fff;
+  color: var(--ss-atc-ink);
+  border: 1.5px solid var(--ss-atc-ink);
+}
+
+.ss-atc__btn--ghost:hover { background: #fdf4f2; }
+
+.ss-atc__btn--ghost { gap: 5px; }
+
+.ss-atc__btn--primary {
+  background: var(--ss-atc-black);
+  color: #fff;
+  border: 0;
+  font-size: 17px !important;
+  font-weight: 700;
+  box-shadow: 0 10px 22px rgba(11, 11, 13, 0.22);
+}
+
+.ss-atc__btn--primary:hover { background: #24242a; }
+
+.ss-atc__pay {
+  height: 20px;
+  width: auto;
+  display: block;
+}
+
+.ss-atc__spinner {
+  display: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  animation: ss-atc-spin 0.7s linear infinite;
+}
+
+.ss-atc__btn.is-loading { cursor: progress; }
+.ss-atc__btn.is-loading .ss-atc__pay { display: none; }
+.ss-atc__btn.is-loading .ss-atc__spinner { display: block; }
+
+@keyframes ss-atc-spin { to { transform: rotate(360deg); } }
+
+.ss-atc__continue {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 4px !important;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ss-atc-ink-soft);
+  font-size: 14px !important;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.ss-atc__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Page behind the popup stays put */
+html.ss-atc-lock,
+html.ss-atc-lock body {
+  overflow: hidden !important;
+}
+
+/* ── Desktop: card under the header, top right ────────────── */
+@media screen and (min-width: 750px) {
+  .ss-atc {
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 16px 20px;
+  }
+
+  .ss-atc__backdrop { background: rgba(20, 24, 38, 0.3); }
+
+  .ss-atc__panel {
+    width: 400px;
+    max-height: calc(100vh - 32px);
+    padding: 18px 20px 14px;
+    border-radius: 20px;
+    box-shadow: 0 24px 60px rgba(20, 24, 38, 0.22);
+    opacity: 0;
+    transform: translateY(-12px);
+    transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+  }
+
+  .ss-atc.is-open .ss-atc__panel {
+    opacity: 1;
+    transform: none;
+  }
+
+  .ss-atc__handle { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-atc__backdrop,
+  .ss-atc__panel,
+  .ss-atc__btn { transition: none; }
+  .ss-atc__media { animation: none; }
+}
