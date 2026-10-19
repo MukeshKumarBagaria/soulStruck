@@ -253,7 +253,7 @@
                 "pocket_image_mobile": "shopify://shop_images/Mobile-Pocket_Edit_kit_Soul_Struck.webp",
                 "desktop_columns": "2",
                 "image_ratio": "square",
-                "image_fit": "cover",
+                "image_fit": "contain",
                 "corner_radius": 16,
                 "image_corner_radius": 12,
                 "card_background": "#fdeef4",
