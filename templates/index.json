@@ -762,10 +762,13 @@
             "enable_image_30": false,
             "card_aspect_ratio": "9:16",
             "card_height": 480,
+            "card_height_mobile": 360,
             "card_gap": 16,
             "card_border_radius": 12,
             "enable_autoplay": true,
             "animation_speed": "fast",
+            "scroll_speed": 200,
+            "mobile_speed_percent": 100,
             "pause_on_hover": true,
             "enable_hover_effect": true,
             "show_fade_edges": true,
@@ -814,33 +817,6 @@
     },
     "17765982920983bbc2": {
       "type": "_blocks",
-      "blocks": {
-        "ai_gen_block_b308ea1_ciMzBz": {
-          "type": "ai_gen_block_b308ea1",
-          "settings": {
-            "title": "Your Soul Struck Slay Kit",
-            "title_size": 32,
-            "title_weight": "700",
-            "title_color": "#c44851",
-            "subtitle": "Every thing you need for the perfect press-on manicure at home",
-            "subtitle_size": 16,
-            "subtitle_weight": "400",
-            "subtitle_color": "#666666",
-            "subtitle_gap": 8,
-            "text_alignment": "center",
-            "text_spacing": 10,
-            "image": "shopify://shop_images/Nail-Kit-Homepage.jpg",
-            "image_height": 500,
-            "mobile_image_height": 300,
-            "image_fit": "contain",
-            "background_color": "#ffffff"
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "ai_gen_block_b308ea1_ciMzBz"
-      ],
       "name": "split layout slider",
       "settings": {
         "content_direction": "column",
