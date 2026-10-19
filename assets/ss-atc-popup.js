@@ -14,9 +14,9 @@
   Shiprocket's checkout (fastrr) also posts to /cart/add when restoring a
   cart, so a response alone never opens the popup.
 
-  The bag total comes from /cart.js. The discount nudge and "You're saving"
-  are read from the Shiprocket cart (its shadow DOM) once it has refreshed,
-  so they always match the side cart.
+  The bag total, struck price, "You're saving" and discount nudge are the side
+  cart's own figures (read once it has refreshed), so the popup and the side
+  cart always show the same numbers.
 
   Must load before Shiprocket's scripts (it is in <head>, they are in <body>)
   so the globals are wrapped before Shiprocket assigns them.
@@ -29,8 +29,12 @@
   root.dataset.ready = 'true';
 
   var INTENT_MS = 6000; // add-to-cart click → /cart/add response
-  var ADD_MS = 4000; // /cart/add response → Shiprocket's drawer-open call
+  var ADD_MS = 2500; // /cart/add response → Shiprocket's drawer-open call
+  var CART_CLICK_MS = 1500; // cart icon click → its drawer-open call
   var CLOSE_MS = 320;
+  var SETTLE_MS = 3000; // side cart count matched → accept its totals even if ≠ Shopify's
+  var STABLE_MS = 700; // side cart totals unchanged this long → show them
+  var FALLBACK_MS = 8000; // side cart never caught up → show Shopify's total
 
   var ADD_SELECTOR = [
     '[data-ss-atc]:not([data-ss-buy-link])',
@@ -75,12 +79,18 @@
   var nativeUpdate = null;
 
   var intent = null; // { at, el } — last click on an add-to-cart control
+  var cartClickAt = 0; // last click on a cart link — that always opens the drawer
   var pendingAdd = null; // { at, item } — last successful /cart/add
   var current = null; // the add the popup is showing
   var isOpen = false;
   var lastTrigger = null;
   var expectedCount = null; // cart item_count after the add
   var currentCart = null; // /cart.js after the add
+  var countMatchedAt = 0; // when the side cart's item count first matched
+  var stableSig = ''; // side cart totals + nudge last seen
+  var stableSince = 0; // …unchanged since
+  var settleTimer = null;
+  var fallbackTimer = null;
   var updating = 0; // Shiprocket cart refreshes in flight
   var drawerObserver = null;
   var syncTimer = null;
@@ -134,7 +144,8 @@
     function () { return nativeSlide; },
     function () {
       var add = pendingAdd;
-      if (add && Date.now() - add.at < ADD_MS && !drawerOpen()) {
+      var cartClicked = Date.now() - cartClickAt < CART_CLICK_MS;
+      if (add && !cartClicked && Date.now() - add.at < ADD_MS && !drawerOpen()) {
         pendingAdd = null;
         if (current === add) return; // already showing this add
         try {
@@ -237,6 +248,10 @@
     function (event) {
       var t = event.target;
       if (!t || !t.closest || root.contains(t)) return;
+      if (t.closest('a[href="/cart"], a[href$="/cart"]')) {
+        cartClickAt = Date.now();
+        return;
+      }
       var hit = addControl(t);
       if (hit) intent = { at: Date.now(), el: hit };
     },
@@ -280,12 +295,6 @@
     }
   }
 
-  // "₹1,258.20" / "-₹139.80" → 125820 (paise); NaN when there's no number
-  function paise(text) {
-    var m = String(text || '').replace(/,/g, '').match(/\d+(?:\.\d+)?/);
-    return m ? Math.round(parseFloat(m[0]) * 100) : NaN;
-  }
-
   function setText(node, text) {
     if (!node) return;
     node.textContent = text || '';
@@ -303,10 +312,17 @@
     setText(el.off, '');
     el.nudge.hidden = true;
     el.summary.hidden = true;
+    el.summary.classList.remove('is-pending');
     setText(el.totalWas, '');
+    setText(el.saving, '');
     el.count.textContent = '';
     expectedCount = null;
     currentCart = null;
+    countMatchedAt = 0;
+    stableSig = '';
+    stableSince = 0;
+    clearTimeout(settleTimer);
+    clearTimeout(fallbackTimer);
   }
 
   function renderItem(item) {
@@ -357,24 +373,23 @@
     }
   }
 
-  /*
-    Bag total straight from Shopify: total_price already includes the
-    automatic "buy more" discount and matches what checkout charges before
-    shipping. (Shiprocket's "Estimated Total" also deducts a prepaid discount
-    that only applies to online payment, so it can't be used here.)
-  */
-  function renderTotal(cart, saving) {
-    // With Shiprocket's saving (offers + MRP) known, strike through the MRP
-    // total so "was − now" equals the saving shown, as checkout does.
-    var was = saving > 0 ? cart.total_price + saving : cart.original_total_price;
-    el.total.textContent = money(cart.total_price);
-    setText(el.totalWas, was > cart.total_price ? money(was) : '');
-    el.items.textContent = '(' + cart.item_count + (cart.item_count === 1 ? ' item)' : ' items)');
-    el.summary.hidden = false;
+  function renderTotals(t) {
+    el.total.textContent = money(t.total);
+    setText(el.totalWas, t.was ? money(t.was) : '');
+    setText(el.saving, t.saving > 0 ? "You're saving " + money(t.saving) + ' on this order' : '');
+    el.summary.classList.remove('is-pending');
+    clearTimeout(fallbackTimer);
   }
 
-  /* Pull the nudge, savings and payment icons from the side cart once it
-     reflects this add (its item count matches the cart's). */
+  /*
+    Bag total, struck price and saving are the side cart's own corrected
+    figures (window.ssSmartCartTotals in assets/ss-smart-cart.js), so the popup
+    and the side cart can't disagree. They're taken once the side cart shows
+    this add: its item count matches the cart's and its total matches
+    Shopify's — or, when they legitimately differ (a Shiprocket coupon is
+    applied), once the count has matched for SETTLE_MS. The discount nudge
+    comes from the same render.
+  */
   function syncFromDrawer() {
     if (!isOpen) return;
     if (drawerOpen()) {
@@ -395,23 +410,46 @@
     if (expectedCount === null || updating > 0) return;
     var qty = r.getElementById('sr-cart-header-quantity');
     var n = qty ? parseInt((qty.textContent || '').replace(/\D/g, ''), 10) : NaN;
-    if (n !== expectedCount) return;
+    if (n !== expectedCount) {
+      countMatchedAt = 0;
+      return;
+    }
+    if (!countMatchedAt) countMatchedAt = Date.now();
+
+    var t = typeof window.ssSmartCartTotals === 'function' ? window.ssSmartCartTotals() : null;
+    if (!t) return;
+    var now = Date.now();
+    var waited = now - countMatchedAt;
+    if (currentCart && t.total !== currentCart.total_price && waited < SETTLE_MS) {
+      // Totals not re-rendered for this add yet; look again even if nothing else changes.
+      recheck(SETTLE_MS - waited);
+      return;
+    }
 
     var sub = r.querySelector('.progress-bar-sub-heading');
-    var nudge = sub && sub.textContent.replace(/\s+/g, ' ').trim();
-    el.nudgeText.textContent = nudge || '';
-    el.nudge.hidden = !nudge;
+    var nudge = (sub && sub.textContent.replace(/\s+/g, ' ').trim()) || '';
 
-    // Shiprocket's "You're saving ₹X" (offers + savings on MRP)
-    var badge = r.getElementById('footer-combined-offer-badge');
-    var saving = '';
-    if (badge && !badge.classList.contains('hidden') && badge.style.display !== 'none') {
-      var m = (badge.textContent || '').match(/₹\s?[\d,]+(?:\.\d+)?/);
-      var amount = m ? paise(m[0]) : NaN;
-      if (amount > 0) saving = "You're saving " + money(amount) + ' on this order';
+    // Shiprocket renders totals twice — the MRP saving lands a moment after the
+    // offer — so wait for a stable set before revealing it, then mirror changes.
+    var sig = [t.total, t.was, t.saving, nudge].join('|');
+    if (sig !== stableSig) {
+      stableSig = sig;
+      stableSince = now;
     }
-    setText(el.saving, saving);
-    if (currentCart) renderTotal(currentCart, saving ? amount : 0);
+    var pending = el.summary.classList.contains('is-pending');
+    if (pending && now - stableSince < STABLE_MS) {
+      recheck(STABLE_MS - (now - stableSince));
+      return;
+    }
+
+    el.nudgeText.textContent = nudge;
+    el.nudge.hidden = !nudge;
+    renderTotals(t);
+  }
+
+  function recheck(ms) {
+    clearTimeout(settleTimer);
+    settleTimer = setTimeout(syncFromDrawer, Math.max(0, ms) + 30);
   }
 
   function scheduleSync() {
@@ -446,8 +484,21 @@
         expectedCount = cart.item_count;
         currentCart = cart;
         el.count.textContent = '(' + cart.item_count + ')';
-        renderTotal(cart, 0);
-        syncFromDrawer();
+        el.items.textContent = '(' + cart.item_count + (cart.item_count === 1 ? ' item)' : ' items)');
+        el.summary.hidden = false;
+
+        var shopifyTotals = { total: cart.total_price, was: null, saving: 0 };
+        if (!srRoot() || typeof window.ssSmartCartTotals !== 'function') {
+          renderTotals(shopifyTotals); // no Shiprocket cart to match
+        } else {
+          el.summary.classList.add('is-pending');
+          // If the side cart never catches up, Shopify's total is still right.
+          clearTimeout(fallbackTimer);
+          fallbackTimer = setTimeout(function () {
+            if (current === add && el.summary.classList.contains('is-pending')) renderTotals(shopifyTotals);
+          }, FALLBACK_MS);
+          syncFromDrawer();
+        }
 
         // Adds that bypassed Shiprocket leave its cart stale; refresh it so
         // "View cart" and the summary are right. Shiprocket's own adds are
@@ -518,6 +569,8 @@
     expectedCount = null;
     clearTimeout(syncTimer);
     clearTimeout(selfRefreshTimer);
+    clearTimeout(settleTimer);
+    clearTimeout(fallbackTimer);
     if (drawerObserver) {
       drawerObserver.disconnect();
       drawerObserver = null;

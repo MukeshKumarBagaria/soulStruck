@@ -66,7 +66,7 @@
   max-height: calc(100dvh - 24px);
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 10px 18px calc(16px + env(safe-area-inset-bottom, 0px));
+  padding: 8px 16px calc(14px + env(safe-area-inset-bottom, 0px));
   border-radius: 22px 22px 0 0;
   background:
     radial-gradient(120% 70% at 100% 0%, #fde7e2 0%, rgba(253, 231, 226, 0) 55%),
@@ -82,7 +82,7 @@
 .ss-atc__handle {
   width: 40px;
   height: 4px;
-  margin: 0 auto 10px;
+  margin: 0 auto 8px;
   border-radius: 999px;
   background: #ead7d3;
 }
@@ -91,14 +91,14 @@
 .ss-atc__head {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 14px;
+  gap: 9px;
+  margin-bottom: 12px;
 }
 
 .ss-atc__tick {
   flex: 0 0 auto;
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
@@ -108,8 +108,8 @@
 }
 
 .ss-atc__tick svg {
-  width: 15px;
-  height: 15px;
+  width: 13px;
+  height: 13px;
   fill: none;
   stroke: currentColor;
   stroke-width: 3;
@@ -119,7 +119,7 @@
 
 .ss-atc__title {
   flex: 1 1 auto;
-  font-size: 16px;
+  font-size: 14.5px;
   font-weight: 600;
   line-height: 1.3;
   letter-spacing: -0.01em;
@@ -127,9 +127,9 @@
 
 .ss-atc__close {
   flex: 0 0 auto;
-  width: 40px;
-  height: 40px;
-  margin: -8px -10px -8px 0;
+  width: 36px;
+  height: 36px;
+  margin: -8px -8px -8px 0;
   padding: 0;
   border: 0;
   border-radius: 50%;
@@ -142,8 +142,8 @@
 }
 
 .ss-atc__close svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   fill: none;
   stroke: currentColor;
   stroke-width: 2;
@@ -155,10 +155,10 @@
 /* ── Item ─────────────────────────────────────────────────── */
 .ss-atc__item {
   display: flex;
-  gap: 14px;
+  gap: 12px;
   align-items: center;
-  padding: 12px;
-  border-radius: 16px;
+  padding: 10px;
+  border-radius: 14px;
   background: #fffdfc;
   border: 1px solid var(--ss-atc-line);
   box-shadow: 0 6px 18px rgba(226, 87, 76, 0.06);
@@ -166,9 +166,9 @@
 
 .ss-atc__media {
   flex: 0 0 auto;
-  width: 80px;
-  height: 80px;
-  border-radius: 12px;
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
   overflow: hidden;
   background: linear-gradient(110deg, #f8ebe8 30%, #fdf4f2 50%, #f8ebe8 70%) 0 0 / 200% 100%;
   animation: ss-atc-shimmer 1.2s linear infinite;
@@ -200,7 +200,7 @@
 
 .ss-atc__name {
   font-family: var(--ss-atc-serif);
-  font-size: 18px;
+  font-size: 15.5px;
   font-weight: 600;
   line-height: 1.25;
   letter-spacing: -0.005em;
@@ -212,7 +212,7 @@
 }
 
 .ss-atc__variant {
-  font-size: 13.5px;
+  font-size: 12.5px;
   line-height: 1.35;
   color: var(--ss-atc-muted);
 }
@@ -226,23 +226,23 @@
 }
 
 .ss-atc__now {
-  font-size: 16px;
+  font-size: 14.5px;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
 
 .ss-atc__was {
-  font-size: 13.5px;
+  font-size: 12px;
   color: var(--ss-atc-strike);
 }
 
 .ss-atc__off {
   align-self: center;
-  padding: 2px 7px;
-  border-radius: 6px;
+  padding: 2px 6px;
+  border-radius: 5px;
   background: #e5f5e8;
   color: var(--ss-atc-green);
-  font-size: 11.5px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
@@ -253,21 +253,21 @@
 .ss-atc__nudge {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 12px !important;
-  padding: 10px 12px;
-  border-radius: 12px;
+  gap: 8px;
+  margin-top: 10px !important;
+  padding: 8px 10px;
+  border-radius: 10px;
   background: linear-gradient(100deg, #fde6e2 0%, #fbd9d3 100%);
   color: #c2443a;
-  font-size: 13.5px;
+  font-size: 12.5px;
   font-weight: 600;
   line-height: 1.35;
 }
 
 .ss-atc__nudge svg {
   flex: 0 0 auto;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.8;
@@ -277,7 +277,7 @@
 
 /* ── Summary ──────────────────────────────────────────────── */
 .ss-atc__summary {
-  margin-top: 14px;
+  margin-top: 12px;
   padding: 0 2px;
 }
 
@@ -289,7 +289,7 @@
 }
 
 .ss-atc__total-label {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--ss-atc-ink-soft);
 }
 
@@ -303,12 +303,28 @@
 }
 
 .ss-atc__total-was {
-  font-size: 14px;
+  font-size: 12.5px;
   color: var(--ss-atc-strike);
 }
 
+/* Until the side cart has refreshed, so the popup never shows a different number */
+.ss-atc__summary.is-pending .ss-atc__total-amount > * {
+  display: none;
+}
+
+.ss-atc__summary.is-pending .ss-atc__total-amount::after {
+  content: '';
+  display: block;
+  width: 84px;
+  height: 16px;
+  align-self: center;
+  border-radius: 6px;
+  background: linear-gradient(110deg, #f3e4e1 30%, #fbf1ef 50%, #f3e4e1 70%) 0 0 / 200% 100%;
+  animation: ss-atc-shimmer 1.2s linear infinite;
+}
+
 .ss-atc__total {
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 800;
   letter-spacing: -0.02em;
 }
@@ -316,19 +332,19 @@
 .ss-atc__saving {
   margin-top: 6px !important;
   display: inline-block;
-  padding: 4px 10px;
+  padding: 3px 9px;
   border-radius: 999px;
   background: #d9f6ea;
   color: #136b46;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
 }
 
 /* ── Actions ──────────────────────────────────────────────── */
 .ss-atc__actions {
   display: grid;
-  gap: 10px;
-  margin-top: 16px;
+  gap: 8px;
+  margin-top: 14px;
 }
 
 .ss-atc__btn {
@@ -338,10 +354,10 @@
   justify-content: center;
   gap: 10px;
   width: 100%;
-  min-height: 52px;
-  padding: 0 18px;
-  border-radius: 14px;
-  font-size: 16px !important;
+  min-height: 46px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font-size: 15px !important;
   font-weight: 600;
   line-height: 1;
   cursor: pointer;
@@ -370,7 +386,7 @@
   background: var(--ss-atc-black);
   color: #fff;
   border: 0;
-  font-size: 17px !important;
+  font-size: 15.5px !important;
   font-weight: 700;
   box-shadow: 0 10px 22px rgba(11, 11, 13, 0.22);
 }
@@ -378,15 +394,15 @@
 .ss-atc__btn--primary:hover { background: #24242a; }
 
 .ss-atc__pay {
-  height: 20px;
+  height: 18px;
   width: auto;
   display: block;
 }
 
 .ss-atc__spinner {
   display: none;
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   border: 2.5px solid rgba(255, 255, 255, 0.35);
   border-top-color: #fff;
@@ -402,13 +418,13 @@
 .ss-atc__continue {
   display: block;
   width: 100%;
-  min-height: 44px;
-  margin-top: 4px !important;
+  min-height: 40px;
+  margin-top: 2px !important;
   padding: 0;
   border: 0;
   background: transparent;
   color: var(--ss-atc-ink-soft);
-  font-size: 14px !important;
+  font-size: 13px !important;
   font-weight: 500;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -441,9 +457,9 @@ html.ss-atc-lock body {
   .ss-atc__backdrop { background: rgba(20, 24, 38, 0.3); }
 
   .ss-atc__panel {
-    width: 400px;
+    width: 380px;
     max-height: calc(100vh - 32px);
-    padding: 18px 20px 14px;
+    padding: 16px 18px 12px;
     border-radius: 20px;
     box-shadow: 0 24px 60px rgba(20, 24, 38, 0.22);
     opacity: 0;
@@ -463,5 +479,6 @@ html.ss-atc-lock body {
   .ss-atc__backdrop,
   .ss-atc__panel,
   .ss-atc__btn { transition: none; }
-  .ss-atc__media { animation: none; }
+  .ss-atc__media,
+  .ss-atc__summary.is-pending .ss-atc__total-amount::after { animation: none; }
 }

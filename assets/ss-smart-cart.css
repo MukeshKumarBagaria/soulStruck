@@ -105,9 +105,9 @@
 .mini-cart-header {
   background: transparent !important;
   box-shadow: none !important;
-  padding: 14px 20px 10px !important;
-  gap: 14px !important;
-  min-height: 52px;
+  padding: 12px 18px 8px !important;
+  gap: 12px !important;
+  min-height: 48px;
 }
 
 .mini-cart-header .close-button {
@@ -131,9 +131,9 @@
 .mini-cart-title-flex::before {
   content: '';
   flex: 0 0 auto;
-  width: 22px;
-  height: 22px;
-  margin-right: 6px;
+  width: 20px;
+  height: 20px;
+  margin-right: 4px;
   background-color: var(--ss-coral);
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5.5 7.5h13l-1 13a1.5 1.5 0 0 1-1.5 1.4H8a1.5 1.5 0 0 1-1.5-1.4z'/%3E%3Cpath d='M9 10V6a3 3 0 0 1 6 0v4'/%3E%3C/svg%3E") center / contain no-repeat;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5.5 7.5h13l-1 13a1.5 1.5 0 0 1-1.5 1.4H8a1.5 1.5 0 0 1-1.5-1.4z'/%3E%3Cpath d='M9 10V6a3 3 0 0 1 6 0v4'/%3E%3C/svg%3E") center / contain no-repeat;
@@ -142,7 +142,7 @@
 .mini-cart-title,
 .item_count {
   font-family: var(--ss-sans) !important;
-  font-size: 18px !important;
+  font-size: 16px !important;
   font-weight: 600 !important;
   line-height: 1.3 !important;
   color: var(--ss-ink) !important;
@@ -152,7 +152,7 @@
 /* ── Announcement banner (fading texts) ───────────────────── */
 .sr-cart-banner-container {
   margin: 4px 12px 0 !important;
-  height: 44px !important;
+  height: 40px !important;
   border-radius: 14px !important;
   background:
     linear-gradient(100deg, #fde6e2 0%, #fbd6d0 50%, #fde4df 100%) !important;
@@ -195,10 +195,10 @@
   display: flex !important;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   height: 100%;
   font-family: var(--ss-sans) !important;
-  font-size: 16px !important;
+  font-size: 14px !important;
   font-weight: 700 !important;
   line-height: 1 !important;
   letter-spacing: -0.005em;
@@ -210,8 +210,8 @@
 .sr-cart-banner-container .sr-banner-fade-css span::before {
   content: '';
   flex: 0 0 auto;
-  width: 26px;
-  height: 20px;
+  width: 22px;
+  height: 17px;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 20'%3E%3Cpath d='M1 4.5A2.5 2.5 0 0 1 3.5 2h10A2.5 2.5 0 0 1 16 4.5V14H1z' fill='%23e2574c'/%3E%3Cpath d='M16 6h4.2c.6 0 1.2.3 1.6.8l3 3.8c.3.4.4.8.4 1.3V14H16z' fill='%23e2574c'/%3E%3Cpath d='M18 8h2.4l2 2.6H18z' fill='%23fde3df'/%3E%3Ccircle cx='6' cy='15.5' r='3' fill='%23fff' stroke='%23e2574c' stroke-width='2'/%3E%3Ccircle cx='20' cy='15.5' r='3' fill='%23fff' stroke='%23e2574c' stroke-width='2'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
@@ -240,7 +240,7 @@
 
 .progress-bar-heading {
   font-family: var(--ss-serif) !important;
-  font-size: 28px !important;
+  font-size: 24px !important;
   font-weight: 700 !important;
   line-height: 1.15 !important;
   letter-spacing: -0.01em;
@@ -249,7 +249,7 @@
 }
 
 .progress-bar-sub-heading {
-  font-size: 14.5px !important;
+  font-size: 13px !important;
   line-height: 1.4 !important;
   color: var(--ss-ink-soft) !important;
   margin-top: 6px !important;
@@ -262,7 +262,7 @@
 
 .milestone-text-optional,
 .milestone-text-optional span {
-  font-size: 13px !important;
+  font-size: 12px !important;
   font-weight: 600 !important;
   color: var(--ss-ink) !important;
   white-space: nowrap;
@@ -315,11 +315,11 @@
 
 .milestone-text span {
   display: inline-block;
-  padding: 5px 12px;
+  padding: 4px 10px;
   border-radius: 8px;
   background: var(--ss-pill);
   color: var(--ss-coral) !important;
-  font-size: 13px !important;
+  font-size: 12px !important;
   font-weight: 600 !important;
   line-height: 1.2;
   white-space: nowrap;
@@ -350,15 +350,15 @@
 
 .sr-cart-item-image-container {
   margin-top: 0 !important;
-  min-width: 84px !important;
-  min-height: 80px !important;
+  min-width: 76px !important;
+  min-height: 72px !important;
   align-self: flex-start;
 }
 
 .mini-cart-item .sr-cart-item-image {
-  width: 84px !important;
-  height: 80px !important;
-  max-height: 80px !important;
+  width: 76px !important;
+  height: 72px !important;
+  max-height: 72px !important;
   object-fit: cover !important;
   border: none !important;
   border-radius: 12px !important;
@@ -413,7 +413,7 @@
   column-gap: 10px;
   row-gap: 8px;
   align-items: start !important;
-  min-height: 80px;
+  min-height: 72px;
 }
 
 .title-variant-wrapper {
@@ -445,7 +445,7 @@
 
 .mini-cart-item-title-content {
   font-family: var(--ss-serif) !important;
-  font-size: 18px !important;
+  font-size: 16px !important;
   font-weight: 600 !important;
   line-height: 1.25 !important;
   color: var(--ss-ink) !important;
@@ -455,18 +455,18 @@
 }
 
 .mini-cart-item-variant {
-  font-size: 14px !important;
+  font-size: 13px !important;
   line-height: 1.35 !important;
   color: var(--ss-muted) !important;
 }
 
 .mini-cart-item-price {
   line-height: 1.25 !important;
-  font-size: 17px !important;
+  font-size: 15px !important;
 }
 
 .display-price-container {
-  font-size: 17px !important;
+  font-size: 15px !important;
   font-weight: 700 !important;
   color: var(--ss-ink) !important;
   letter-spacing: -0.01em;
@@ -478,7 +478,7 @@
 }
 
 .sr-cart-cut-out-price {
-  font-size: 14px !important;
+  font-size: 12.5px !important;
   font-weight: 400 !important;
   color: var(--ss-strike) !important;
   margin-top: 2px;
@@ -490,8 +490,8 @@
 
 /* Quantity stepper */
 .mini-cart-item-actions {
-  height: 36px !important;
-  min-width: 92px !important;
+  height: 34px !important;
+  min-width: 88px !important;
   border-radius: 10px !important;
   border: 1px solid #ecdcd9 !important;
   background: linear-gradient(180deg, #ffffff 0%, #fdf6f5 100%) !important;
@@ -505,7 +505,7 @@
   width: 30px;
   height: 100%;
   align-items: center !important;
-  font-size: 19px !important;
+  font-size: 17px !important;
   font-weight: 400 !important;
   line-height: 1 !important;
   color: var(--ss-ink) !important;
@@ -522,7 +522,7 @@
 }
 
 .shiprocket-mini-cart-container .mini-cart-item-qty {
-  font-size: 16px !important;
+  font-size: 15px !important;
   font-weight: 600 !important;
   color: var(--ss-ink) !important;
   max-width: 28px !important;
@@ -530,8 +530,8 @@
 
 /* Delete button */
 .delete-item {
-  width: 36px !important;
-  height: 36px !important;
+  width: 34px !important;
+  height: 34px !important;
   margin-right: 0 !important;
   border-radius: 10px !important;
   border: 1px solid #ecdcd9 !important;
@@ -587,13 +587,13 @@
 .sr-cart-coupon-input-box input,
 .sr-cart-text-input-box-main {
   width: 100% !important;
-  height: 46px !important;
+  height: 44px !important;
   padding: 0 12px 0 52px !important;
   border: 1px solid #f0d8d4 !important;
   border-radius: 12px !important;
   background: #fff !important;
   font-family: var(--ss-sans) !important;
-  font-size: 15px !important;
+  font-size: 14px !important;
   color: var(--ss-ink) !important;
   box-shadow: none !important;
   outline: none !important;
@@ -611,7 +611,7 @@
 
 .sr-cart-coupon-action-button,
 .sr-cart-coupon-action-button.disabled {
-  height: 46px;
+  height: 44px;
   padding: 0 16px !important;
   display: flex;
   align-items: center;
@@ -621,7 +621,7 @@
   background: var(--ss-pill) !important;
   color: var(--ss-coral) !important;
   font-family: var(--ss-sans) !important;
-  font-size: 16px !important;
+  font-size: 15px !important;
   font-weight: 600 !important;
   text-align: center !important;
   transition: background-color 0.2s ease, opacity 0.2s ease;
@@ -651,7 +651,7 @@
 .similar-item-heading,
 .similar-item-heading.active-heading {
   font-family: var(--ss-serif) !important;
-  font-size: 26px !important;
+  font-size: 22px !important;
   font-weight: 700 !important;
   line-height: 1.2 !important;
   color: var(--ss-ink) !important;
@@ -697,7 +697,7 @@
 
 .sr-upsell-item-name {
   font-family: var(--ss-serif) !important;
-  font-size: 15px !important;
+  font-size: 14px !important;
   font-weight: 600 !important;
   line-height: 1.25 !important;
   color: var(--ss-ink) !important;
@@ -743,12 +743,12 @@
 
 .combined-offer-badge {
   margin: 0;
-  padding: 10px 12px !important;
+  padding: 8px 12px !important;
   border-radius: 20px 20px 0 0 !important;
   background: linear-gradient(90deg, #a3e9cf 0%, #b4efd9 50%, #a3e9cf 100%) !important;
   color: #10241c !important;
   font-family: var(--ss-sans) !important;
-  font-size: 17px !important;
+  font-size: 15px !important;
   font-weight: 600 !important;
   line-height: 1.2 !important;
   animation: none !important;
@@ -756,7 +756,7 @@
 
 .combined-offer-badge b {
   font-weight: 800;
-  font-size: 19px;
+  font-size: 16px;
   letter-spacing: -0.01em;
 }
 
@@ -769,16 +769,19 @@
 }
 
 .sr-cart-buy-section {
-  padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px)) !important;
-  gap: 14px !important;
+  padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px)) !important;
+  gap: 12px !important;
 }
 
 .sr-smart-cart-total {
   gap: 4px;
+  /* may shrink: a long total wraps under the struck price instead of squeezing Buy Now */
+  flex: 0 1 auto;
+  min-width: 0;
 }
 
 .order-summary-total {
-  font-size: 15px !important;
+  font-size: 14px !important;
   font-weight: 500;
   color: var(--ss-ink-soft) !important;
   gap: 8px !important;
@@ -790,38 +793,41 @@
 }
 
 .sr-cart-total-price-amount {
-  gap: 8px !important;
+  flex-wrap: wrap;
+  column-gap: 8px !important;
+  row-gap: 0 !important;
   align-items: baseline !important;
 }
 
 .sr-cart-total-price-amount .summary-original-price {
-  font-size: 15px !important;
+  font-size: 13.5px !important;
   font-weight: 500 !important;
   color: var(--ss-strike) !important;
 }
 
 .sr-cart-total-price-amount .total-price {
-  font-size: 24px !important;
+  font-size: 20px !important;
   font-weight: 800 !important;
   color: var(--ss-ink) !important;
   letter-spacing: -0.02em;
 }
 
 .sr-cart-checkout-button-container {
-  flex: 1 1 auto;
+  /* room for "Buy Now" + payment icons; on narrow phones the struck price wraps above the total instead */
+  flex: 1 0 176px;
   position: relative;
 }
 
 .mini-cart-order-btn,
 #sr-buy-now-button {
   width: 100% !important;
-  height: 58px !important;
-  border-radius: 16px !important;
+  height: 52px !important;
+  border-radius: 14px !important;
   border: none !important;
   background: #0b0b0d !important;
   color: #fff !important;
   font-family: var(--ss-sans) !important;
-  font-size: 19px !important;
+  font-size: 17px !important;
   font-weight: 700 !important;
   letter-spacing: -0.01em;
   box-shadow: 0 10px 22px rgba(11, 11, 13, 0.22);
@@ -831,6 +837,10 @@
 
 #sr-buy-now-button:active {
   transform: scale(0.985);
+}
+
+#sr-buy-now-btn-text {
+  white-space: nowrap;
 }
 
 .buy-now-text-content {
@@ -860,7 +870,7 @@
 /* ── Order summary sheet ──────────────────────────────────── */
 .mini-cart-order-summary-content .summary-heading-text {
   font-family: var(--ss-serif) !important;
-  font-size: 20px !important;
+  font-size: 18px !important;
   font-weight: 700 !important;
 }
 
@@ -868,6 +878,15 @@
 .mini-cart-order-summary > div {
   font-size: 14px;
   color: var(--ss-ink-soft);
+}
+
+/*
+  The prepaid discount is left out of the total (see assets/ss-smart-cart.js):
+  checkout applies its own prepaid discount per payment method, so a fixed
+  line here would make the bill not add up to the total shown.
+*/
+#sr-cart-prepaid-discount-container {
+  display: none !important;
 }
 
 /* ── Empty cart ───────────────────────────────────────────── */
