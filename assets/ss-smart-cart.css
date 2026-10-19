@@ -235,24 +235,19 @@
 #mini-cart-progress-section {
   background: transparent !important;
   border-bottom: none !important;
-  padding: 18px 16px 12px !important;
+  padding: 14px 16px 12px !important;
 }
 
+/* "Shopping Cart" title — the header already says "Shopping Bag" */
 .progress-bar-heading {
-  font-family: var(--ss-serif) !important;
-  font-size: 24px !important;
-  font-weight: 700 !important;
-  line-height: 1.15 !important;
-  letter-spacing: -0.01em;
-  color: var(--ss-ink) !important;
-  margin-top: 0 !important;
+  display: none !important;
 }
 
 .progress-bar-sub-heading {
   font-size: 13px !important;
   line-height: 1.4 !important;
   color: var(--ss-ink-soft) !important;
-  margin-top: 6px !important;
+  margin-top: 0 !important;
 }
 
 .progress-container {
