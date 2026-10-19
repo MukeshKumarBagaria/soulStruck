@@ -216,12 +216,54 @@
     "ss_trust_marquee_T7kQ2m": {
       "type": "ss-trust-marquee",
       "blocks": {
-        "item_truck": { "type": "item", "settings": { "icon": "truck", "label": "ships in 24-48 hours", "link": "" } },
-        "item_heart": { "type": "item", "settings": { "icon": "heart", "label": "20,000+ girlies", "link": "" } },
-        "item_pin": { "type": "item", "settings": { "icon": "pin", "label": "delivery across india", "link": "" } },
-        "item_lightning": { "type": "item", "settings": { "icon": "lightning", "label": "fast checkout", "link": "" } },
-        "item_chat": { "type": "item", "settings": { "icon": "chat", "label": "24 / 7 support", "link": "" } },
-        "item_check": { "type": "item", "settings": { "icon": "check", "label": "safe payments", "link": "" } }
+        "item_truck": {
+          "type": "item",
+          "settings": {
+            "icon": "truck",
+            "label": "ships in 24-48 hours",
+            "link": ""
+          }
+        },
+        "item_heart": {
+          "type": "item",
+          "settings": {
+            "icon": "heart",
+            "label": "20,000+ girlies",
+            "link": ""
+          }
+        },
+        "item_pin": {
+          "type": "item",
+          "settings": {
+            "icon": "pin",
+            "label": "delivery across india",
+            "link": ""
+          }
+        },
+        "item_lightning": {
+          "type": "item",
+          "settings": {
+            "icon": "lightning",
+            "label": "fast checkout",
+            "link": ""
+          }
+        },
+        "item_chat": {
+          "type": "item",
+          "settings": {
+            "icon": "chat",
+            "label": "24 / 7 support",
+            "link": ""
+          }
+        },
+        "item_check": {
+          "type": "item",
+          "settings": {
+            "icon": "check",
+            "label": "safe payments",
+            "link": ""
+          }
+        }
       },
       "block_order": [
         "item_truck",
@@ -232,7 +274,28 @@
         "item_check"
       ],
       "name": "Trust marquee",
-      "settings": {}
+      "settings": {
+        "speed": 40,
+        "direction": "left",
+        "pause_on_hover": true,
+        "repeats": 3,
+        "aria_label": "Why shop with us",
+        "padding_y": 10,
+        "item_gap": 48,
+        "show_separator": true,
+        "border_top": false,
+        "border_bottom": true,
+        "font_size": 13,
+        "font_weight": "500",
+        "text_transform": "lowercase",
+        "icon_size": 18,
+        "icon_stroke": 2,
+        "bg_color": "#FBF4F3",
+        "text_color": "#0f0f0f",
+        "icon_color": "#0f0f0f",
+        "separator_color": "#bdbdbd",
+        "border_color": "#ececec"
+      }
     }
   },
   "order": [
